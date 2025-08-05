@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Stock Manual G5000</title>
+<style>
+  body { font-family: Arial, sans-serif; background:#f0f4f8; padding: 20px; }
+  .container { max-width: 420px; margin: auto; background:#fff; padding:20px; border-radius:10px; box-shadow: 0 4px 12px rgba(0,0,0,0.1);}
+  h2 { text-align:center; color:#334155; }
+  label { display:block; margin-top:15px; color:#475569; font-weight:600; }
+  select, input[type="number"], input[type="text"] {
+    width:100%; padding:8px; margin-top:6px; border-radius:5px; border:1px solid #cbd5e1; font-size:1rem;
+  }
+  button {
+    width:48%; padding:10px; margin-top:20px; font-size:1.05rem; font-weight:bold; border:none; border-radius:6px;
+    cursor:pointer;
+    color:#fff;
+  }
+  button#masuk { background:#22d3ee; }
+  button#masuk:hover { background:#0ea5e9; }
+  button#keluar { background:#f87171; }
+  button#keluar:hover { background:#dc2626; }
+  .btn-group { display:flex; justify-content:space-between; }
+  #status { margin-top:15px; font-weight:600; text-align:center; color:#334155; }
+</style>
+</head>
+<body>
+  <div class="container">
+    <h2>Stock Manual G5000</h2>
+
+    <label for="jenisBarang">Jenis Barang</label>
+    <select id="jenisBarang">
+      <option value="">-- Pilih Jenis Barang --</option>
+      <option value="elektronik">Elektronik</option>
+      <option value="peralatan">Peralatan</option>
+    </select>
+
+    <label for="namaBarang">Nama Barang</label>
+    <select id="namaBarang" disabled>
+      <option value="">-- Pilih Nama Barang --</option>
+    </select>
+
+    <label for="qty">Jumlah</label>
+    <input type="number" id="qty" min="1" placeholder="Masukkan jumlah">
+
+    <label for="checker">Checker</label>
+    <input type="text" id="checker" placeholder="Nama checker">
+
+    <div class="btn-group">
+      <button id="masuk">Barang Masuk</button>
+      <button id="keluar">Barang Keluar</button>
+    </div>
+
+    <div id="status"></div>
+  </div>
+
+<script>
+  const jenisBarangEl = document.getElementById('jenisBarang');
+  const namaBarangEl = document.getElementById('namaBarang');
+  const qtyEl = document.getElementById('qty');
+  const checkerEl = document.getElementById('checker');
+  const statusEl = document.getElementById('status');
+
+  // Data barang sesuai jenis - bisa diedit nanti
+  const dataBarang = {
+    elektronik: ['Handphone', 'Laptop', 'TV'],
+    peralatan: ['Obeng', 'Tang', 'Palumas']
+  };
+
+  // URL Google Apps Script per jenis barang -- Ganti ini dengan URL hasil deploy Apps Script Anda
+  const urlSpreadsheet = {
+    elektronik: 'https://script.google.com/macros/s/AKfycby6sgp5RP_ijB8Cdc2GcosdikAPIzblGQT8NAOs8fLQXKzmgVerHZ_wi3J0VPbv7oGOZA/exec',
+    peralatan: 'https://script.google.com/macros/s/AKfycbw-W18ucb5SuB04bjC3E8i0EiGhwAMcBdcEYCsLkhWgm7TvINAR0VGnBUzZ5GkWxoYx2g/exec'
+  };
+
+  jenisBarangEl.addEventListener('change', () => {
+    const jenis = jenisBarangEl.value;
+    namaBarangEl.innerHTML = '<option value="">-- Pilih Nama Barang --</option>';
+    if (jenis && dataBarang[jenis]) {
+      dataBarang[jenis].forEach(item => {
+        const opt = document.createElement('option');
+        opt.value = item;
+        opt.textContent = item;
+        namaBarangEl.appendChild(opt);
+      });
+      namaBarangEl.disabled = false;
+    } else {
+      namaBarangEl.disabled = true;
+    }
+  });
+
+  // Fungsi submit data ke Google Apps Script
+  async function submitData(tipe) {
+    const jenis = jenisBarangEl.value;
+    const namaBarang = namaBarangEl.value;
+    const qty = qtyEl.value;
+    const checker = checkerEl.value.trim();
+
+    if (!jenis) return statusEl.textContent = 'Mohon pilih jenis barang';
+    if (!namaBarang) return statusEl.textContent = 'Mohon pilih nama barang';
+    if (!qty || qty < 1) return statusEl.textContent = 'Jumlah harus diisi dan lebih dari 0';
+    if (!checker) return statusEl.textContent = 'Mohon isi nama checker';
+
+    statusEl.textContent = 'Menyimpan...';
+
+    const url = urlSpreadsheet[jenis];
+    if (!url) {
+      statusEl.textContent = 'URL Spreadsheet belum disetting untuk jenis barang ini.';
+      return;
+    }
+
+    try {
+      const res = await fetch(url, {
+        method: 'POST',
+        body: JSON.stringify({
+          namaProduk: namaBarang,
+          qty: Number(qty),
+          checker: checker,
+          tipe: tipe
+        }),
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      });
+
+      const data = await res.json();
+      if (data.result === 'success') {
+        statusEl.textContent = `Data barang ${tipe === 'in' ? 'masuk' : 'keluar'} berhasil disimpan.`;
+        qtyEl.value = '';
+        checkerEl.value = '';
+      } else {
+        statusEl.textContent = 'Gagal menyimpan data.';
+      }
+    } catch (e) {
+      statusEl.textContent = 'Terjadi kesalahan jaringan atau server.';
+    }
+  }
+
+  document.getElementById('masuk').addEventListener('click', () => submitData('in'));
+  document.getElementById('keluar').addEventListener('click', () => submitData('out'));
+</script>
+</body>
+</html>
