@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="id">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -10,6 +11,7 @@
       background: linear-gradient(120deg, #f8fafc 0%, #e2e8f0 100%);
       padding: 20px;
     }
+
     .container {
       max-width: 480px;
       margin: 2rem auto;
@@ -18,11 +20,13 @@
       border-radius: 1rem;
       box-shadow: 0 4px 28px rgba(163, 191, 250, 0.2);
     }
+
     h2 {
       text-align: center;
       margin-bottom: 2rem;
       color: #475569;
     }
+
     label {
       display: block;
       margin-top: 1.2rem;
@@ -30,7 +34,10 @@
       color: #64748b;
       font-weight: 600;
     }
-    select, input[type="number"], input[type="text"] {
+
+    select,
+    input[type="number"],
+    input[type="text"] {
       width: 100%;
       padding: 0.7rem 1rem;
       border-radius: 0.65rem;
@@ -38,11 +45,13 @@
       font-size: 1rem;
       box-sizing: border-box;
     }
+
     .btn-group {
       display: flex;
       gap: 1rem;
       margin-top: 1.5rem;
     }
+
     button {
       flex: 1;
       padding: 0.75rem 0;
@@ -54,31 +63,40 @@
       cursor: pointer;
       transition: background 0.2s ease;
     }
+
     button#btn-in {
       background: #22d3ee;
     }
+
     button#btn-in:hover {
       background: #0ea5e9;
     }
+
     button#btn-out {
       background: #f87171;
     }
+
     button#btn-out:hover {
       background: #dc2626;
     }
+
     .status {
       margin-top: 1rem;
       text-align: center;
       color: #334155;
       font-weight: 600;
+      min-height: 1.3em;
     }
+
     @media(max-width: 540px) {
       .container {
         padding: 1rem 1.5rem;
       }
+
       .btn-group {
         flex-direction: column;
       }
+
       button {
         width: 100%;
         margin-top: 10px;
@@ -86,6 +104,7 @@
     }
   </style>
 </head>
+
 <body>
   <div class="container">
     <h2>Stock Manual G5000</h2>
@@ -118,7 +137,8 @@
   </div>
 
   <script>
-    const JENIS_BARANG = {
+    // Data barang per jenis, bisa diedit sesuai kebutuhan frontend
+    const NAMA_BARANG = {
       elektronik: ['Handphone', 'Laptop', 'TV'],
       peralatan: ['Obeng', 'Tang', 'Palumas'],
       makanan: ['Teh', 'Kopi', 'Gula']
@@ -129,34 +149,39 @@
     const qtyEl = document.getElementById('qty');
     const checkerEl = document.getElementById('checker');
     const statusEl = document.getElementById('status');
-    const btnInEl = document.getElementById('btn-in');
-    const btnOutEl = document.getElementById('btn-out');
 
-    // Ganti dengan URL Web App Google Apps Script backend Anda nanti
-    const BACKEND_URL = 'https://script.google.com/macros/s/AKfycbyUtRRFGpnCghE5hCD0JBhbOmKlD103wV1yCHzRFoWa0lTXdUnOP6VDWZ-BI1jPfg1_Tg/exec';
+    // Ganti ini dengan URL Web App hasil deploy Google Apps Script backend Anda
+    const BACKEND_URL = 'https://script.google.com/macros/s/AKfycbzkzDGWsZWtYTb9GE4F9MehmYjZpIO1vrv4DZ6V9uSzOLPibslv_EXPIrfOEXMdQmdkBw/exec';
 
+    // Mengisi dropdown nama barang saat jenis barang dipilih
     jenisBarangEl.addEventListener('change', () => {
       const jenis = jenisBarangEl.value;
       namaBarangEl.innerHTML = '<option value="">-- Pilih Nama Barang --</option>';
 
-      if (jenis && JENIS_BARANG[jenis]) {
-        JENIS_BARANG[jenis].forEach(item => {
-          const option = document.createElement('option');
-          option.value = item;
-          option.textContent = item;
-          namaBarangEl.appendChild(option);
+      if (jenis && NAMA_BARANG[jenis]) {
+        NAMA_BARANG[jenis].forEach(item => {
+          const opt = document.createElement('option');
+          opt.value = item;
+          opt.textContent = item;
+          namaBarangEl.appendChild(opt);
         });
         namaBarangEl.disabled = false;
       } else {
         namaBarangEl.disabled = true;
       }
+
+      clearStatus();
     });
 
-    function resetStatus() {
+    // Fungsi clear pesan status
+    function clearStatus() {
       statusEl.textContent = '';
     }
 
+    // Fungsi kirim data ke backend
     async function submitData(tipe) {
+      clearStatus();
+
       const jenis = jenisBarangEl.value;
       const namaProduk = namaBarangEl.value;
       const qty = qtyEl.value;
@@ -167,48 +192,48 @@
       if (!qty || qty < 1) return statusEl.textContent = 'Jumlah harus diisi dan minimal 1.';
       if (!checker) return statusEl.textContent = 'Mohon isi nama checker.';
 
-      statusEl.textContent = 'Menyimpan data ...';
+      statusEl.textContent = 'Menyimpan data...';
 
       try {
         const response = await fetch(BACKEND_URL, {
           method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             jenis,
             namaProduk,
             qty: Number(qty),
             checker,
-            tipe  // 'in' atau 'out'
+            tipe
           }),
-          headers: {
-            'Content-Type': 'application/json'
-          },
           mode: 'cors'
         });
 
         if (!response.ok) {
-          throw new Error('Network response was not ok');
+          throw new Error(`Server error: ${response.status}`);
         }
 
-        const data = await response.json();
+        const result = await response.json();
 
-        if (data.result === 'success') {
+        if (result.result === 'success') {
           statusEl.textContent = `Data barang ${tipe === 'in' ? 'masuk' : 'keluar'} berhasil disimpan!`;
           qtyEl.value = '';
           checkerEl.value = '';
         } else {
-          statusEl.textContent = 'Gagal menyimpan data: ' + (data.message || 'Error tidak diketahui');
+          statusEl.textContent = `Gagal menyimpan data: ${result.message || 'Tidak diketahui'}`;
         }
+
       } catch (error) {
+        console.error('Fetch error:', error);
         statusEl.textContent = 'Gagal menyimpan data. Periksa koneksi atau hubungi admin.';
-        console.error('Error:', error);
       }
     }
 
-    btnInEl.addEventListener('click', () => submitData('in'));
-    btnOutEl.addEventListener('click', () => submitData('out'));
+    document.getElementById('btn-in').addEventListener('click', () => submitData('in'));
+    document.getElementById('btn-out').addEventListener('click', () => submitData('out'));
 
-    // Reset status saat input berubah
-    [jenisBarangEl, namaBarangEl, qtyEl, checkerEl].forEach(el => el.addEventListener('input', resetStatus));
+    // Bersihkan status saat edit input agar UI responsif
+    [jenisBarangEl, namaBarangEl, qtyEl, checkerEl].forEach(el => el.addEventListener('input', clearStatus));
   </script>
 </body>
+
 </html>
