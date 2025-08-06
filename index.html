@@ -1,144 +1,214 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Stock Manual G5000</title>
-<style>
-  body { font-family: Arial, sans-serif; background:#f0f4f8; padding: 20px; }
-  .container { max-width: 420px; margin: auto; background:#fff; padding:20px; border-radius:10px; box-shadow: 0 4px 12px rgba(0,0,0,0.1);}
-  h2 { text-align:center; color:#334155; }
-  label { display:block; margin-top:15px; color:#475569; font-weight:600; }
-  select, input[type="number"], input[type="text"] {
-    width:100%; padding:8px; margin-top:6px; border-radius:5px; border:1px solid #cbd5e1; font-size:1rem;
-  }
-  button {
-    width:48%; padding:10px; margin-top:20px; font-size:1.05rem; font-weight:bold; border:none; border-radius:6px;
-    cursor:pointer;
-    color:#fff;
-  }
-  button#masuk { background:#22d3ee; }
-  button#masuk:hover { background:#0ea5e9; }
-  button#keluar { background:#f87171; }
-  button#keluar:hover { background:#dc2626; }
-  .btn-group { display:flex; justify-content:space-between; }
-  #status { margin-top:15px; font-weight:600; text-align:center; color:#334155; }
-</style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Stock Manual G5000 - Standalone</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(120deg, #f8fafc 0%, #e2e8f0 100%);
+      padding: 20px;
+    }
+    .container {
+      max-width: 480px;
+      margin: 2rem auto;
+      background: #fff;
+      padding: 2rem;
+      border-radius: 1rem;
+      box-shadow: 0 4px 28px rgba(163, 191, 250, 0.2);
+    }
+    h2 {
+      text-align: center;
+      margin-bottom: 2rem;
+      color: #475569;
+    }
+    label {
+      display: block;
+      margin-top: 1.2rem;
+      margin-bottom: 0.35rem;
+      color: #64748b;
+      font-weight: 600;
+    }
+    select, input[type="number"], input[type="text"] {
+      width: 100%;
+      padding: 0.7rem 1rem;
+      border-radius: 0.65rem;
+      border: 1px solid #dce1e7;
+      font-size: 1rem;
+      box-sizing: border-box;
+    }
+    .btn-group {
+      display: flex;
+      gap: 1rem;
+      margin-top: 1.5rem;
+    }
+    button {
+      flex: 1;
+      padding: 0.75rem 0;
+      border: none;
+      border-radius: 0.75rem;
+      font-weight: 700;
+      color: #fff;
+      font-size: 1.1rem;
+      cursor: pointer;
+      transition: background 0.2s ease;
+    }
+    button#btn-in {
+      background: #22d3ee;
+    }
+    button#btn-in:hover {
+      background: #0ea5e9;
+    }
+    button#btn-out {
+      background: #f87171;
+    }
+    button#btn-out:hover {
+      background: #dc2626;
+    }
+    .status {
+      margin-top: 1rem;
+      text-align: center;
+      color: #334155;
+      font-weight: 600;
+    }
+    @media(max-width: 540px) {
+      .container {
+        padding: 1rem 1.5rem;
+      }
+      .btn-group {
+        flex-direction: column;
+      }
+      button {
+        width: 100%;
+        margin-top: 10px;
+      }
+    }
+  </style>
 </head>
 <body>
   <div class="container">
     <h2>Stock Manual G5000</h2>
 
     <label for="jenisBarang">Jenis Barang</label>
-    <select id="jenisBarang">
+    <select id="jenisBarang" aria-label="Jenis Barang">
       <option value="">-- Pilih Jenis Barang --</option>
       <option value="elektronik">Elektronik</option>
       <option value="peralatan">Peralatan</option>
+      <option value="makanan">Makanan</option>
     </select>
 
     <label for="namaBarang">Nama Barang</label>
-    <select id="namaBarang" disabled>
+    <select id="namaBarang" aria-label="Nama Barang" disabled>
       <option value="">-- Pilih Nama Barang --</option>
     </select>
 
-    <label for="qty">Jumlah</label>
-    <input type="number" id="qty" min="1" placeholder="Masukkan jumlah">
+    <label for="qty">Jumlah Qty</label>
+    <input type="number" id="qty" min="1" placeholder="Masukkan jumlah" aria-label="Jumlah" />
 
-    <label for="checker">Checker</label>
-    <input type="text" id="checker" placeholder="Nama checker">
+    <label for="checker">Nama Checker</label>
+    <input type="text" id="checker" placeholder="Nama checker" aria-label="Checker" />
 
     <div class="btn-group">
-      <button id="masuk">Barang Masuk</button>
-      <button id="keluar">Barang Keluar</button>
+      <button id="btn-in">Barang Masuk</button>
+      <button id="btn-out">Barang Keluar</button>
     </div>
 
-    <div id="status"></div>
+    <div class="status" id="status"></div>
   </div>
 
-<script>
-  const jenisBarangEl = document.getElementById('jenisBarang');
-  const namaBarangEl = document.getElementById('namaBarang');
-  const qtyEl = document.getElementById('qty');
-  const checkerEl = document.getElementById('checker');
-  const statusEl = document.getElementById('status');
+  <script>
+    const JENIS_BARANG = {
+      elektronik: ['Handphone', 'Laptop', 'TV'],
+      peralatan: ['Obeng', 'Tang', 'Palumas'],
+      makanan: ['Teh', 'Kopi', 'Gula']
+    };
 
-  // Data barang sesuai jenis - bisa diedit nanti
-  const dataBarang = {
-    elektronik: ['Handphone', 'Laptop', 'TV'],
-    peralatan: ['Obeng', 'Tang', 'Palumas']
-  };
+    const jenisBarangEl = document.getElementById('jenisBarang');
+    const namaBarangEl = document.getElementById('namaBarang');
+    const qtyEl = document.getElementById('qty');
+    const checkerEl = document.getElementById('checker');
+    const statusEl = document.getElementById('status');
+    const btnInEl = document.getElementById('btn-in');
+    const btnOutEl = document.getElementById('btn-out');
 
-  // URL Google Apps Script per jenis barang -- Ganti ini dengan URL hasil deploy Apps Script Anda
-  const urlSpreadsheet = {
-    elektronik: 'https://script.google.com/macros/s/AKfycby6sgp5RP_ijB8Cdc2GcosdikAPIzblGQT8NAOs8fLQXKzmgVerHZ_wi3J0VPbv7oGOZA/exec',
-    peralatan: 'https://script.google.com/macros/s/AKfycbw-W18ucb5SuB04bjC3E8i0EiGhwAMcBdcEYCsLkhWgm7TvINAR0VGnBUzZ5GkWxoYx2g/exec'
-  };
+    // Ganti dengan URL Web App Google Apps Script backend Anda nanti
+    const BACKEND_URL = 'https://script.google.com/macros/s/AKfycbyUtRRFGpnCghE5hCD0JBhbOmKlD103wV1yCHzRFoWa0lTXdUnOP6VDWZ-BI1jPfg1_Tg/exec';
 
-  jenisBarangEl.addEventListener('change', () => {
-    const jenis = jenisBarangEl.value;
-    namaBarangEl.innerHTML = '<option value="">-- Pilih Nama Barang --</option>';
-    if (jenis && dataBarang[jenis]) {
-      dataBarang[jenis].forEach(item => {
-        const opt = document.createElement('option');
-        opt.value = item;
-        opt.textContent = item;
-        namaBarangEl.appendChild(opt);
-      });
-      namaBarangEl.disabled = false;
-    } else {
-      namaBarangEl.disabled = true;
-    }
-  });
+    jenisBarangEl.addEventListener('change', () => {
+      const jenis = jenisBarangEl.value;
+      namaBarangEl.innerHTML = '<option value="">-- Pilih Nama Barang --</option>';
 
-  // Fungsi submit data ke Google Apps Script
-  async function submitData(tipe) {
-    const jenis = jenisBarangEl.value;
-    const namaBarang = namaBarangEl.value;
-    const qty = qtyEl.value;
-    const checker = checkerEl.value.trim();
-
-    if (!jenis) return statusEl.textContent = 'Mohon pilih jenis barang';
-    if (!namaBarang) return statusEl.textContent = 'Mohon pilih nama barang';
-    if (!qty || qty < 1) return statusEl.textContent = 'Jumlah harus diisi dan lebih dari 0';
-    if (!checker) return statusEl.textContent = 'Mohon isi nama checker';
-
-    statusEl.textContent = 'Menyimpan...';
-
-    const url = urlSpreadsheet[jenis];
-    if (!url) {
-      statusEl.textContent = 'URL Spreadsheet belum disetting untuk jenis barang ini.';
-      return;
-    }
-
-    try {
-      const res = await fetch(url, {
-        method: 'POST',
-        body: JSON.stringify({
-          namaProduk: namaBarang,
-          qty: Number(qty),
-          checker: checker,
-          tipe: tipe
-        }),
-        headers: {
-          'Content-Type': 'application/json'
-        }
-      });
-
-      const data = await res.json();
-      if (data.result === 'success') {
-        statusEl.textContent = `Data barang ${tipe === 'in' ? 'masuk' : 'keluar'} berhasil disimpan.`;
-        qtyEl.value = '';
-        checkerEl.value = '';
+      if (jenis && JENIS_BARANG[jenis]) {
+        JENIS_BARANG[jenis].forEach(item => {
+          const option = document.createElement('option');
+          option.value = item;
+          option.textContent = item;
+          namaBarangEl.appendChild(option);
+        });
+        namaBarangEl.disabled = false;
       } else {
-        statusEl.textContent = 'Gagal menyimpan data.';
+        namaBarangEl.disabled = true;
       }
-    } catch (e) {
-      statusEl.textContent = 'Terjadi kesalahan jaringan atau server.';
-    }
-  }
+    });
 
-  document.getElementById('masuk').addEventListener('click', () => submitData('in'));
-  document.getElementById('keluar').addEventListener('click', () => submitData('out'));
-</script>
+    function resetStatus() {
+      statusEl.textContent = '';
+    }
+
+    async function submitData(tipe) {
+      const jenis = jenisBarangEl.value;
+      const namaProduk = namaBarangEl.value;
+      const qty = qtyEl.value;
+      const checker = checkerEl.value.trim();
+
+      if (!jenis) return statusEl.textContent = 'Mohon pilih jenis barang.';
+      if (!namaProduk) return statusEl.textContent = 'Mohon pilih nama barang.';
+      if (!qty || qty < 1) return statusEl.textContent = 'Jumlah harus diisi dan minimal 1.';
+      if (!checker) return statusEl.textContent = 'Mohon isi nama checker.';
+
+      statusEl.textContent = 'Menyimpan data ...';
+
+      try {
+        const response = await fetch(BACKEND_URL, {
+          method: 'POST',
+          body: JSON.stringify({
+            jenis,
+            namaProduk,
+            qty: Number(qty),
+            checker,
+            tipe  // 'in' atau 'out'
+          }),
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          mode: 'cors'
+        });
+
+        if (!response.ok) {
+          throw new Error('Network response was not ok');
+        }
+
+        const data = await response.json();
+
+        if (data.result === 'success') {
+          statusEl.textContent = `Data barang ${tipe === 'in' ? 'masuk' : 'keluar'} berhasil disimpan!`;
+          qtyEl.value = '';
+          checkerEl.value = '';
+        } else {
+          statusEl.textContent = 'Gagal menyimpan data: ' + (data.message || 'Error tidak diketahui');
+        }
+      } catch (error) {
+        statusEl.textContent = 'Gagal menyimpan data. Periksa koneksi atau hubungi admin.';
+        console.error('Error:', error);
+      }
+    }
+
+    btnInEl.addEventListener('click', () => submitData('in'));
+    btnOutEl.addEventListener('click', () => submitData('out'));
+
+    // Reset status saat input berubah
+    [jenisBarangEl, namaBarangEl, qtyEl, checkerEl].forEach(el => el.addEventListener('input', resetStatus));
+  </script>
 </body>
 </html>
