@@ -1,213 +1,143 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-  <meta charset="UTF-8" />
-  <title>Stok Manual</title>
+  <meta charset="UTF-8">
+  <title>Kartu Stock Manual</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1">
   <style>
-    body {
-      font-family: Arial, sans-serif;
-      max-width: 600px;
-      margin: 2em auto;
-      padding: 1em;
-      border: 1px solid #ccc;
-      border-radius: 8px;
-      background-color: #fafafa;
-    }
-    label {
-      display: block;
-      margin-top: 1em;
-      font-weight: bold;
-    }
-    input, select, button {
-      width: 100%;
-      padding: 0.5em;
-      margin-top: 0.3em;
-      font-size: 1rem;
-      box-sizing: border-box;
-      border-radius: 4px;
-      border: 1px solid #ccc;
-    }
-    button {
-      width: 48%;
-      margin-top: 1em;
-      font-weight: bold;
-      cursor: pointer;
-      background-color: #4CAF50;
-      color: white;
-      border: none;
-      transition: background-color 0.3s ease;
-    }
-    button#barangKeluarBtn {
-      background-color: #f44336;
-    }
-    button:hover {
-      filter: brightness(90%);
-    }
-    .button-group {
-      display: flex;
-      justify-content: space-between;
-    }
+    body { font-family: 'Segoe UI', Arial, sans-serif; margin: 0; background: #f4f6f8; }
+    .container { max-width: 400px; margin: 30px auto; background: #fff; padding: 32px 20px 24px 20px; border-radius: 10px; box-shadow: 0 4px 16px rgba(0,0,0,0.07);}
+    h2 { text-align: center; margin-bottom: 20px; letter-spacing:1px;}
+    label { display:block; margin-top:12px; margin-bottom: 8px; font-size:14px;}
+    select, input[type="number"], input[type="text"] {width:100%; padding:10px; font-size:15px; border-radius:6px; border:1px solid #ddd; margin-bottom: 8px;}
+    .btn-group { display:flex; gap:10px; margin-top:10px;}
+    button { flex:1; padding:11px; font-size:16px; border:none; border-radius:6px; color:#fff; cursor:pointer;}
+    .btn-masuk { background: #0d9347;}
+    .btn-keluar { background: #d32b2b;}
+    .msg {margin-top:16px; text-align:center; font-weight:500;}
+    @media (max-width:480px) {.container{padding:16px 6px 16px 6px;}}
   </style>
 </head>
 <body>
-  <h1>Stok Manual</h1>
+  <div class="container">
+    <h2>Kartu Stock Manual</h2>
+    <form id="stockForm">
+      <label for="jenis">Jenis Barang:</label>
+      <select id="jenis" required>
+        <option value="">Pilih jenis barang</option>
+        <option value="kawat_besi">Kawat Besi</option>
+        <option value="galvalum_bondex">Galvalum-Bondex</option>
+        <option value="holo_kanal">Holo-Kanal</option>
+        <option value="semen">Semen</option>
+      </select>
 
-  <form id="stokForm" target="hidden_iframe" method="POST" autocomplete="off">
-    <!-- Pilih Jenis Barang -->
-    <label for="jenisBarang">Jenis Barang (pilih salah satu)</label>
-    <select id="jenisBarang" name="jenisBarang" required>
-      <option value="" disabled selected>-- Pilih Jenis Barang --</option>
-      <option value="Elektronik">Elektronik</option>
-      <option value="Makanan">Makanan</option>
-      <!-- Tambahkan jenis barang lain di sini jika diperlukan -->
-    </select>
+      <label for="nama">Nama Barang:</label>
+      <select id="nama" required>
+        <option value="">Pilih nama barang</option>
+      </select>
 
-    <!-- Nama Barang (optional) -->
-    <label for="namaBarang">Nama Barang (optional)</label>
-    <input type="text" id="namaBarang" name="" placeholder="Nama Barang akan diatur otomatis berdasarkan jenis barang" />
+      <label for="qty">Jumlah (Qty):</label>
+      <input id="qty" type="number" min="1" required />
 
-    <!-- Jumlah -->
-    <label for="jumlah">Jumlah</label>
-    <input type="number" id="jumlah" name="" min="1" required placeholder="Masukkan jumlah" />
+      <label for="checker">Checker:</label>
+      <input id="checker" type="text" required />
 
-    <!-- Checker -->
-    <label for="checker">Checker</label>
-    <input type="text" id="checker" name="" placeholder="Nama Checker" />
-
-    <div class="button-group">
-      <button type="button" id="barangMasukBtn">Barang Masuk</button>
-      <button type="button" id="barangKeluarBtn">Barang Keluar</button>
-    </div>
-  </form>
-
-  <!-- Iframe untuk submit form tanpa reload halaman -->
-  <iframe name="hidden_iframe" style="display:none;"></iframe>
-
+      <div class="btn-group">
+        <button type="button" class="btn-masuk" id="btnIn">Barang Masuk</button>
+        <button type="button" class="btn-keluar" id="btnOut">Barang Keluar</button>
+      </div>
+    </form>
+    <div class="msg" id="msg"></div>
+  </div>
   <script>
-    // ================================
-    // KONFIGURASI TIAP JENIS BARANG
-    // ================================
-    // Sesuaikan URL formResponse dan entry ID sesuai Google Form Anda
-    // entryNamaBarang: optional field nama barang
-    // entryChecker: Checker field
-    // entryJumlahMasuk: jumlah barang masuk
-    // entryJumlahKeluar: jumlah barang keluar
-    // ================================
+  // Daftar nama barang sesuai jenis
+  const barangOptions = {
+    kawat_besi: ["Kawat 6mm", "Kawat 8mm", "Kawat 10mm"],
+    galvalum_bondex: ["Galvalum 0.3mm", "Bondex 0.3mm"],
+    holo_kanal: ["Holo 4x4", "Kanal C 75"],
+    semen: ["Semen Tiga Roda", "Semen Gresik"]
+  };
 
-    const configJenisBarang = {
-      "Elektronik": {
-        formUrl: 'https://docs.google.com/forms/u/0/d/e/1FAIpQLSf-VCMgLUhHMeiT5yRi5MMbdd80WU24ML30XIA8rHhJffxzPg/formResponse',
-        entryNamaBarang: 'entry.1807916840',
-        entryChecker: 'entry.1600868911',
-        entryJumlahMasuk: 'entry.1282008846',
-        entryJumlahKeluar: 'entry.181095592'
-      },
-      "Makanan": {
-        formUrl: 'https://docs.google.com/forms/u/0/d/e/1FAIpQLScvETNjdJnC9ZiFSsgRx5zP2dit95j_0Y4NzyqccCRf-Sl47Q/formResponse',
-        entryNamaBarang: 'entry.566128663',
-        entryChecker: 'entry.843098471',
-        entryJumlahMasuk: 'entry.969048917',
-        entryJumlahKeluar: 'entry.1223821394'
-      }
-      // Tambahkan jenis barang lain dengan format yang sama di sini
-    };
+  // Spreadsheet Web App URLs sesuai jenis barang
+  const spreadsheetURLs = {
+    kawat_besi: "https://script.google.com/macros/s/AKfycbxdjhsg1CfChywn_F1XSO9hz1Vj_D1x8f6eZRjVD5v3tmBd8IrYvXL1otYleLNzbEvm5g/exec",
+    galvalum_bondex: "https://script.google.com/macros/s/AKfycbx7-ijMQ1Jii7vnJgL64nqa0Gdif4Lpj8j4horfZDpfTNl-zS5ijga9Kcprc2JdUpkgrQ/exec",
+    holo_kanal: "https://script.google.com/macros/s/AKfycbxxxx_xholokanal/exec",
+    semen: "https://script.google.com/macros/s/AKfycbxxxx_xsemen/exec"
+  };
 
-    // Ambil elemen HTML form dan input
-    const form = document.getElementById('stokForm');
-    const jenisBarangSelect = document.getElementById('jenisBarang');
-    const inputNamaBarang = document.getElementById('namaBarang');
-    const inputJumlah = document.getElementById('jumlah');
-    const inputChecker = document.getElementById('checker');
+  const form = document.getElementById('stockForm');
+  const jenisEl = document.getElementById('jenis');
+  const namaEl = document.getElementById('nama');
+  const qtyEl = document.getElementById('qty');
+  const checkerEl = document.getElementById('checker');
+  const msgEl = document.getElementById('msg');
+  const btnIn = document.getElementById('btnIn');
+  const btnOut = document.getElementById('btnOut');
 
-    // Fungsi update atribut name berdasarkan jenis barang yang dipilih
-    function updateEntryIds() {
-      const jenisTerpilih = jenisBarangSelect.value;
-
-      if(jenisTerpilih && configJenisBarang[jenisTerpilih]) {
-        // Set nama attribute input agar sesuai entry ID Google Form
-        inputNamaBarang.name = configJenisBarang[jenisTerpilih].entryNamaBarang || ''; 
-        // inputJumlah name tidak langsung set, karena jumlah dikirim dinamis, tetap kosong
-        inputJumlah.name = 'jumlahInput'; // nama sementara, dipakai di JS nanti
-        inputChecker.name = configJenisBarang[jenisTerpilih].entryChecker || '';
-      } else {
-        // Reset jika tidak ada jenis barang terpilih
-        inputNamaBarang.name = '';
-        inputJumlah.name = '';
-        inputChecker.name = '';
-      }
-    }
-
-    // Panggil updateEntryIds saat jenis barang berubah
-    jenisBarangSelect.addEventListener('change', updateEntryIds);
-
-    // Fungsi submit form ke Google Form
-    function submitForm(aksi) {
-      const jenisTerpilih = jenisBarangSelect.value;
-      if (!jenisTerpilih) {
-        alert('Silakan pilih jenis barang terlebih dahulu!');
-        return;
-      }
-
-      const config = configJenisBarang[jenisTerpilih];
-      if(!config) {
-        alert('Konfigurasi untuk jenis barang ini tidak ditemukan!');
-        return;
-      }
-
-      // Validasi jumlah input
-      const jumlahVal = inputJumlah.value.trim();
-      if (!jumlahVal || isNaN(jumlahVal) || Number(jumlahVal) <= 0) {
-        alert('Masukkan jumlah yang valid lebih dari 0!');
-        inputJumlah.focus();
-        return;
-      }
-
-      // Buat FormData sebagai body post
-      const formData = new FormData();
-
-      // Tambahkan nama barang jika ada
-      if(inputNamaBarang.name && inputNamaBarang.value.trim() !== '') {
-        formData.append(inputNamaBarang.name, inputNamaBarang.value.trim());
-      }
-
-      // Tambahkan checker jika tidak kosong
-      if(inputChecker.name && inputChecker.value.trim() !== '') {
-        formData.append(inputChecker.name, inputChecker.value.trim());
-      }
-
-      // Jumlah akan dikirim ke field masuk atau keluar sesuai tombol
-      if(aksi === 'masuk') {
-        formData.append(config.entryJumlahMasuk, jumlahVal);
-      } else if(aksi === 'keluar') {
-        formData.append(config.entryJumlahKeluar, jumlahVal);
-      } else {
-        alert('Aksi tidak dikenali!');
-        return;
-      }
-
-      // Kirim data via fetch POST (mode no-cors agar tanpa reload)
-      fetch(config.formUrl, {
-        method: 'POST',
-        mode: 'no-cors',
-        body: formData
-      }).then(() => {
-        alert(`Data berhasil dikirim untuk Barang ${aksi === "masuk" ? "Masuk" : "Keluar"}`);
-        form.reset();
-        // Reset entry ids karena form sudah reset
-        updateEntryIds();
-      }).catch(error => {
-        console.error('Error saat submit:', error);
-        alert('Terjadi kesalahan saat mengirim data. Silakan coba ulangi.');
+  // Update nama barang setelah select jenis
+  jenisEl.addEventListener('change', function() {
+    const jenis = jenisEl.value;
+    namaEl.innerHTML = '<option value="">Pilih nama barang</option>';
+    if(barangOptions[jenis]) {
+      barangOptions[jenis].forEach(nama => {
+        namaEl.innerHTML += `<option value="${nama}">${nama}</option>`;
       });
     }
+  });
 
-    // Pasang event listener tombol
-    document.getElementById('barangMasukBtn').addEventListener('click', () => submitForm('masuk'));
-    document.getElementById('barangKeluarBtn').addEventListener('click', () => submitForm('keluar'));
+  // Submit function
+  function submitForm(jenis, namaBarang, masuk, keluar, checker) {
+    msgEl.textContent = "Menyimpan data...";
+    let url = spreadsheetURLs[jenis];
+    if(!url) {msgEl.textContent = "Jenis barang belum didukung."; return;}
+    // Format body untuk Apps Script
+    const body = {
+      namaBarang: namaBarang,
+      masuk: masuk,
+      keluar: keluar,
+      checker: checker
+    };
+    fetch(url, {
+      method: 'POST',
+      mode: 'cors',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body)
+    })
+    .then(res => res.json())
+    .then(data => {
+      if(data && data.result === "success") {
+        msgEl.textContent = "Berhasil menyimpan!";
+        form.reset();
+        namaEl.innerHTML = '<option value="">Pilih nama barang</option>';
+      } else {
+        msgEl.textContent = "Gagal menyimpan. Coba lagi!";
+      }
+    })
+    .catch(() => {
+      msgEl.textContent = "Gagal menyimpan. Cek koneksi atau coba refresh!";
+    });
+  }
 
-    // Initial setup saat halaman dimuat
-    updateEntryIds();
+  // Event listener tombol
+  btnIn.addEventListener('click', function() {
+    if(form.checkValidity()) {
+      submitForm(
+        jenisEl.value, namaEl.value, qtyEl.value, '', checkerEl.value
+      );
+    } else {
+      form.reportValidity();
+    }
+  });
+  btnOut.addEventListener('click', function() {
+    if(form.checkValidity()) {
+      submitForm(
+        jenisEl.value, namaEl.value, '', qtyEl.value, checkerEl.value
+      );
+    } else {
+      form.reportValidity();
+    }
+  });
   </script>
-
 </body>
 </html>
