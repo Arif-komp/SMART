@@ -110,12 +110,12 @@
       semen: ['Semen Tiga Roda', 'Semen Gresik'],
     };
 
-    // Ganti URL Web Apps sesuai hasil deploy Google Apps Script Anda (lihat instruksi di bawah)
+    // Ganti URL Web Apps hasil deploy Google Apps Script milik Anda
     const spreadsheetURLs = {
-      kawat_besi: 'https://script.google.com/macros/s/AKfycbwXmN9HmTt3IZTJzotAyTWHDvkZ8zK73nrD7nerzNZMpyXD-XLN0qr-kgHUC1HaHREbcA/exec',
-      galvalum_bondex: 'https://script.google.com/macros/s/AKfycbwXmN9HmTt3IZTJzotAyTWHDvkZ8zK73nrD7nerzNZMpyXD-XLN0qr-kgHUC1HaHREbcA/exec',
+      kawat_besi: 'https://script.google.com/macros/s/AKfycbzu9opuapR6bczNYUN-5pAsFAHSxGcj5DiGY3MJ9gHq1YGsrBDjoqw2609-jiZxywskUw/exec',
+      galvalum_bondex: 'https://script.google.com/macros/s/AKfycbzbhybp7drJVX0zk8Oih3CRvdmBWap2r-M-HRF4ogYWYwFv7J4lj40qo7ewihUvL9GoWQ/exec',
       holo_kanal: 'https://script.google.com/macros/s/YOUR_HOLO_KANAL_WEBAPP_URL/exec',
-      semen: 'https://script.google.com/macros/s/AKfycbwXmN9HmTt3IZTJzotAyTWHDvkZ8zK73nrD7nerzNZMpyXD-XLN0qr-kgHUC1HaHREbcA/exec',
+      semen: 'https://script.google.com/macros/s/YOUR_SEMEN_WEBAPP_URL/exec',
     };
 
     const form = document.getElementById('stockForm');
@@ -155,7 +155,10 @@
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(body),
       })
-        .then((res) => res.json())
+        .then((res) => {
+          if (!res.ok) throw new Error('Network response not ok');
+          return res.json();
+        })
         .then((data) => {
           if (data && data.result === 'success') {
             msgEl.textContent = 'Berhasil menyimpan!';
@@ -165,7 +168,8 @@
             msgEl.textContent = 'Gagal menyimpan. Coba lagi!';
           }
         })
-        .catch(() => {
+        .catch((err) => {
+          console.error('Fetch error:', err);
           msgEl.textContent = 'Gagal menyimpan. Cek koneksi atau coba refresh!';
         });
     }
