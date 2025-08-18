@@ -5,70 +5,17 @@
   <title>Kartu Stock Manual</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <style>
-    body {
-      font-family: 'Segoe UI', Arial, sans-serif;
-      margin: 0;
-      background: #f4f6f8;
-    }
-    .container {
-      max-width: 400px;
-      margin: 30px auto;
-      background: #fff;
-      padding: 32px 20px 24px 20px;
-      border-radius: 10px;
-      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.07);
-    }
-    h2 {
-      text-align: center;
-      margin-bottom: 20px;
-      letter-spacing: 1px;
-    }
-    label {
-      display: block;
-      margin-top: 12px;
-      margin-bottom: 8px;
-      font-size: 14px;
-    }
-    select,
-    input[type='number'],
-    input[type='text'] {
-      width: 100%;
-      padding: 10px;
-      font-size: 15px;
-      border-radius: 6px;
-      border: 1px solid #ddd;
-      margin-bottom: 8px;
-    }
-    .btn-group {
-      display: flex;
-      gap: 10px;
-      margin-top: 10px;
-    }
-    button {
-      flex: 1;
-      padding: 11px;
-      font-size: 16px;
-      border: none;
-      border-radius: 6px;
-      color: #fff;
-      cursor: pointer;
-    }
-    .btn-masuk {
-      background: #0d9347;
-    }
-    .btn-keluar {
-      background: #d32b2b;
-    }
-    .msg {
-      margin-top: 16px;
-      text-align: center;
-      font-weight: 500;
-    }
-    @media (max-width: 480px) {
-      .container {
-        padding: 16px 6px 16px 6px;
-      }
-    }
+    body { font-family: 'Segoe UI', Arial, sans-serif; margin:0; background:#f4f6f8; }
+    .container { max-width:400px; margin:30px auto; background:#fff; padding:32px 20px 24px 20px; border-radius:10px; box-shadow:0 4px 16px rgba(0,0,0,0.07);}
+    h2 { text-align:center; margin-bottom:20px; letter-spacing:1px; }
+    label { display:block; margin-top:12px; margin-bottom:8px; font-size:14px;}
+    select, input[type="number"], input[type="text"] {width:100%; padding:10px; font-size:15px; border-radius:6px; border:1px solid #ddd; margin-bottom:8px;}
+    .btn-group { display:flex; gap:10px; margin-top:10px;}
+    button { flex:1; padding:11px; font-size:16px; border:none; border-radius:6px; color:#fff; cursor:pointer;}
+    .btn-masuk { background:#0d9347; }
+    .btn-keluar { background:#d32b2b; }
+    .msg { margin-top:16px; text-align:center; font-weight:500;}
+    @media (max-width:480px) { .container { padding:16px 6px 16px 6px; } }
   </style>
 </head>
 <body>
@@ -110,10 +57,9 @@
       semen: ['Semen Tiga Roda', 'Semen Gresik'],
     };
 
-    // Ganti URL Web Apps hasil deploy Google Apps Script milik Anda
     const spreadsheetURLs = {
-      kawat_besi: 'https://script.google.com/macros/s/AKfycbzu9opuapR6bczNYUN-5pAsFAHSxGcj5DiGY3MJ9gHq1YGsrBDjoqw2609-jiZxywskUw/exec',
-      galvalum_bondex: 'https://script.google.com/macros/s/AKfycbzbhybp7drJVX0zk8Oih3CRvdmBWap2r-M-HRF4ogYWYwFv7J4lj40qo7ewihUvL9GoWQ/exec',
+      kawat_besi: 'https://script.google.com/macros/s/AKfycbyuQu9TzyC0Ac6Q9cgP6qPxqEit5DC0aGVMCWRzbHytk3PdVqgiz3iX2-mVETUSzSyZUg/exec',
+      galvalum_bondex: 'https://script.google.com/macros/s/AKfycbwxMHECdE6GORQDDpBZ1oM9OoWhQCWeRpSkrBmIm-wYwnXFO9HXJPTbm8dW6PawPmijmQ/exec',
       holo_kanal: 'https://script.google.com/macros/s/YOUR_HOLO_KANAL_WEBAPP_URL/exec',
       semen: 'https://script.google.com/macros/s/YOUR_SEMEN_WEBAPP_URL/exec',
     };
@@ -127,7 +73,7 @@
     const btnIn = document.getElementById('btnIn');
     const btnOut = document.getElementById('btnOut');
 
-    jenisEl.addEventListener('change', function () {
+    jenisEl.addEventListener('change', () => {
       const jenis = jenisEl.value;
       namaEl.innerHTML = '<option value="">Pilih nama barang</option>';
       if (barangOptions[jenis]) {
@@ -144,23 +90,18 @@
         msgEl.textContent = 'Jenis barang belum didukung.';
         return;
       }
-      const body = {
-        namaBarang: namaBarang,
-        masuk: masuk,
-        keluar: keluar,
-        checker: checker,
-      };
+      const body = { namaBarang, masuk, keluar, checker };
       fetch(url, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(body),
+        body: JSON.stringify(body)
       })
-        .then((res) => {
-          if (!res.ok) throw new Error('Network response not ok');
+        .then(res => {
+          if (!res.ok) throw new Error('Network response was not ok');
           return res.json();
         })
-        .then((data) => {
-          if (data && data.result === 'success') {
+        .then(data => {
+          if (data.result === 'success') {
             msgEl.textContent = 'Berhasil menyimpan!';
             form.reset();
             namaEl.innerHTML = '<option value="">Pilih nama barang</option>';
@@ -168,13 +109,12 @@
             msgEl.textContent = 'Gagal menyimpan. Coba lagi!';
           }
         })
-        .catch((err) => {
-          console.error('Fetch error:', err);
+        .catch(() => {
           msgEl.textContent = 'Gagal menyimpan. Cek koneksi atau coba refresh!';
         });
     }
 
-    btnIn.addEventListener('click', function () {
+    btnIn.addEventListener('click', () => {
       if (form.checkValidity()) {
         submitForm(jenisEl.value, namaEl.value, qtyEl.value, '', checkerEl.value);
       } else {
@@ -182,7 +122,7 @@
       }
     });
 
-    btnOut.addEventListener('click', function () {
+    btnOut.addEventListener('click', () => {
       if (form.checkValidity()) {
         submitForm(jenisEl.value, namaEl.value, '', qtyEl.value, checkerEl.value);
       } else {
