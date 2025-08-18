@@ -1,21 +1,74 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
   <title>Kartu Stock Manual</title>
-  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <style>
-    body { font-family: 'Segoe UI', Arial, sans-serif; margin: 0; background: #f4f6f8; }
-    .container { max-width: 400px; margin: 30px auto; background: #fff; padding: 32px 20px 24px 20px; border-radius: 10px; box-shadow: 0 4px 16px rgba(0,0,0,0.07);}
-    h2 { text-align: center; margin-bottom: 20px; letter-spacing:1px;}
-    label { display:block; margin-top:12px; margin-bottom: 8px; font-size:14px;}
-    select, input[type="number"], input[type="text"] {width:100%; padding:10px; font-size:15px; border-radius:6px; border:1px solid #ddd; margin-bottom: 8px;}
-    .btn-group { display:flex; gap:10px; margin-top:10px;}
-    button { flex:1; padding:11px; font-size:16px; border:none; border-radius:6px; color:#fff; cursor:pointer;}
-    .btn-masuk { background: #0d9347;}
-    .btn-keluar { background: #d32b2b;}
-    .msg {margin-top:16px; text-align:center; font-weight:500;}
-    @media (max-width:480px) {.container{padding:16px 6px 16px 6px;}}
+    body {
+      font-family: 'Segoe UI', Arial, sans-serif;
+      margin: 0;
+      background: #f4f6f8;
+    }
+    .container {
+      max-width: 400px;
+      margin: 30px auto;
+      background: #fff;
+      padding: 32px 20px 24px 20px;
+      border-radius: 10px;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.07);
+    }
+    h2 {
+      text-align: center;
+      margin-bottom: 20px;
+      letter-spacing: 1px;
+    }
+    label {
+      display: block;
+      margin-top: 12px;
+      margin-bottom: 8px;
+      font-size: 14px;
+    }
+    select,
+    input[type='number'],
+    input[type='text'] {
+      width: 100%;
+      padding: 10px;
+      font-size: 15px;
+      border-radius: 6px;
+      border: 1px solid #ddd;
+      margin-bottom: 8px;
+    }
+    .btn-group {
+      display: flex;
+      gap: 10px;
+      margin-top: 10px;
+    }
+    button {
+      flex: 1;
+      padding: 11px;
+      font-size: 16px;
+      border: none;
+      border-radius: 6px;
+      color: #fff;
+      cursor: pointer;
+    }
+    .btn-masuk {
+      background: #0d9347;
+    }
+    .btn-keluar {
+      background: #d32b2b;
+    }
+    .msg {
+      margin-top: 16px;
+      text-align: center;
+      font-weight: 500;
+    }
+    @media (max-width: 480px) {
+      .container {
+        padding: 16px 6px 16px 6px;
+      }
+    }
   </style>
 </head>
 <body>
@@ -50,94 +103,88 @@
     <div class="msg" id="msg"></div>
   </div>
   <script>
-  // Daftar nama barang sesuai jenis
-  const barangOptions = {
-    kawat_besi: ["Kawat 6mm", "Kawat 8mm", "Kawat 10mm"],
-    galvalum_bondex: ["Galvalum 0.3mm", "Bondex 0.3mm"],
-    holo_kanal: ["Holo 4x4", "Kanal C 75"],
-    semen: ["Semen Tiga Roda", "Semen Gresik"]
-  };
-
-  // Spreadsheet Web App URLs sesuai jenis barang
-  const spreadsheetURLs = {
-    kawat_besi: "https://script.google.com/macros/s/AKfycbxdjhsg1CfChywn_F1XSO9hz1Vj_D1x8f6eZRjVD5v3tmBd8IrYvXL1otYleLNzbEvm5g/exec",
-    galvalum_bondex: "https://script.google.com/macros/s/AKfycbx7-ijMQ1Jii7vnJgL64nqa0Gdif4Lpj8j4horfZDpfTNl-zS5ijga9Kcprc2JdUpkgrQ/exec",
-    holo_kanal: "https://script.google.com/macros/s/AKfycbxxxx_xholokanal/exec",
-    semen: "https://script.google.com/macros/s/AKfycbxxxx_xsemen/exec"
-  };
-
-  const form = document.getElementById('stockForm');
-  const jenisEl = document.getElementById('jenis');
-  const namaEl = document.getElementById('nama');
-  const qtyEl = document.getElementById('qty');
-  const checkerEl = document.getElementById('checker');
-  const msgEl = document.getElementById('msg');
-  const btnIn = document.getElementById('btnIn');
-  const btnOut = document.getElementById('btnOut');
-
-  // Update nama barang setelah select jenis
-  jenisEl.addEventListener('change', function() {
-    const jenis = jenisEl.value;
-    namaEl.innerHTML = '<option value="">Pilih nama barang</option>';
-    if(barangOptions[jenis]) {
-      barangOptions[jenis].forEach(nama => {
-        namaEl.innerHTML += `<option value="${nama}">${nama}</option>`;
-      });
-    }
-  });
-
-  // Submit function
-  function submitForm(jenis, namaBarang, masuk, keluar, checker) {
-    msgEl.textContent = "Menyimpan data...";
-    let url = spreadsheetURLs[jenis];
-    if(!url) {msgEl.textContent = "Jenis barang belum didukung."; return;}
-    // Format body untuk Apps Script
-    const body = {
-      namaBarang: namaBarang,
-      masuk: masuk,
-      keluar: keluar,
-      checker: checker
+    const barangOptions = {
+      kawat_besi: ['Kawat 6mm', 'Kawat 8mm', 'Kawat 10mm'],
+      galvalum_bondex: ['Galvalum 0.3mm', 'Bondex 0.3mm'],
+      holo_kanal: ['Holo 4x4', 'Kanal C 75'],
+      semen: ['Semen Tiga Roda', 'Semen Gresik'],
     };
-    fetch(url, {
-      method: 'POST',
-      mode: 'cors',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(body)
-    })
-    .then(res => res.json())
-    .then(data => {
-      if(data && data.result === "success") {
-        msgEl.textContent = "Berhasil menyimpan!";
-        form.reset();
-        namaEl.innerHTML = '<option value="">Pilih nama barang</option>';
-      } else {
-        msgEl.textContent = "Gagal menyimpan. Coba lagi!";
-      }
-    })
-    .catch(() => {
-      msgEl.textContent = "Gagal menyimpan. Cek koneksi atau coba refresh!";
-    });
-  }
 
-  // Event listener tombol
-  btnIn.addEventListener('click', function() {
-    if(form.checkValidity()) {
-      submitForm(
-        jenisEl.value, namaEl.value, qtyEl.value, '', checkerEl.value
-      );
-    } else {
-      form.reportValidity();
+    // Ganti URL Web Apps sesuai hasil deploy Google Apps Script Anda (lihat instruksi di bawah)
+    const spreadsheetURLs = {
+      kawat_besi: 'https://script.google.com/macros/s/AKfycbwXmN9HmTt3IZTJzotAyTWHDvkZ8zK73nrD7nerzNZMpyXD-XLN0qr-kgHUC1HaHREbcA/exec',
+      galvalum_bondex: 'https://script.google.com/macros/s/AKfycbwXmN9HmTt3IZTJzotAyTWHDvkZ8zK73nrD7nerzNZMpyXD-XLN0qr-kgHUC1HaHREbcA/exec',
+      holo_kanal: 'https://script.google.com/macros/s/YOUR_HOLO_KANAL_WEBAPP_URL/exec',
+      semen: 'https://script.google.com/macros/s/AKfycbwXmN9HmTt3IZTJzotAyTWHDvkZ8zK73nrD7nerzNZMpyXD-XLN0qr-kgHUC1HaHREbcA/exec',
+    };
+
+    const form = document.getElementById('stockForm');
+    const jenisEl = document.getElementById('jenis');
+    const namaEl = document.getElementById('nama');
+    const qtyEl = document.getElementById('qty');
+    const checkerEl = document.getElementById('checker');
+    const msgEl = document.getElementById('msg');
+    const btnIn = document.getElementById('btnIn');
+    const btnOut = document.getElementById('btnOut');
+
+    jenisEl.addEventListener('change', function () {
+      const jenis = jenisEl.value;
+      namaEl.innerHTML = '<option value="">Pilih nama barang</option>';
+      if (barangOptions[jenis]) {
+        barangOptions[jenis].forEach((nama) => {
+          namaEl.innerHTML += `<option value="${nama}">${nama}</option>`;
+        });
+      }
+    });
+
+    function submitForm(jenis, namaBarang, masuk, keluar, checker) {
+      msgEl.textContent = 'Menyimpan data...';
+      let url = spreadsheetURLs[jenis];
+      if (!url) {
+        msgEl.textContent = 'Jenis barang belum didukung.';
+        return;
+      }
+      const body = {
+        namaBarang: namaBarang,
+        masuk: masuk,
+        keluar: keluar,
+        checker: checker,
+      };
+      fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body),
+      })
+        .then((res) => res.json())
+        .then((data) => {
+          if (data && data.result === 'success') {
+            msgEl.textContent = 'Berhasil menyimpan!';
+            form.reset();
+            namaEl.innerHTML = '<option value="">Pilih nama barang</option>';
+          } else {
+            msgEl.textContent = 'Gagal menyimpan. Coba lagi!';
+          }
+        })
+        .catch(() => {
+          msgEl.textContent = 'Gagal menyimpan. Cek koneksi atau coba refresh!';
+        });
     }
-  });
-  btnOut.addEventListener('click', function() {
-    if(form.checkValidity()) {
-      submitForm(
-        jenisEl.value, namaEl.value, '', qtyEl.value, checkerEl.value
-      );
-    } else {
-      form.reportValidity();
-    }
-  });
+
+    btnIn.addEventListener('click', function () {
+      if (form.checkValidity()) {
+        submitForm(jenisEl.value, namaEl.value, qtyEl.value, '', checkerEl.value);
+      } else {
+        form.reportValidity();
+      }
+    });
+
+    btnOut.addEventListener('click', function () {
+      if (form.checkValidity()) {
+        submitForm(jenisEl.value, namaEl.value, '', qtyEl.value, checkerEl.value);
+      } else {
+        form.reportValidity();
+      }
+    });
   </script>
 </body>
 </html>
