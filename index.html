@@ -1,121 +1,125 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-<meta charset="UTF-8" />
-<title>Kartu Stock Manual</title>
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<style>
-  body { font-family: 'Segoe UI', Arial, sans-serif; margin:0; background:#f4f6f8; }
-  .container { max-width:400px; margin:30px auto; background:#fff; padding:32px 20px 24px 20px; border-radius:10px; box-shadow:0 4px 16px rgba(0,0,0,0.07);}
-  h2 { text-align:center; margin-bottom:20px; letter-spacing:1px; }
-  label { display:block; margin-top:12px; margin-bottom:8px; font-size:14px;}
-  select,input[type="number"],input[type="text"]{width:100%;padding:10px;font-size:15px;border-radius:6px;border:1px solid #ddd;margin-bottom:8px;}
-  .btn-group{display:flex;gap:10px;margin-top:10px;}
-  button{flex:1;padding:11px;font-size:16px;border:none;border-radius:6px;color:#fff;cursor:pointer;}
-  .btn-masuk{background:#0d9347;}
-  .btn-keluar{background:#d32b2b;}
-  .msg{margin-top:16px;text-align:center;font-weight:500;}
-  @media (max-width:480px){.container{padding:16px 6px 16px 6px;}}
-</style>
+  <meta charset="UTF-8" />
+  <title>Kartu Stock Manual</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    body { font-family: 'Segoe UI', Arial, sans-serif; margin: 0; background: #f4f6f8; }
+    .container { max-width: 400px; margin: 30px auto; background: #fff; padding: 32px 20px 24px 20px; border-radius: 10px; box-shadow: 0 4px 16px rgba(0,0,0,0.07); }
+    h2 { text-align: center; margin-bottom: 20px; letter-spacing: 1px; }
+    label { display: block; margin-top: 12px; margin-bottom: 8px; font-size: 14px; }
+    select, input[type="number"], input[type="text"] { width: 100%; padding: 10px; font-size: 15px; border-radius: 6px; border: 1px solid #ddd; margin-bottom: 8px; }
+    .btn-group { display: flex; gap: 10px; margin-top: 10px; }
+    button { flex: 1; padding: 11px; font-size: 16px; border: none; border-radius: 6px; color: #fff; cursor: pointer; }
+    .btn-masuk { background: #0d9347; }
+    .btn-keluar { background: #d32b2b; }
+    .msg { margin-top: 16px; text-align: center; font-weight: 500; }
+    @media (max-width: 480px) { .container { padding: 16px 6px 16px 6px; } }
+  </style>
 </head>
 <body>
-<div class="container">
-<h2>Kartu Stock Manual</h2>
-<form id="stockForm">
-  <label for="jenis">Jenis Barang:</label>
-  <select id="jenis" required>
-    <option value="">Pilih jenis barang</option>
-    <option value="kawat_besi">Kawat Besi</option>
-    <option value="galvalum_bondex">Galvalum-Bondex</option>
-    <option value="holo_kanal">Holo-Kanal</option>
-    <option value="semen">Semen</option>
-  </select>
+  <div class="container">
+    <h2>Kartu Stock Manual</h2>
+    <form id="stockForm">
+      <label for="jenis">Jenis Barang:</label>
+      <select id="jenis" required>
+        <option value="">Pilih jenis barang</option>
+        <option value="kawat_besi">Kawat Besi</option>
+        <option value="galvalum_bondex">Galvalum-Bondex</option>
+        <option value="holo_kanal">Holo-Kanal</option>
+        <option value="semen">Semen</option>
+      </select>
 
-  <label for="nama">Nama Barang:</label>
-  <select id="nama" required>
-    <option value="">Pilih nama barang</option>
-  </select>
+      <label for="nama">Nama Barang:</label>
+      <select id="nama" required>
+        <option value="">Pilih nama barang</option>
+      </select>
 
-  <label for="qty">Jumlah (Qty):</label>
-  <input id="qty" type="number" min="1" required />
+      <label for="qty">Jumlah (Qty):</label>
+      <input id="qty" type="number" min="1" required />
 
-  <label for="checker">Checker:</label>
-  <input id="checker" type="text" required />
+      <label for="checker">Checker:</label>
+      <input id="checker" type="text" required />
 
-  <div class="btn-group">
-    <button type="button" class="btn-masuk" id="btnIn">Barang Masuk</button>
-    <button type="button" class="btn-keluar" id="btnOut">Barang Keluar</button>
+      <div class="btn-group">
+        <button type="button" class="btn-masuk" id="btnIn">Barang Masuk</button>
+        <button type="button" class="btn-keluar" id="btnOut">Barang Keluar</button>
+      </div>
+    </form>
+    <div class="msg" id="msg"></div>
   </div>
-</form>
-<div class="msg" id="msg"></div>
-</div>
 
-<script>
-  const barangOptions = {
-    kawat_besi: ['Kawat 6mm', 'Kawat 8mm', 'Kawat 10mm'],
-    galvalum_bondex: ['Galvalum 0.3mm', 'Bondex 0.3mm'],
-    holo_kanal: ['Holo 4x4', 'Kanal C 75'],
-    semen: ['Semen Tiga Roda', 'Semen Gresik']
-  };
+  <script>
+    const barangOptions = {
+      kawat_besi: ['Kawat 6mm', 'Kawat 8mm', 'Kawat 10mm'],
+      galvalum_bondex: ['Galvalum 0.3mm', 'Bondex 0.3mm'],
+      holo_kanal: ['Holo 4x4', 'Kanal C 75'],
+      semen: ['Semen Tiga Roda', 'Semen Gresik']
+    };
 
-  // Ganti dengan URL Web App hasil deploy yang benar dan pakai HTTPS
-  const WEBAPP_URL = 'https://script.google.com/macros/s/AKfycbxnRzjvCmI72W-mW_YCVqJPJ56KTnHdj_SFxxtacUsiUNrI1iA9wk2NNMcoYVZdHVlGHg/exec';
+    const WEBAPP_URL = 'https://script.google.com/macros/s/AKfycbyXdTVuODVamXzfkVmkK6VdGRqwxgY0kbP7D9V5Wwm3OWztkHEsnndL3jU20ooxmsgZrA/exec'; // Ganti dengan URL WebApp
 
-  const form = document.getElementById('stockForm');
-  const jenisEl = document.getElementById('jenis');
-  const namaEl = document.getElementById('nama');
-  const qtyEl = document.getElementById('qty');
-  const checkerEl = document.getElementById('checker');
-  const msgEl = document.getElementById('msg');
-  const btnIn = document.getElementById('btnIn');
-  const btnOut = document.getElementById('btnOut');
+    const form = document.getElementById('stockForm');
+    const jenisEl = document.getElementById('jenis');
+    const namaEl = document.getElementById('nama');
+    const qtyEl = document.getElementById('qty');
+    const checkerEl = document.getElementById('checker');
+    const msgEl = document.getElementById('msg');
+    const btnIn = document.getElementById('btnIn');
+    const btnOut = document.getElementById('btnOut');
 
-  jenisEl.addEventListener('change', () => {
-    const jenis = jenisEl.value;
-    namaEl.innerHTML = '<option value="">Pilih nama barang</option>';
-    if (barangOptions[jenis]) {
-      barangOptions[jenis].forEach(nama => {
-        namaEl.innerHTML += `<option value="${nama}">${nama}</option>`;
-      });
-    }
-  });
-
-  async function submitForm(jenis, namaBarang, masuk, keluar, checker) {
-    msgEl.textContent = 'Menyimpan data...';
-
-    try {
-      const response = await fetch(WEBAPP_URL, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ jenisBarang: jenis, namaBarang, masuk, keluar, checker })
-      });
-      if (!response.ok) {
-        const text = await response.text();
-        throw new Error(`HTTP ${response.status}: ${text}`);
+    jenisEl.addEventListener('change', () => {
+      const jenis = jenisEl.value;
+      namaEl.innerHTML = '<option value="">Pilih nama barang</option>';
+      if (barangOptions[jenis]) {
+        barangOptions[jenis].forEach(nama => {
+          namaEl.innerHTML += `<option value="${nama}">${nama}</option>`;
+        });
       }
-      const data = await response.json();
-      if (data.result === 'success') {
-        msgEl.textContent = 'Berhasil menyimpan!';
-        form.reset();
-        namaEl.innerHTML = '<option value="">Pilih nama barang</option>';
-      } else {
-        msgEl.textContent = `Gagal menyimpan: ${data.message || 'Coba ulangi!'}`;
+    });
+
+    async function submitForm(jenis, namaBarang, masuk, keluar, checker) {
+      msgEl.textContent = 'Menyimpan data...';
+
+      try {
+        const response = await fetch(WEBAPP_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ jenisBarang: jenis, namaBarang, masuk, keluar, checker })
+        });
+
+        if (!response.ok) {
+          const text = await response.text();
+          throw new Error(`HTTP ${response.status}: ${text}`);
+        }
+
+        const data = await response.json();
+
+        if (data.result === 'success') {
+          msgEl.textContent = 'Berhasil menyimpan!';
+          form.reset();
+          namaEl.innerHTML = '<option value="">Pilih nama barang</option>';
+        } else {
+          msgEl.textContent = `Gagal menyimpan: ${data.message || 'Coba ulangi!'}`;
+        }
+      } catch (error) {
+        console.error('Fetch error:', error);
+        msgEl.textContent = `Gagal menyimpan: ${error.message}`;
       }
-    } catch (error) {
-      console.error('Fetch error:', error);
-      msgEl.textContent = `Gagal menyimpan: ${error.message}`;
     }
-  }
 
-  btnIn.addEventListener('click', () => {
-    if (form.checkValidity()) submitForm(jenisEl.value, namaEl.value, qtyEl.value, '', checkerEl.value);
-    else form.reportValidity();
-  });
+    btnIn.addEventListener('click', () => {
+      if (form.checkValidity())
+        submitForm(jenisEl.value, namaEl.value, qtyEl.value, '', checkerEl.value);
+      else form.reportValidity();
+    });
 
-  btnOut.addEventListener('click', () => {
-    if (form.checkValidity()) submitForm(jenisEl.value, namaEl.value, '', qtyEl.value, checkerEl.value);
-    else form.reportValidity();
-  });
-</script>
+    btnOut.addEventListener('click', () => {
+      if (form.checkValidity())
+        submitForm(jenisEl.value, namaEl.value, '', qtyEl.value, checkerEl.value);
+      else form.reportValidity();
+    });
+  </script>
 </body>
 </html>
