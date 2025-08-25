@@ -1,329 +1,182 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="id">
 <head>
-  <meta charset="utf-8"/>
-  <meta name="viewport" content="width=device-width,initial-scale=1"/>
-  <title>Stok Manual Gudang</title>
-<style>
-  :root { 
-    --card:#fff; --bg:#f1f5f9; --accent:#2563eb; 
-    --ok:#16a34a; --err:#dc2626; 
-    --text:#1e293b; --subtext:#64748b;
-  }
-  *{box-sizing:border-box;margin:0;padding:0}
-  body{
-    font-family:Inter, "Segoe UI", Roboto, Arial, sans-serif;
-    background:var(--bg);
-    display:flex; align-items:center; justify-content:center;
-    min-height:100vh; padding:20px;
-  }
-  .card{
-    width:100%; max-width:540px;
-    background:var(--card);
-    border-radius:20px;
-    padding:34px 28px;
-    box-shadow:0 12px 32px rgba(0,0,0,0.05);
-    animation: fadeIn .4s ease;
-  }
-  @keyframes fadeIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
-  h1{
-    font-size:26px; text-align:center;
-    color:var(--text); margin-bottom:12px;
-    font-weight:700;
-  }
-  p.subtitle{
-    text-align:center; color:var(--subtext); font-size:16px;
-    margin-bottom:26px
-  }
-  label{
-    display:block; margin-top:18px; color:var(--subtext);
-    font-weight:600; font-size:15px;
-  }
-
-  /* --- Input & Dropdown Lebih Besar & Elegan --- */
-  select, input {
-    width: 100%;
-    padding: 15px 18px;
-    margin-top: 8px;
-    border-radius: 12px;
-    border: 1px solid #e2e8f0;
-    background: #fff;
-    font-size: 16px;
-    color: var(--text);
-    appearance: none;
-    -webkit-appearance: none;
-    -moz-appearance: none;
-    background-image: url("data:image/svg+xml;utf8,<svg fill='%2364748b' height='22' viewBox='0 0 24 24' width='22' xmlns='http://www.w3.org/2000/svg'><path d='M7 10l5 5 5-5z'/></svg>");
-    background-repeat: no-repeat;
-    background-position: right 16px center;
-    background-size: 18px;
-    transition: all .2s ease;
-  }
-  input[type="text"], input[type="number"] {
-    background-image: none !important;
-  }
-  select:hover, input:hover {
-    border-color: var(--accent);
-    background: #f9fafb;
-  }
-  select:focus, input:focus {
-    outline: none;
-    border-color: var(--accent);
-    box-shadow: 0 0 0 4px rgba(37,99,235,0.12);
-    background: #fff;
-  }
-
-  .row{
-    display:flex; gap:16px; margin-top:28px
-  }
-  .row button{
-    flex:1; padding:17px; border-radius:14px;
-    border:0; font-weight:700; cursor:pointer;
-    font-size:17px; transition:.25s
-  }
-  .in{background:#10b981;color:white;box-shadow:0 4px 10px rgba(16,185,129,0.25)}
-  .out{background:#ef4444;color:white;box-shadow:0 4px 10px rgba(239,68,68,0.25)}
-  .row button:hover{opacity:0.92; transform:translateY(-2px)}
-  .status{
-    margin-top:22px; min-height:26px;
-    font-weight:600; text-align:center; font-size:15px
-  }
-  .muted{
-    font-size:13px; color:var(--subtext);
-    margin-top:16px; text-align:center
-  }
-  @media(max-width:480px){
-    .card{padding:24px 18px; border-radius:18px}
-    h1{font-size:22px}
-    label{font-size:14px}
-    .row button{font-size:15px; padding:14px}
-  }
-</style>
-
-
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>STOK MANUAL</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #e0f2fe, #fef9c3);
+      margin: 0; padding: 0;
+      display: flex; justify-content: center; align-items: center;
+      min-height: 100vh;
+    }
+    .container {
+      background: #fff;
+      padding: 2rem;
+      border-radius: 1.5rem;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+      max-width: 500px;
+      width: 90%;
+      text-align: center;
+    }
+    h1 { margin-bottom: 1.5rem; color: #2563eb; }
+    label { display: block; margin-top: 1rem; text-align: left; }
+    select, input {
+      width: 100%; padding: 0.7rem; margin-top: 0.5rem;
+      border: 1px solid #ccc; border-radius: 0.5rem; font-size: 1rem;
+    }
+    button {
+      width: 48%; padding: 0.7rem;
+      border: none; border-radius: 0.7rem;
+      background: #2563eb; color: #fff;
+      font-size: 1rem; cursor: pointer;
+      margin-top: 1.2rem;
+      transition: background 0.3s;
+      position: relative;
+    }
+    button:hover { background: #1d4ed8; }
+    .btn-keluar { background: #dc2626; }
+    .btn-keluar:hover { background: #b91c1c; }
+    .spinner {
+      border: 3px solid #f3f3f3;
+      border-top: 3px solid white;
+      border-radius: 50%;
+      width: 14px; height: 14px;
+      animation: spin 1s linear infinite;
+      position: absolute; right: 12px; top: 50%;
+      transform: translateY(-50%);
+      display: none;
+    }
+    @keyframes spin { 100% { transform: rotate(360deg); } }
+    .toast {
+      visibility: hidden;
+      min-width: 200px;
+      background-color: #333;
+      color: #fff; text-align: center;
+      border-radius: 8px; padding: 10px;
+      position: fixed; z-index: 1;
+      left: 50%; bottom: 30px;
+      transform: translateX(-50%);
+      opacity: 0; transition: opacity 0.5s, bottom 0.5s;
+    }
+    .toast.show {
+      visibility: visible; opacity: 1; bottom: 50px;
+    }
+    .success { background: #16a34a; }
+    .error { background: #dc2626; }
+  </style>
 </head>
 <body>
-  <div class="card">
-    <h1>Stok Manual Gudang</h1>
-    <p class="subtitle">Form pencatatan barang masuk & keluar</p>
+  <div class="container">
+    <h1>STOK MANUAL</h1>
 
-    <!-- FORM -->
-    <form id="form" onsubmit="return false;">
-      <label for="jenis">Jenis Produk</label>
-      <select id="jenis" required>
-        <option value="">-- Pilih Jenis Produk --</option>
-      </select>
+    <label for="jenis">Jenis Produk</label>
+    <select id="jenis" onchange="updateProduk()">
+      <option value="">Pilih Jenis Produk</option>
+      <option value="BESI">BESI</option>
+      <option value="SEMEN">SEMEN</option>
+      <option value="BWG">BWG - KAWAT DURI</option>
+      <option value="BAJA">BAJA RINGAN - HOLO</option>
+      <option value="GALVALUM">GALVALUM - BONDEX</option>
+    </select>
 
-      <div id="lokasiWrap" style="display:none;">
-        <label for="lokasi">Lokasi</label>
-        <input id="lokasi" type="text" placeholder="Contoh: A03"/>
-      </div>
+    <label for="produk">Nama Produk</label>
+    <select id="produk">
+      <option value="">Pilih Nama Produk</option>
+    </select>
 
-      <label for="nama">Nama Produk</label>
-      <select id="nama" required>
-        <option value="">-- Pilih Nama Produk --</option>
-      </select>
+    <label for="jumlah">Jumlah</label>
+    <input type="number" id="jumlah" placeholder="Masukkan jumlah">
 
-      <label for="jumlah">Jumlah</label>
-      <input id="jumlah" type="number" min="1" required placeholder="Jumlah" />
+    <label for="checker">Checker</label>
+    <input type="text" id="checker" placeholder="Masukkan nama checker">
 
-      <label for="checker">Checker</label>
-      <input id="checker" placeholder="Checker" type="text" required />
-
-      <div class="row">
-        <button type="button" class="in" id="btnIn">Barang Masuk</button>
-        <button type="button" class="out" id="btnOut">Barang Keluar</button>
-      </div>
-
-      <div id="status" class="status"></div>
-      <div class="muted">Dibuat & digunakan hanya untuk keperluan gudang</div>
-    </form>
+    <div style="display:flex; justify-content: space-between;">
+      <button onclick="kirimData('masuk', this)">MASUK<div class="spinner"></div></button>
+      <button class="btn-keluar" onclick="kirimData('keluar', this)">KELUAR<div class="spinner"></div></button>
+    </div>
   </div>
 
+  <div id="toast" class="toast"></div>
+
   <script>
-  /************************************************************************
-   * CONFIGURATION (EDIT HERE when you want to ADD/UPDATE products or sheet links)
-   *
-   * - produkData: map jenis -> { sheetId: "<spreadsheetId>", items: [list of product names] }
-   *   -> tambahkan / ubah di sini saat perlu menambah jenis produk baru atau ganti spreadsheet.
-   *
-   * IMPORTANT: jika ingin menambah jenis baru, tambahkan key baru di produkData
-   * dan masukkan sheetId target (spreadsheet yang memiliki sheet bernama 'Form Responses 1').
-   ************************************************************************/
-  const produkData = {
-    "BESI": {
-      sheetId: "1Kt5XTBqT_USrHsLY9J6uJZOzLTHIc800YjtI1n-WHLA",
-      items: ["KAWAT 6 (ENAM)","KAWAT 8 (DELAPAN)","KAWAT 10 (SEPULUH)","KAWAT 12 (DUA BELAS)","KAWAT 4.7 X 12","KAWAT 8.4 X 12","KAWAT 22 ( DUA PULUH DUA ) ULIR","KAWAT 19 ( SEMBILAN BELAS ) ULIR","KAWAT 25 ( DUA PULUH LIMA ) ULIR","KAWAT 13 (TIGA BELAS) ULIR","KAWAT 7.1 X 12","KAWAT 16 (ENAM BELAS)","KAWAT 16 ( ENAM BELAS ) ULIR","KAWAT 14 (EMPAT BELAS)","KAWAT 11.4 X 12","KAWAT 10 ( SEPULUH ) ULIR"]
-    },
-    "GALVALUM - BONDEX": {
-      sheetId: "1aZnAVAeV3OCnEgk1o1z1769noifeAc1PjB7aOeK0icE",
-      items: ["GALVALUM KENCANA (0.25) 4M","GALVALUM KENCANA (0.3) 4M","GALVALUM KENCANA (0.35) 4M","GALVALUM SOLID KENCANA (0.3) 4M"]
-    },
-    "BAJA RINGAN - HOLO": {
-      sheetId: "1_fJThDQs7K6f6Zv6a5cC3q8gQDsc2giPbBbUQSwDY5E",
-      items: ["BAJA RINGAN KANAL KENCANA C 75 (0.70)","BAJA RINGAN KANAL KENCANA C 75 (0.75)","BAJA RINGAN KANAL S C 75","BAJA RINGAN KANAL SOLID KENCANA C 75 (0.75)","BAJA RINGAN RENG KENCANA 0.40","BAJA RINGAN RENG S 0.40","HOLO PLAFON 14X36 (0.25) KENCANA","HOLO PLAFON 15X30 (0.25) S MINI","HOLO PLAFON 16X34 (0.25) S","HOLO PLAFON 30X30 (0.25) S MINI","HOLO PLAFON 33X36 (0.25) S","HOLO PLAFON 36X36 (0.25) KENCANA"]
-    },
-    "BWG - KAWAT DURI": {
-      sheetId: "1o3O-1RWkMz6MlDNsn55f-mN7HluoyPBcdioEllT3CzM",
-      items: ["BENDRAT PUTIH ROL (25 KG)","BENDRAT HITAM ROL (20KG)","BWG 12","BWG 14","BWG 16","BWG 6","BWG 10","BWG 8","KAWAT DURI BIASA","KAWAT DURI 100M (ANTI KARAT)","LIS KAYU 4X4","BENDRAT STIK 20 KG"]
-    },
-    "PIPA KOTAK": {
-      sheetId: "1b7qs089N-kzQ2cWx1d1SmkXv8OA8yxME5tMOz3wtHuo",
-      items: ["PIPA GALV KOTAK 15X15 (0.8) KUNING 2,17","PIPA GALV KOTAK 15X35 (0.6) PUTIH 2,43","PIPA GALV KOTAK 15X35 (0.7) HITAM 2,84","PIPA GALV KOTAK 15X35 (0.8) KUNING 3,24","PIPA GALV KOTAK 15X35 (1.2) BIRU 4,46","PIPA GALV KOTAK 15X35 (1) HIJAU 3,73","PIPA GALV KOTAK 20X20 (0.8) KUNING 2,79","PIPA GALV KOTAK 20X40 (0.8) KUNING 4,30","PIPA GALV KOTAK 20X40 (0.9) MERAH 4,83","PIPA GALV KOTAK 20X40 (1.2) BIRU 5,88","PIPA GALV KOTAK 20X40 (1) HIJAU 5,36","PIPA GALV KOTAK 25X25 (0.8) KUNING 3,24","PIPA GALV KOTAK 30X30 (0.8) KUNING 4,75","PIPA GALV KOTAK 35X35 (0.6) PUTIH 3,56","PIPA GALV KOTAK 35X35 (0.7) HITAM 4,15","PIPA GALV KOTAK 35X35 (0.8) KUNING 4,75","PIPA GALV KOTAK 35X35 (0.9) MERAH 5,34","PIPA GALV KOTAK 35X35 (1.2) BIRU 6,65","PIPA GALV KOTAK 35X55 (0.8) KUNING 5,02","PIPA GALV KOTAK 35X55 (0.9) MERAH 5,86","PIPA GALV KOTAK 35X55 (1) HIJAU","PIPA GALV KOTAK 40X40 (0.8) KUNING 5,80","PIPA GALV KOTAK 40X40 (1.2) BIRU 7,95","PIPA GALV KOTAK 40X40 (1) HIJAU 7,24","PIPA GALV KOTAK 40X60 (0.8) KUNING 7,31","PIPA GALV KOTAK 40X60 (0.9) MERAH 8,22","PIPA GALV KOTAK 40X60 (1) HIJAU 9,14","PIPA GALV KOTAK 40X80 (1.2) BIRU 11,42","PIPA GALV KOTAK 40X80 (1) HIJAU 9,71","PIPA GALV KOTAK 45X45 (0.9) MERAH 6,00","PIPA GALV KOTAK 45X45 (1.2) BIRU 8,56","PIPA GALV KOTAK 50X100 (1.2) BIRU 14,27","PIPA GALV KOTAK 50X100 (1.4) UNGU 17,13"]
-    },
-    "SEMEN": {
-      sheetId: "1NWgWjjJMjJwbzyZi3og0v0W4qUTQJI7jJ2elR1JYzYI",
-      items: ["SEMEN TIGA RODA 50 KG","SEMEN TONASA 50 KG","SEMEN PUTIH JAGUAR 40 KG","SB PEREKAT BATA RINGAN 40 KG"]
-    }
-  };
-
-  // Apps Script Web App URL (DEPLOY APPS SCRIPT ONCE). Replace with your deployed URL (ending with /exec)
-  // The Apps Script code is given below; deploy it once and paste the URL here.
-  const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyf8SKz5m8TDe4oECfgnGHRINgJZSS4T8c4GG5aIWOSgHd8BrhNQAUWLHpvVLA6Pyk/exec";
-
-  /************************************************************************
-   * UI initialization: fill Jenis dropdown (unique keys from produkData)
-   ************************************************************************/
-  const jenisEl = document.getElementById("jenis");
-  const namaEl = document.getElementById("nama");
-  const lokasiWrap = document.getElementById("lokasiWrap");
-  const statusEl = document.getElementById("status");
-
-  function initJenis() {
-    // Clear except placeholder
-    // Add each jenis once (no duplicates because keys are unique)
-    Object.keys(produkData).forEach(k => {
-      const opt = document.createElement("option");
-      opt.value = k;
-      opt.textContent = k;
-      jenisEl.appendChild(opt);
-    });
-  }
-  initJenis();
-
-  // When jenis changes: show nama items and show lokasi only for PIPA KOTAK or SIKU
-  jenisEl.addEventListener("change", () => {
-    const jenis = jenisEl.value;
-    namaEl.innerHTML = "<option value=''>-- Pilih Nama Produk --</option>";
-    if (!jenis) {
-      lokasiWrap.style.display = "none";
-      namaEl.disabled = true;
-      return;
-    }
-    namaEl.disabled = false;
-    const items = (produkData[jenis] && produkData[jenis].items) || [];
-    items.forEach(it => {
-      const op = document.createElement("option");
-      op.value = it; op.textContent = it;
-      namaEl.appendChild(op);
-    });
-    // show lokasi only for these kinds
-    if (jenis === "PIPA KOTAK" || jenis === "SIKU") {
-      lokasiWrap.style.display = "block";
-    } else {
-      lokasiWrap.style.display = "none";
-    }
-  });
-
-  /************************************************************************
-   * JSONP helper:
-   * - Generates unique callback name per request
-   * - Cleans up script tag & callback after response
-   * This avoids CORS and works for static hosting (GitHub Pages)
-   ************************************************************************/
-  function jsonpCall(url, params) {
-    return new Promise((resolve, reject) => {
-      const cbName = "cb_" + Date.now().toString(36) + "_" + Math.random().toString(36).slice(2);
-      params.callback = cbName;
-      const qs = Object.entries(params).map(([k,v]) => `${encodeURIComponent(k)}=${encodeURIComponent(v)}`).join("&");
-      const script = document.createElement("script");
-      script.src = url + (url.includes("?") ? "&" : "?") + qs;
-      script.onerror = () => {
-        cleanup();
-        reject(new Error("Network error"));
-      };
-      window[cbName] = (resp) => {
-        cleanup();
-        resolve(resp);
-      };
-      function cleanup() {
-        try { delete window[cbName]; } catch(e) {}
-        if (script.parentNode) script.parentNode.removeChild(script);
-      }
-      document.body.appendChild(script);
-    });
-  }
-
-  /************************************************************************
-   * Submit handler:
-   * - Build payload and call Apps Script via JSONP
-   * - Immediately reset form (no waiting). Status updated later by callback.
-   ************************************************************************/
-  function send(actionType) {
-    const jenis = jenisEl.value;
-    const nama = namaEl.value;
-    const jumlah = document.getElementById("jumlah").value;
-    const checker = document.getElementById("checker").value;
-    const lokasi = document.getElementById("lokasi").value || "";
-
-    if (!jenis || !nama || !jumlah || !checker) {
-      alert("Lengkapi semua field yang wajib!");
-      return;
-    }
-
-    const mapping = produkData[jenis];
-    if (!mapping || !mapping.sheetId) {
-      alert("Tidak ada spreadsheet target untuk jenis produk ini.");
-      return;
-    }
-
-    // Build payload that server expects. We pass sheetId so server knows target spreadsheet.
-    const payload = {
-      sheetId: mapping.sheetId,
-      jenisProduk: jenis,
-      namaProduk: nama,
-      lokasi: lokasi,
-      jumlah: Number(jumlah),
-      checker: checker,
-      tipe: (actionType === "in") ? "masuk" : "keluar"
+    const produkList = {
+      "BESI": ["Besi Beton 8mm", "Besi Beton 10mm"],
+      "SEMEN": ["Semen Tiga Roda", "Semen Holcim"],
+      "BWG": ["BWG 6", "Kawat Duri"],
+      "BAJA": ["Baja Ringan C75", "Holo 4x4"],
+      "GALVALUM": ["Galvalum 0.25", "Bondex 0.30"]
     };
 
-    // Immediately reset form so user can continue (no waiting)
-    document.getElementById("form").reset();
-    namaEl.innerHTML = "<option value=''>-- Pilih Nama Produk --</option>";
-    lokasiWrap.style.display = "none";
-    statusEl.textContent = "Mengirim...";
+    const formUrls = {
+      "BESI": "https://docs.google.com/forms/d/e/FORM_ID_BESI/formResponse",
+      "SEMEN": "https://docs.google.com/forms/d/e/FORM_ID_SEMEN/formResponse",
+      "BWG": "https://docs.google.com/forms/d/e/FORM_ID_BWG/formResponse",
+      "BAJA": "https://docs.google.com/forms/d/e/FORM_ID_BAJA/formResponse",
+      "GALVALUM": "https://docs.google.com/forms/d/e/FORM_ID_GALVALUM/formResponse"
+    };
 
-    // Call Apps Script endpoint via JSONP; server will append to sheet
-    // The server code (Apps Script) is provided below — deploy it once and set APPS_SCRIPT_URL accordingly.
-    jsonpCall(APPS_SCRIPT_URL, { action: "save", data: JSON.stringify(payload) })
-      .then(resp => {
-        // resp expected: { success: true } or { success:false, message:...}
-        if (resp && resp.success) {
-          statusEl.style.color = "var(--ok)";
-          statusEl.textContent = "✅ Data tersimpan.";
-        } else {
-          statusEl.style.color = "var(--err)";
-          statusEl.textContent = "❌ Gagal simpan: " + (resp && resp.message ? resp.message : "unknown");
-        }
-      })
-      .catch(err => {
-        statusEl.style.color = "var(--err)";
-        statusEl.textContent = "❌ Gagal koneksi: " + err.message;
-      });
-  }
+    const fieldIds = {
+      "nama": "entry.111111",
+      "masuk": "entry.222222",
+      "keluar": "entry.333333",
+      "checker": "entry.444444"
+    };
 
-  // wire buttons
-  document.getElementById("btnIn").addEventListener("click", () => send("in"));
-  document.getElementById("btnOut").addEventListener("click", () => send("out"));
+    function updateProduk() {
+      const jenis = document.getElementById("jenis").value;
+      const produkSelect = document.getElementById("produk");
+      produkSelect.innerHTML = '<option value="">Pilih Nama Produk</option>';
+      if (produkList[jenis]) {
+        produkList[jenis].forEach(p => {
+          let opt = document.createElement("option");
+          opt.value = p;
+          opt.textContent = p;
+          produkSelect.appendChild(opt);
+        });
+      }
+    }
 
-  /************************************************************************
-   * HELPERS - optional: function to add new jenis/nama at runtime via UI
-   * (not required, but left here if you later want in-browser editing)
-   ************************************************************************/
-  // Example:
-  // function addNewJenis(jenis, sheetId, itemsArray) { produkData[jenis] = {sheetId, items: itemsArray}; updateJenisDropdown(); }
-  // function updateJenisDropdown() { /* rebuild jenis options */ }
+    function showToast(msg, type) {
+      const toast = document.getElementById("toast");
+      toast.textContent = msg;
+      toast.className = "toast show " + type;
+      setTimeout(() => { toast.className = toast.className.replace("show", ""); }, 1000);
+    }
+
+    function kirimData(mode, btn) {
+      const jenis = document.getElementById("jenis").value;
+      const produk = document.getElementById("produk").value;
+      const jumlah = document.getElementById("jumlah").value;
+      const checker = document.getElementById("checker").value;
+
+      if (!jenis || !produk || !jumlah || !checker) {
+        showToast("Lengkapi data!", "error");
+        return;
+      }
+
+      const formUrl = formUrls[jenis];
+      const formData = new FormData();
+      formData.append(fieldIds.nama, produk);
+      formData.append(mode === "masuk" ? fieldIds.masuk : fieldIds.keluar, jumlah);
+      formData.append(fieldIds.checker, checker);
+
+      // kosongkan form lebih dulu
+      document.getElementById("jenis").value = "";
+      document.getElementById("produk").innerHTML = '<option value="">Pilih Nama Produk</option>';
+      document.getElementById("jumlah").value = "";
+      document.getElementById("checker").value = "";
+
+      const spinner = btn.querySelector(".spinner");
+      spinner.style.display = "inline-block";
+
+      fetch(formUrl, { method: "POST", body: formData, mode: "no-cors" })
+        .then(() => { showToast("Sukses!", "success"); })
+        .catch(() => { showToast("Gagal!", "error"); })
+        .finally(() => { spinner.style.display = "none"; });
+    }
   </script>
 </body>
 </html>
