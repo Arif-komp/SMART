@@ -1,244 +1,257 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="id">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>STOK MANUAL</title>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>STOK MANUAL — Input Stok</title>
   <style>
-    body {
-      font-family: 'Segoe UI', sans-serif;
-      background: linear-gradient(135deg, #1e3c72, #2a5298);
-      margin: 0;
-      min-height: 100vh;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      padding: 20px;
-    }
-    .container {
-      background: #fff;
-      border-radius: 20px;
-      padding: 30px;
-      max-width: 450px;
-      width: 100%;
-      box-shadow: 0 10px 25px rgba(0,0,0,0.2);
-    }
-    h1 {
-      text-align: center;
-      margin-bottom: 25px;
-      color: #1e3c72;
-    }
-    label {
-      display: block;
-      margin-top: 15px;
-      font-weight: bold;
-      color: #333;
-    }
-    select, input {
-      width: 100%;
-      padding: 12px;
-      border-radius: 10px;
-      border: 1px solid #ccc;
-      margin-top: 5px;
-      font-size: 14px;
-    }
-    .btn-group {
-      display: flex;
-      gap: 15px;
-      margin-top: 25px;
-    }
-    button {
-      flex: 1;
-      padding: 12px;
-      border: none;
-      border-radius: 12px;
-      color: #fff;
-      font-size: 15px;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-      transition: background 0.3s, transform 0.2s;
-    }
-    button:disabled { opacity: 0.6; cursor: not-allowed; }
-    .btn-masuk { background: #16a34a; }
-    .btn-masuk:hover:not(:disabled) { background: #15803d; transform: translateY(-2px); }
-    .btn-keluar { background: #dc2626; }
-    .btn-keluar:hover:not(:disabled) { background: #b91c1c; transform: translateY(-2px); }
-    .spinner {
-      border: 2px solid rgba(255,255,255,0.4);
-      border-top: 2px solid #fff;
-      border-radius: 50%;
-      width: 16px;
-      height: 16px;
-      animation: spin 1s linear infinite;
-    }
+    /* UI modern, responsive */
+    body { font-family: 'Segoe UI', Tahoma, sans-serif; margin:0; padding:20px; background: linear-gradient(135deg,#e6f0ff,#f8fafc); display:flex; justify-content:center; }
+    .card { width:100%; max-width:520px; background:#fff; border-radius:12px; padding:22px; box-shadow:0 12px 30px rgba(8,20,44,0.08); }
+    h1 { margin:0 0 12px; color:#1e3a8a; text-align:center; }
+    label{ display:block; margin-top:12px; font-weight:600; color:#374151; }
+    select,input{ width:100%; padding:10px 12px; margin-top:6px; border:1px solid #e6edf4; border-radius:8px; font-size:15px; }
+    .row2 { display:flex; gap:12px; margin-top:16px; }
+    .row2 > button { flex:1; padding:12px; border:0; border-radius:10px; color:#fff; font-weight:700; font-size:15px; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:8px; }
+    .btn-masuk { background:#16a34a; }
+    .btn-masuk:disabled, .btn-keluar:disabled { opacity:0.65; cursor:not-allowed; }
+    .btn-keluar { background:#dc2626; }
+    .spinner{ width:16px; height:16px; border-radius:50%; border:2px solid rgba(255,255,255,0.45); border-top-color:#fff; animation:spin 1s linear infinite; display:none; }
     @keyframes spin { 100% { transform: rotate(360deg); } }
-    .toast {
-      position: fixed;
-      bottom: 30px;
-      left: 50%;
-      transform: translateX(-50%);
-      background: #333;
-      color: #fff;
-      padding: 12px 20px;
-      border-radius: 8px;
-      opacity: 0;
-      pointer-events: none;
-      transition: opacity 0.3s;
-      z-index: 9999;
-      font-size: 14px;
-    }
-    .toast.show { opacity: 1; }
-    .toast.success { background: #16a34a; }
-    .toast.error { background: #dc2626; }
+    .muted{ margin-top:10px; color:#6b7280; font-size:13px; }
+    .toast { position:fixed; left:50%; transform:translateX(-50%); bottom:28px; padding:10px 16px; border-radius:10px; color:#fff; font-weight:700; display:none; z-index:9999; box-shadow:0 8px 24px rgba(2,6,23,0.2); }
+    .toast.show{ display:block; animation:toastIn .22s ease forwards; }
+    @keyframes toastIn { from { opacity:0; transform:translateX(-50%) translateY(8px); } to { opacity:1; transform:translateX(-50%) translateY(0); } }
+    .toast.ok{ background:#16a34a; } .toast.err{ background:#dc2626; }
+    @media (max-width:480px){ .card{ padding:16px; } }
   </style>
 </head>
 <body>
-  <div class="container">
+  <div class="card" role="main">
     <h1>STOK MANUAL</h1>
-    <form id="stokForm">
-      <label for="jenisProduk">Jenis Produk</label>
-      <select id="jenisProduk" required>
-        <option value="">Pilih Jenis Produk</option>
-        <option value="BESI">BESI</option>
-        <option value="SEMEN">SEMEN</option>
-        <option value="BWG">BWG - KAWAT DURI</option>
-        <option value="BAJA">BAJA RINGAN - HOLO</option>
-        <option value="GALVALUM">GALVALUM - BONDEX</option>
-      </select>
 
-      <label for="namaProduk">Nama Produk</label>
-      <select id="namaProduk" required>
-        <option value="">Pilih Nama Produk</option>
-      </select>
+    <label for="jenis">Jenis Produk</label>
+    <select id="jenis">
+      <option value="">— Pilih Jenis Barang —</option>
+      <option value="BESI">BESI</option>
+      <option value="SEMEN">SEMEN</option>
+      <option value="BWG">BWG - KAWAT DURI</option>
+      <option value="BAJA">BAJA RINGAN - HOLO</option>
+      <option value="GALVALUM">GALVALUM - BONDEX</option>
+    </select>
 
-      <label for="jumlah">Jumlah</label>
-      <input type="number" id="jumlah" min="1" placeholder="Masukkan jumlah">
+    <label for="nama">Nama Produk</label>
+    <select id="nama">
+      <option value="">— Pilih Nama Produk —</option>
+    </select>
 
-      <label for="checker">Checker</label>
-      <input type="text" id="checker" placeholder="Nama checker">
-      
-      <div class="btn-group">
-        <button type="button" class="btn-masuk" onclick="submitForm('masuk')"> 
-          <span class="btn-text">MASUK</span>
-          <div class="spinner" style="display:none;"></div>
-        </button>
-        <button type="button" class="btn-keluar" onclick="submitForm('keluar')"> 
-          <span class="btn-text">KELUAR</span>
-          <div class="spinner" style="display:none;"></div>
-        </button>
-      </div>
-    </form>
+    <label for="jumlah">Jumlah</label>
+    <input id="jumlah" type="number" min="1" placeholder="Masukkan Jumlah">
+
+    <label for="checker">Checker</label>
+    <input id="checker" type="text" placeholder="Nama Checker">
+
+    <div class="row2" style="margin-top:18px;">
+      <button id="btnMasuk" class="btn-masuk" type="button" onclick="handleSubmit('MASUK', this)">
+        <span class="btn-text">MASUK</span>
+        <span class="spinner"></span>
+      </button>
+      <button id="btnKeluar" class="btn-keluar" type="button" onclick="handleSubmit('KELUAR', this)">
+        <span class="btn-text">KELUAR</span>
+        <span class="spinner"></span>
+      </button>
+    </div>
+
+    <div class="muted">&copy; 2025 Arif Munandar - Form Input Hanya Untuk Keperluan Gudang</div>
   </div>
-  
+
   <div id="toast" class="toast"></div>
 
-  <script>
-    // === KONFIGURASI PRODUK & FORM ===
-    const produkMap = {
-      "BESI": {
-        formUrl: "https://docs.google.com/forms/d/e/FORM_ID_BESI/formResponse",
-        namaProduk: ["Besi Ulir 8mm", "Besi Ulir 10mm"],
-        entryNamaProduk: "entry.123456",
-        entryMasuk: "entry.234567",
-        entryKeluar: "entry.345678",
-        entryChecker: "entry.456789"
-      },
-      "SEMEN": {
-        formUrl: "https://docs.google.com/forms/d/e/FORM_ID_SEMEN/formResponse",
-        namaProduk: ["Semen Tiga Roda", "Semen Gresik"],
-        entryNamaProduk: "entry.567890",
-        entryMasuk: "entry.678901",
-        entryKeluar: "entry.789012",
-        entryChecker: "entry.890123"
-      }
-      // Tambah jenis produk lain di sini
-    };
+<script>
+/* ============================
+   CONFIG — sesuaikan di sini
+   ============================ */
 
-    // === KONFIGURASI Spreadsheet2 (multi support) ===
-    const spreadsheet2Map = {
-      "BESI": "https://script.google.com/macros/s/AKfycbx123456/exec",
-      "SEMEN": "https://script.google.com/macros/s/AKfycbx987654/exec"
-    };
+/*
+ produkMap:
+  - setiap key = jenis produk
+  - setiap value berisi:
+     formUrl: URL formResponse (paste form action /formResponse)
+     namaProduk: array list nama (dropdown)
+     entryNamaProduk, entryMasuk, entryKeluar, entryChecker: entry IDs dari form
+*/
+const produkMap = {
+  BESI: {
+    formUrl: "https://docs.google.com/forms/u/0/d/e/1FAIpQLScvETNjdJnC9ZiFSsgRx5zP2dit95j_0Y4NzyqccCRf-Sl47Q/formResponse",
+    namaProduk: ["KAWAT 6 (ENAM)","KAWAT 8 (DELAPAN)","KAWAT 10 (SEPULUH)","KAWAT 12 (DUA BELAS)","KAWAT 4.7 X 12","KAWAT 8.4 X 12","KAWAT 22 ( DUA PULUH DUA ) ULIR","KAWAT 19 ( SEMBILAN BELAS ) ULIR","KAWAT 25 ( DUA PULUH LIMA ) ULIR","KAWAT 13 (TIGA BELAS) ULIR","KAWAT 7.1 X 12","KAWAT 16 (ENAM BELAS)","KAWAT 16 ( ENAM BELAS ) ULIR","KAWAT 14 (EMPAT BELAS)","KAWAT 11.4 X 12","KAWAT 10 ( SEPULUH ) ULIR"],
+    entryNamaProduk: "entry.566128663",
+    entryMasuk: "entry.969048917",
+    entryKeluar: "entry.1223821394",
+    entryChecker: "entry.843098471"
+  },
+  SEMEN: {
+    formUrl: "https://docs.google.com/forms/u/0/d/e/1FAIpQLSfLiOefYM1lh94iVd2QhLqYrP7emz8XaNJfF1xaGQJefzBk5A/formResponse",
+    namaProduk: ["SEMEN TIGA RODA 50 KG","SEMEN TONASA 50 KG","SEMEN PUTIH JAGUAR 40 KG","SB PEREKAT BATA RINGAN 40 KG"],
+    entryNamaProduk: "entry.152178025",
+    entryMasuk: "entry.1621335854",
+    entryKeluar: "entry.741061137",
+    entryChecker: "entry.1328592234"
+  },
+  BWG: {
+    formUrl: "https://docs.google.com/forms/u/0/d/e/1FAIpQLSf-VCMgLUhHMeiT5yRi5MMbdd80WU24ML30XIA8rHhJffxzPg/formResponse",
+    namaProduk: ["BENDRAT PUTIH ROL (25 KG)","BENDRAT HITAM ROL (20KG)","BWG 12","BWG 14","BWG 16","BWG 6","BWG 10","BWG 8","KAWAT DURI BIASA","KAWAT DURI 100M (ANTI KARAT)","LIS KAYU 4X4","BENDRAT STIK 20 KG","Razor"],
+    entryNamaProduk: "entry.1807916840",
+    entryMasuk: "entry.1282008846",
+    entryKeluar: "entry.181095592",
+    entryChecker: "entry.1600868911"
+  },
+  BAJA: {
+    formUrl: "https://docs.google.com/forms/u/0/d/e/1FAIpQLSextZdpd83aQ78X7g14qtW-yuk4ycgwn9d5Qv_Pky53LIYgcg/formResponse",
+    namaProduk: ["BAJA RINGAN KANAL KENCANA C 75 (0.70)","BAJA RINGAN KANAL KENCANA C 75 (0.75)","BAJA RINGAN KANAL S C 75","BAJA RINGAN KANAL SOLID KENCANA C 75 (0.75)","BAJA RINGAN RENG KENCANA 0.40","BAJA RINGAN RENG S 0.40","HOLO PLAFON 14X36 (0.25) KENCANA","HOLO PLAFON 36X36 (0.25) KENCANA","HOLO PLAFON 15X30 (0.25) S MINI","HOLO PLAFON 30X30 (0.25) S MINI","HOLO PLAFON 16X34 (0.25) S","HOLO PLAFON 33X36 (0.25) S"],
+    entryNamaProduk: "entry.415839597",
+    entryMasuk: "entry.1500221455",
+    entryKeluar: "entry.2000860025",
+    entryChecker: "entry.211138121"
+  },
+  GALVALUM: {
+    formUrl: "https://docs.google.com/forms/u/0/d/e/1FAIpQLSfe5IGqDtbUSb_3RKS7YP0Utqz7hUbCh-pU4SUg6yWMYEZdgQ/formResponse",
+    namaProduk: ["Galvalum 0.25","Bondex 0.30"],
+    entryNamaProduk: "entry.474436634",
+    entryMasuk: "entry.1112527206",
+    entryKeluar: "entry.1555381536",
+    entryChecker: "entry.1649894231"
+  }
+};
 
-    const jenisProdukEl = document.getElementById("jenisProduk");
-    const namaProdukEl = document.getElementById("namaProduk");
+/*
+ spreadsheet2Map:
+  - mapping jenis -> WebApp URL Apps Script (Spreadsheet 2)
+  - jika tidak pakai WebApp/Versi2, biarkan nilai kosong or hapus
+  - NOTE: jika pemilik Spreadsheet2 memberi akses edit ke akun yang menjalankan Apps Script di Spreadsheet1,
+          kamu juga bisa gunakan mekanisme server-side appendRow (lihat Apps Script Spreadsheet1).
+*/
+const spreadsheet2Map = {
+  BESI: "https://script.google.com/macros/s/WEB_APP_ID_BESI/exec",
+  SEMEN: "https://script.google.com/macros/s/WEB_APP_ID_SEMEN/exec",
+  BWG: "https://script.google.com/macros/s/WEB_APP_ID_BWG/exec",
+  BAJA: "https://script.google.com/macros/s/WEB_APP_ID_BAJA/exec",
+  GALVALUM: "https://script.google.com/macros/s/WEB_APP_ID_GALVALUM/exec"
+};
 
-    jenisProdukEl.addEventListener("change", () => {
-      const jenis = jenisProdukEl.value;
-      namaProdukEl.innerHTML = "<option value=''>Pilih Nama Produk</option>";
-      if (produkMap[jenis]) {
-        produkMap[jenis].namaProduk.forEach(nm => {
-          const opt = document.createElement("option");
-          opt.value = nm;
-          opt.textContent = nm;
-          namaProdukEl.appendChild(opt);
-        });
-      }
-    });
+/* ============================
+   UI & Logic (jangan ubah bagian lain)
+   ============================ */
 
-    function showToast(msg, type) {
-      const toast = document.getElementById("toast");
-      toast.textContent = msg;
-      toast.className = "toast show " + type;
-      setTimeout(() => { toast.className = "toast"; }, 1200);
+const jenisEl = document.getElementById('jenis');
+const namaEl = document.getElementById('nama');
+const jumlahEl = document.getElementById('jumlah');
+const checkerEl = document.getElementById('checker');
+const toastEl = document.getElementById('toast');
+
+function showToast(msg, ok=true, ms=1400){
+  toastEl.textContent = msg;
+  toastEl.className = 'toast show ' + (ok ? 'ok' : 'err');
+  toastEl.style.background = ok ? '#16a34a' : '#dc2626';
+  setTimeout(()=> { toastEl.className = 'toast'; }, ms);
+}
+
+// populate nama produk saat jenis berubah
+jenisEl.addEventListener('change', () => {
+  const jenis = jenisEl.value;
+  namaEl.innerHTML = '<option value="">— Pilih Nama Produk —</option>';
+  if (!jenis || !produkMap[jenis]) return;
+  produkMap[jenis].namaProduk.forEach(p => {
+    const o = document.createElement('option');
+    o.value = p; o.textContent = p;
+    namaEl.appendChild(o);
+  });
+});
+
+// reset nama placeholder on load
+document.addEventListener('DOMContentLoaded', () => {
+  namaEl.innerHTML = '<option value="">— Pilih Nama Produk —</option>';
+});
+
+// validate
+function validateInputs(){
+  const jenis = jenisEl.value.trim();
+  const nama = namaEl.value.trim();
+  const jumlah = jumlahEl.value.trim();
+  const checker = checkerEl.value.trim();
+  if (!jenis) { showToast('Pilih Jenis Produk', false); return false; }
+  if (!nama) { showToast('Pilih Nama Produk', false); return false; }
+  if (!jumlah || Number(jumlah) <= 0) { showToast('Isi Jumlah (>0)', false); return false; }
+  if (!checker) { showToast('Isi Checker', false); return false; }
+  return { jenis, nama, jumlah: Number(jumlah), checker };
+}
+
+// main submit handler: action = 'MASUK' or 'KELUAR'
+async function handleSubmit(action, buttonEl){
+  const v = validateInputs(); if (!v) return;
+  const cfg = produkMap[v.jenis];
+  if (!cfg) { showToast('Konfigurasi form tidak ditemukan', false); return; }
+
+  // prepare values
+  const masukVal = (action === 'MASUK') ? v.jumlah : '';
+  const keluarVal = (action === 'KELUAR') ? v.jumlah : '';
+
+  // reset form IMMEDIATELY (user dapat input lagi)
+  jenisEl.value = '';
+  namaEl.innerHTML = '<option value="">— pilih nama produk —</option>';
+  jumlahEl.value = '';
+  checkerEl.value = '';
+
+  // show spinner on the clicked button
+  const spinner = buttonEl.querySelector('.spinner');
+  const text = buttonEl.querySelector('.btn-text');
+  if (text) text.style.display = 'none';
+  if (spinner) spinner.style.display = 'inline-block';
+  buttonEl.disabled = true;
+
+  // send to Google Form (no-cors)
+  let okForm = true;
+  try {
+    const fd = new FormData();
+    fd.append(cfg.entryNamaProduk, v.nama);
+    fd.append(cfg.entryMasuk, String(masukVal));
+    fd.append(cfg.entryKeluar, String(keluarVal));
+    fd.append(cfg.entryChecker, v.checker);
+    // fire-and-forget via no-cors
+    await fetch(cfg.formUrl, { method: 'POST', body: fd, mode: 'no-cors' });
+  } catch (err) {
+    okForm = false;
+    console.warn('Error send to Google Form (likely CORS suppressed):', err);
+  }
+
+  // send to Spreadsheet2 (if configured) via WebApp URL (POST JSON)
+  let okSpreadsheet2 = true;
+  try {
+    const url = spreadsheet2Map[v.jenis];
+    if (url) {
+      const payload = { namaProduk: v.nama, masuk: masukVal, keluar: keluarVal, checker: v.checker, jenis: v.jenis, ts: new Date().toISOString() };
+      // we don't await too long (best-effort). still await to detect network errors.
+      await fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
     }
+  } catch (err) {
+    okSpreadsheet2 = false;
+    console.warn('Error send to Spreadsheet2 WebApp:', err);
+  }
 
-    async function submitForm(action) {
-      const jenis = jenisProdukEl.value;
-      const namaProduk = namaProdukEl.value;
-      const jumlah = document.getElementById("jumlah").value;
-      const checker = document.getElementById("checker").value;
+  // feedback
+  if (okForm && okSpreadsheet2) showToast('Sukses tersimpan', true);
+  else if (!okForm && okSpreadsheet2) showToast('Gagal kirim ke Form', false);
+  else if (okForm && !okSpreadsheet2) showToast('Terkirim ke Form, gagal ke Spreadsheet2', false);
+  else showToast('Gagal menyimpan data', false);
 
-      // Validasi detail
-      if (!jenis) return showToast("Pilih Jenis Produk!", "error");
-      if (!namaProduk) return showToast("Pilih Nama Produk!", "error");
-      if (!jumlah || jumlah <= 0) return showToast("Isi Jumlah (>0)!", "error");
-      if (!checker) return showToast("Isi Checker!", "error");
-
-      const config = produkMap[jenis];
-      if (!config) return showToast("Konfigurasi tidak ditemukan", "error");
-
-      const masukVal = (action === "masuk") ? jumlah : "";
-      const keluarVal = (action === "keluar") ? jumlah : "";
-
-      const formData = new FormData();
-      formData.append(config.entryNamaProduk, namaProduk);
-      formData.append(config.entryMasuk, masukVal);
-      formData.append(config.entryKeluar, keluarVal);
-      formData.append(config.entryChecker, checker);
-
-      // Reset form lebih awal
-      document.getElementById("stokForm").reset();
-      namaProdukEl.innerHTML = "<option value=''>Pilih Nama Produk</option>";
-
-      // Spinner
-      const btn = (action === "masuk") ? document.querySelector(".btn-masuk") : document.querySelector(".btn-keluar");
-      const text = btn.querySelector(".btn-text");
-      const spinner = btn.querySelector(".spinner");
-      btn.disabled = true; text.style.display="none"; spinner.style.display="block";
-
-      try {
-        // Simpan ke Form (Spreadsheet1)
-        await fetch(config.formUrl, { method:"POST", mode:"no-cors", body:formData });
-        // Simpan ke Spreadsheet2 jika ada
-        if (spreadsheet2Map[jenis]) {
-          fetch(spreadsheet2Map[jenis], {
-            method:"POST",
-            headers:{ "Content-Type":"application/json" },
-            body:JSON.stringify({ namaProduk, masuk:masukVal, keluar:keluarVal, checker })
-          });
-        }
-        showToast("Sukses tersimpan", "success");
-      } catch (e) {
-        console.error(e);
-        showToast("Gagal menyimpan", "error");
-      } finally {
-        btn.disabled = false; text.style.display="block"; spinner.style.display="none";
-      }
-    }
-  </script>
+  // restore button
+  if (text) text.style.display = 'inline';
+  if (spinner) spinner.style.display = 'none';
+  buttonEl.disabled = false;
+}
+</script>
 </body>
 </html>
