@@ -2,180 +2,242 @@
 <html lang="id">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>STOK MANUAL</title>
   <style>
     body {
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background: linear-gradient(135deg, #e0f2fe, #fef9c3);
-      margin: 0; padding: 0;
-      display: flex; justify-content: center; align-items: center;
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(135deg, #1e3c72, #2a5298);
+      margin: 0;
       min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
     }
     .container {
       background: #fff;
-      padding: 2rem;
-      border-radius: 1.5rem;
-      box-shadow: 0 8px 20px rgba(0,0,0,0.15);
-      max-width: 500px;
-      width: 90%;
-      text-align: center;
+      border-radius: 20px;
+      padding: 30px;
+      max-width: 450px;
+      width: 100%;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.2);
     }
-    h1 { margin-bottom: 1.5rem; color: #2563eb; }
-    label { display: block; margin-top: 1rem; text-align: left; }
+    h1 {
+      text-align: center;
+      margin-bottom: 25px;
+      color: #1e3c72;
+    }
+    label {
+      display: block;
+      margin-top: 15px;
+      font-weight: bold;
+      color: #333;
+    }
     select, input {
-      width: 100%; padding: 0.7rem; margin-top: 0.5rem;
-      border: 1px solid #ccc; border-radius: 0.5rem; font-size: 1rem;
+      width: 100%;
+      padding: 12px;
+      border-radius: 10px;
+      border: 1px solid #ccc;
+      margin-top: 5px;
+      font-size: 14px;
+    }
+    .btn-group {
+      display: flex;
+      gap: 15px;
+      margin-top: 25px;
     }
     button {
-      width: 48%; padding: 0.7rem;
-      border: none; border-radius: 0.7rem;
-      background: #2563eb; color: #fff;
-      font-size: 1rem; cursor: pointer;
-      margin-top: 1.2rem;
-      transition: background 0.3s;
-      position: relative;
+      flex: 1;
+      padding: 12px;
+      border: none;
+      border-radius: 12px;
+      color: #fff;
+      font-size: 15px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: background 0.3s, transform 0.2s;
     }
-    button:hover { background: #1d4ed8; }
+    button:disabled { opacity: 0.6; cursor: not-allowed; }
+    .btn-masuk { background: #16a34a; }
+    .btn-masuk:hover:not(:disabled) { background: #15803d; transform: translateY(-2px); }
     .btn-keluar { background: #dc2626; }
-    .btn-keluar:hover { background: #b91c1c; }
+    .btn-keluar:hover:not(:disabled) { background: #b91c1c; transform: translateY(-2px); }
     .spinner {
-      border: 3px solid #f3f3f3;
-      border-top: 3px solid white;
+      border: 2px solid rgba(255,255,255,0.4);
+      border-top: 2px solid #fff;
       border-radius: 50%;
-      width: 14px; height: 14px;
+      width: 16px;
+      height: 16px;
       animation: spin 1s linear infinite;
-      position: absolute; right: 12px; top: 50%;
-      transform: translateY(-50%);
-      display: none;
     }
     @keyframes spin { 100% { transform: rotate(360deg); } }
     .toast {
-      visibility: hidden;
-      min-width: 200px;
-      background-color: #333;
-      color: #fff; text-align: center;
-      border-radius: 8px; padding: 10px;
-      position: fixed; z-index: 1;
-      left: 50%; bottom: 30px;
+      position: fixed;
+      bottom: 30px;
+      left: 50%;
       transform: translateX(-50%);
-      opacity: 0; transition: opacity 0.5s, bottom 0.5s;
+      background: #333;
+      color: #fff;
+      padding: 12px 20px;
+      border-radius: 8px;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s;
+      z-index: 9999;
+      font-size: 14px;
     }
-    .toast.show {
-      visibility: visible; opacity: 1; bottom: 50px;
-    }
-    .success { background: #16a34a; }
-    .error { background: #dc2626; }
+    .toast.show { opacity: 1; }
+    .toast.success { background: #16a34a; }
+    .toast.error { background: #dc2626; }
   </style>
 </head>
 <body>
   <div class="container">
     <h1>STOK MANUAL</h1>
+    <form id="stokForm">
+      <label for="jenisProduk">Jenis Produk</label>
+      <select id="jenisProduk" required>
+        <option value="">Pilih Jenis Produk</option>
+        <option value="BESI">BESI</option>
+        <option value="SEMEN">SEMEN</option>
+        <option value="BWG">BWG - KAWAT DURI</option>
+        <option value="BAJA">BAJA RINGAN - HOLO</option>
+        <option value="GALVALUM">GALVALUM - BONDEX</option>
+      </select>
 
-    <label for="jenis">Jenis Produk</label>
-    <select id="jenis" onchange="updateProduk()">
-      <option value="">Pilih Jenis Produk</option>
-      <option value="BESI">BESI</option>
-      <option value="SEMEN">SEMEN</option>
-      <option value="BWG">BWG - KAWAT DURI</option>
-      <option value="BAJA">BAJA RINGAN - HOLO</option>
-      <option value="GALVALUM">GALVALUM - BONDEX</option>
-    </select>
+      <label for="namaProduk">Nama Produk</label>
+      <select id="namaProduk" required>
+        <option value="">Pilih Nama Produk</option>
+      </select>
 
-    <label for="produk">Nama Produk</label>
-    <select id="produk">
-      <option value="">Pilih Nama Produk</option>
-    </select>
+      <label for="jumlah">Jumlah</label>
+      <input type="number" id="jumlah" min="1" placeholder="Masukkan jumlah">
 
-    <label for="jumlah">Jumlah</label>
-    <input type="number" id="jumlah" placeholder="Masukkan jumlah">
-
-    <label for="checker">Checker</label>
-    <input type="text" id="checker" placeholder="Masukkan nama checker">
-
-    <div style="display:flex; justify-content: space-between;">
-      <button onclick="kirimData('masuk', this)">MASUK<div class="spinner"></div></button>
-      <button class="btn-keluar" onclick="kirimData('keluar', this)">KELUAR<div class="spinner"></div></button>
-    </div>
+      <label for="checker">Checker</label>
+      <input type="text" id="checker" placeholder="Nama checker">
+      
+      <div class="btn-group">
+        <button type="button" class="btn-masuk" onclick="submitForm('masuk')"> 
+          <span class="btn-text">MASUK</span>
+          <div class="spinner" style="display:none;"></div>
+        </button>
+        <button type="button" class="btn-keluar" onclick="submitForm('keluar')"> 
+          <span class="btn-text">KELUAR</span>
+          <div class="spinner" style="display:none;"></div>
+        </button>
+      </div>
+    </form>
   </div>
-
+  
   <div id="toast" class="toast"></div>
 
   <script>
-    const produkList = {
-      "BESI": ["Besi Beton 8mm", "Besi Beton 10mm"],
-      "SEMEN": ["Semen Tiga Roda", "Semen Holcim"],
-      "BWG": ["BWG 6", "Kawat Duri"],
-      "BAJA": ["Baja Ringan C75", "Holo 4x4"],
-      "GALVALUM": ["Galvalum 0.25", "Bondex 0.30"]
+    // === KONFIGURASI PRODUK & FORM ===
+    const produkMap = {
+      "BESI": {
+        formUrl: "https://docs.google.com/forms/d/e/FORM_ID_BESI/formResponse",
+        namaProduk: ["Besi Ulir 8mm", "Besi Ulir 10mm"],
+        entryNamaProduk: "entry.123456",
+        entryMasuk: "entry.234567",
+        entryKeluar: "entry.345678",
+        entryChecker: "entry.456789"
+      },
+      "SEMEN": {
+        formUrl: "https://docs.google.com/forms/d/e/FORM_ID_SEMEN/formResponse",
+        namaProduk: ["Semen Tiga Roda", "Semen Gresik"],
+        entryNamaProduk: "entry.567890",
+        entryMasuk: "entry.678901",
+        entryKeluar: "entry.789012",
+        entryChecker: "entry.890123"
+      }
+      // Tambah jenis produk lain di sini
     };
 
-    const formUrls = {
-      "BESI": "https://docs.google.com/forms/d/e/FORM_ID_BESI/formResponse",
-      "SEMEN": "https://docs.google.com/forms/d/e/FORM_ID_SEMEN/formResponse",
-      "BWG": "https://docs.google.com/forms/d/e/FORM_ID_BWG/formResponse",
-      "BAJA": "https://docs.google.com/forms/d/e/FORM_ID_BAJA/formResponse",
-      "GALVALUM": "https://docs.google.com/forms/d/e/FORM_ID_GALVALUM/formResponse"
+    // === KONFIGURASI Spreadsheet2 (multi support) ===
+    const spreadsheet2Map = {
+      "BESI": "https://script.google.com/macros/s/AKfycbx123456/exec",
+      "SEMEN": "https://script.google.com/macros/s/AKfycbx987654/exec"
     };
 
-    const fieldIds = {
-      "nama": "entry.111111",
-      "masuk": "entry.222222",
-      "keluar": "entry.333333",
-      "checker": "entry.444444"
-    };
+    const jenisProdukEl = document.getElementById("jenisProduk");
+    const namaProdukEl = document.getElementById("namaProduk");
 
-    function updateProduk() {
-      const jenis = document.getElementById("jenis").value;
-      const produkSelect = document.getElementById("produk");
-      produkSelect.innerHTML = '<option value="">Pilih Nama Produk</option>';
-      if (produkList[jenis]) {
-        produkList[jenis].forEach(p => {
-          let opt = document.createElement("option");
-          opt.value = p;
-          opt.textContent = p;
-          produkSelect.appendChild(opt);
+    jenisProdukEl.addEventListener("change", () => {
+      const jenis = jenisProdukEl.value;
+      namaProdukEl.innerHTML = "<option value=''>Pilih Nama Produk</option>";
+      if (produkMap[jenis]) {
+        produkMap[jenis].namaProduk.forEach(nm => {
+          const opt = document.createElement("option");
+          opt.value = nm;
+          opt.textContent = nm;
+          namaProdukEl.appendChild(opt);
         });
       }
-    }
+    });
 
     function showToast(msg, type) {
       const toast = document.getElementById("toast");
       toast.textContent = msg;
       toast.className = "toast show " + type;
-      setTimeout(() => { toast.className = toast.className.replace("show", ""); }, 1000);
+      setTimeout(() => { toast.className = "toast"; }, 1200);
     }
 
-    function kirimData(mode, btn) {
-      const jenis = document.getElementById("jenis").value;
-      const produk = document.getElementById("produk").value;
+    async function submitForm(action) {
+      const jenis = jenisProdukEl.value;
+      const namaProduk = namaProdukEl.value;
       const jumlah = document.getElementById("jumlah").value;
       const checker = document.getElementById("checker").value;
 
-      if (!jenis || !produk || !jumlah || !checker) {
-        showToast("Lengkapi data!", "error");
-        return;
-      }
+      // Validasi detail
+      if (!jenis) return showToast("Pilih Jenis Produk!", "error");
+      if (!namaProduk) return showToast("Pilih Nama Produk!", "error");
+      if (!jumlah || jumlah <= 0) return showToast("Isi Jumlah (>0)!", "error");
+      if (!checker) return showToast("Isi Checker!", "error");
 
-      const formUrl = formUrls[jenis];
+      const config = produkMap[jenis];
+      if (!config) return showToast("Konfigurasi tidak ditemukan", "error");
+
+      const masukVal = (action === "masuk") ? jumlah : "";
+      const keluarVal = (action === "keluar") ? jumlah : "";
+
       const formData = new FormData();
-      formData.append(fieldIds.nama, produk);
-      formData.append(mode === "masuk" ? fieldIds.masuk : fieldIds.keluar, jumlah);
-      formData.append(fieldIds.checker, checker);
+      formData.append(config.entryNamaProduk, namaProduk);
+      formData.append(config.entryMasuk, masukVal);
+      formData.append(config.entryKeluar, keluarVal);
+      formData.append(config.entryChecker, checker);
 
-      // kosongkan form lebih dulu
-      document.getElementById("jenis").value = "";
-      document.getElementById("produk").innerHTML = '<option value="">Pilih Nama Produk</option>';
-      document.getElementById("jumlah").value = "";
-      document.getElementById("checker").value = "";
+      // Reset form lebih awal
+      document.getElementById("stokForm").reset();
+      namaProdukEl.innerHTML = "<option value=''>Pilih Nama Produk</option>";
 
+      // Spinner
+      const btn = (action === "masuk") ? document.querySelector(".btn-masuk") : document.querySelector(".btn-keluar");
+      const text = btn.querySelector(".btn-text");
       const spinner = btn.querySelector(".spinner");
-      spinner.style.display = "inline-block";
+      btn.disabled = true; text.style.display="none"; spinner.style.display="block";
 
-      fetch(formUrl, { method: "POST", body: formData, mode: "no-cors" })
-        .then(() => { showToast("Sukses!", "success"); })
-        .catch(() => { showToast("Gagal!", "error"); })
-        .finally(() => { spinner.style.display = "none"; });
+      try {
+        // Simpan ke Form (Spreadsheet1)
+        await fetch(config.formUrl, { method:"POST", mode:"no-cors", body:formData });
+        // Simpan ke Spreadsheet2 jika ada
+        if (spreadsheet2Map[jenis]) {
+          fetch(spreadsheet2Map[jenis], {
+            method:"POST",
+            headers:{ "Content-Type":"application/json" },
+            body:JSON.stringify({ namaProduk, masuk:masukVal, keluar:keluarVal, checker })
+          });
+        }
+        showToast("Sukses tersimpan", "success");
+      } catch (e) {
+        console.error(e);
+        showToast("Gagal menyimpan", "error");
+      } finally {
+        btn.disabled = false; text.style.display="block"; spinner.style.display="none";
+      }
     }
   </script>
 </body>
