@@ -1,257 +1,413 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="id">
 <head>
-  <meta charset="utf-8"/>
-  <meta name="viewport" content="width=device-width,initial-scale=1"/>
-  <title>STOK MANUAL — Input Stok</title>
-  <style>
-    /* UI modern, responsive */
-    body { font-family: 'Segoe UI', Tahoma, sans-serif; margin:0; padding:20px; background: linear-gradient(135deg,#e6f0ff,#f8fafc); display:flex; justify-content:center; }
-    .card { width:100%; max-width:520px; background:#fff; border-radius:12px; padding:22px; box-shadow:0 12px 30px rgba(8,20,44,0.08); }
-    h1 { margin:0 0 12px; color:#1e3a8a; text-align:center; }
-    label{ display:block; margin-top:12px; font-weight:600; color:#374151; }
-    select,input{ width:100%; padding:10px 12px; margin-top:6px; border:1px solid #e6edf4; border-radius:8px; font-size:15px; }
-    .row2 { display:flex; gap:12px; margin-top:16px; }
-    .row2 > button { flex:1; padding:12px; border:0; border-radius:10px; color:#fff; font-weight:700; font-size:15px; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:8px; }
-    .btn-masuk { background:#16a34a; }
-    .btn-masuk:disabled, .btn-keluar:disabled { opacity:0.65; cursor:not-allowed; }
-    .btn-keluar { background:#dc2626; }
-    .spinner{ width:16px; height:16px; border-radius:50%; border:2px solid rgba(255,255,255,0.45); border-top-color:#fff; animation:spin 1s linear infinite; display:none; }
-    @keyframes spin { 100% { transform: rotate(360deg); } }
-    .muted{ margin-top:10px; color:#6b7280; font-size:13px; }
-    .toast { position:fixed; left:50%; transform:translateX(-50%); bottom:28px; padding:10px 16px; border-radius:10px; color:#fff; font-weight:700; display:none; z-index:9999; box-shadow:0 8px 24px rgba(2,6,23,0.2); }
-    .toast.show{ display:block; animation:toastIn .22s ease forwards; }
-    @keyframes toastIn { from { opacity:0; transform:translateX(-50%) translateY(8px); } to { opacity:1; transform:translateX(-50%) translateY(0); } }
-    .toast.ok{ background:#16a34a; } .toast.err{ background:#dc2626; }
-    @media (max-width:480px){ .card{ padding:16px; } }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stok Manual Gudang</title>
+    <!-- Memuat Tailwind CSS untuk styling modern dan responsif -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* Menggunakan font Inter dan styling dasar */
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f7f7f7;
+            padding: 1rem;
+        }
+        /* Styling untuk tombol submit */
+        .btn-submit {
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .btn-submit:hover {
+            box-shadow: 0 8px 10px rgba(0, 0, 0, 0.2);
+            transform: translateY(-2px);
+        }
+    </style>
 </head>
 <body>
-  <div class="card" role="main">
-    <h1>STOK MANUAL</h1>
 
-    <label for="jenis">Jenis Produk</label>
-    <select id="jenis">
-      <option value="">— Pilih Jenis Barang —</option>
-      <option value="BESI">BESI</option>
-      <option value="SEMEN">SEMEN</option>
-      <option value="BWG">BWG - KAWAT DURI</option>
-      <option value="BAJA">BAJA RINGAN - HOLO</option>
-      <option value="GALVALUM">GALVALUM - BONDEX</option>
-    </select>
+    <!-- Kontainer Utama Aplikasi -->
+    <div class="max-w-xl mx-auto my-10 bg-white p-6 md:p-10 rounded-xl shadow-2xl border-t-8 border-indigo-600">
 
-    <label for="nama">Nama Produk</label>
-    <select id="nama">
-      <option value="">— Pilih Nama Produk —</option>
-    </select>
+        <!-- Header -->
+        <h1 class="text-3xl font-bold text-center text-gray-800 mb-2">Stok Manual Gudang</h1>
+        <p class="text-center text-sm text-gray-500 mb-8">Input Cepat & Real-time via Google Form</p>
 
-    <label for="jumlah">Jumlah</label>
-    <input id="jumlah" type="number" min="1" placeholder="Masukkan Jumlah">
+        <!-- Pesan Status & Error -->
+        <div id="statusMessage" class="hidden p-3 mb-4 rounded-lg text-sm transition-all duration-300"></div>
+        
+        <!-- Formulir Stok -->
+        <form id="stockForm" action="#" method="POST">
+            
+            <!-- Dropdown Jenis Produk -->
+            <div class="mb-6">
+                <label for="jenisProduk" class="block text-sm font-medium text-gray-700 mb-2">Jenis Produk</label>
+                <select id="jenisProduk" name="jenisProduk" required
+                    class="w-full p-3 border border-gray-300 rounded-lg shadow-sm focus:ring-indigo-500 focus:border-indigo-500 bg-gray-50 transition duration-150 ease-in-out">
+                    <option value="" disabled selected>Pilih Jenis Produk</option>
+                    <!-- Opsi akan diisi oleh JavaScript -->
+                </select>
+            </div>
 
-    <label for="checker">Checker</label>
-    <input id="checker" type="text" placeholder="Nama Checker">
+            <!-- Bagian Filter Kondisional (Galvalum / Pipa) -->
+            <div id="conditionalFilters" class="mb-6 hidden">
+                <div id="locationInput" class="mb-4">
+                    <label for="lokasi" class="block text-sm font-medium text-gray-700 mb-2">Lokasi (Khusus PIPA GALV KOTAK)</label>
+                    <input type="text" id="lokasi" placeholder="Masukkan Kode/Nama Lokasi"
+                        class="w-full p-3 border border-gray-300 rounded-lg shadow-sm focus:ring-purple-500 focus:border-purple-500 transition duration-150 ease-in-out">
+                </div>
 
-    <div class="row2" style="margin-top:18px;">
-      <button id="btnMasuk" class="btn-masuk" type="button" onclick="handleSubmit('MASUK', this)">
-        <span class="btn-text">MASUK</span>
-        <span class="spinner"></span>
-      </button>
-      <button id="btnKeluar" class="btn-keluar" type="button" onclick="handleSubmit('KELUAR', this)">
-        <span class="btn-text">KELUAR</span>
-        <span class="spinner"></span>
-      </button>
+                <label id="filterLabel" class="block text-sm font-medium text-gray-700 mb-2">Filter Nama Produk:</label>
+                <div id="filterButtons" class="flex flex-wrap gap-2">
+                    <!-- Tombol filter akan diisi oleh JavaScript -->
+                </div>
+            </div>
+
+            <!-- Dropdown Nama Produk -->
+            <div class="mb-6">
+                <label for="namaProduk" class="block text-sm font-medium text-gray-700 mb-2">Nama Produk</label>
+                <select id="namaProduk" name="namaProduk" required
+                    class="w-full p-3 border border-gray-300 rounded-lg shadow-sm focus:ring-indigo-500 focus:border-indigo-500 bg-gray-50 transition duration-150 ease-in-out">
+                    <option value="" disabled selected>Pilih Nama Produk</option>
+                </select>
+            </div>
+
+            <!-- Input Jumlah -->
+            <div class="mb-6">
+                <label for="jumlah" class="block text-sm font-medium text-gray-700 mb-2">Jumlah (Masuk/Keluar)</label>
+                <input type="number" id="jumlah" name="jumlah" required min="1" placeholder="Masukkan Jumlah Stok"
+                    class="w-full p-3 border border-gray-300 rounded-lg shadow-sm focus:ring-indigo-500 focus:border-indigo-500 transition duration-150 ease-in-out">
+            </div>
+
+            <!-- Input Checker -->
+            <div class="mb-8">
+                <label for="checker" class="block text-sm font-medium text-gray-700 mb-2">Checker/Petugas</label>
+                <input type="text" id="checker" name="checker" required placeholder="Nama Petugas yang Mengecek"
+                    class="w-full p-3 border border-gray-300 rounded-lg shadow-sm focus:ring-indigo-500 focus:border-indigo-500 transition duration-150 ease-in-out">
+            </div>
+
+            <!-- Tombol Aksi -->
+            <div class="flex flex-col sm:flex-row gap-4">
+                <button type="button" id="btnBarangMasuk" data-type="masuk"
+                    class="btn-submit w-full sm:w-1/2 bg-green-600 hover:bg-green-700 text-white font-semibold py-3 px-4 rounded-lg focus:outline-none focus:ring-4 focus:ring-green-500 focus:ring-opacity-50">
+                    <span id="loadingMasuk" class="hidden spinner-border spinner-border-sm mr-2"></span> Barang Masuk (IN)
+                </button>
+                <button type="button" id="btnBarangKeluar" data-type="keluar"
+                    class="btn-submit w-full sm:w-1/2 bg-red-600 hover:bg-red-700 text-white font-semibold py-3 px-4 rounded-lg focus:outline-none focus:ring-4 focus:ring-red-500 focus:ring-opacity-50">
+                    <span id="loadingKeluar" class="hidden spinner-border spinner-border-sm mr-2"></span> Barang Keluar (OUT)
+                </button>
+            </div>
+
+            <!-- Catatan Penting -->
+            <p class="text-xs text-gray-400 mt-6 text-center">
+                *Entry ID Google Form di bawah ini adalah placeholder. Mohon ganti dengan ID Form dan ID Entry yang sebenarnya.
+            </p>
+        </form>
     </div>
 
-    <div class="muted">&copy; 2025 Arif Munandar - Form Input Hanya Untuk Keperluan Gudang</div>
-  </div>
+    <!-- JavaScript Logic -->
+    <script>
+        // Data Produk, URL Google Form, dan Entry ID (SANGAT PENTING: GANTI DENGAN ID ASLI ANDA)
+        const PRODUCT_DATA = {
+            "KAWAT BETON": {
+                // Ganti URL ini dengan URL 'formResponse' dari Google Form KAWAT BETON
+                form_url: "https://docs.google.com/forms/d/e/1FAIpQLScXfR1b2D1T-KBX-56789/formResponse", 
+                entry: {
+                    nama_produk: "entry.1111111", // ID Entry 'Nama Produk'
+                    masuk: "entry.2222221",      // ID Entry 'Masuk/In'
+                    keluar: "entry.3333331",     // ID Entry 'Keluar/Out'
+                    checker: "entry.4444441",    // ID Entry 'Checker'
+                    lokasi: "entry.5555551"      // ID Entry 'Lokasi' (Jika Ada)
+                },
+                products: [ "K10", "K6", "K8", "K10 ULIR", "K12" ]
+            },
+            "SEMEN": {
+                form_url: "https://docs.google.com/forms/d/e/1FAIpQLSe3vG2Z3Y-KBX-45678/formResponse",
+                entry: {
+                    nama_produk: "entry.1111112", masuk: "entry.2222222", keluar: "entry.3333332", checker: "entry.4444442", lokasi: "entry.5555552"
+                },
+                products: [ "SEMEN TIGA RODA", "SEMEN TONASA", "SEMEN PUTIH JAGUAR", "PEREKAT BATA RINGAN" ]
+            },
+            "BWG - KAWAT DURI": {
+                form_url: "https://docs.google.com/forms/d/e/1FAIpQLSf5uS3Q2V-KBX-34567/formResponse",
+                entry: {
+                    nama_produk: "entry.1111113", masuk: "entry.2222223", keluar: "entry.3333333", checker: "entry.4444443", lokasi: "entry.5555553"
+                },
+                products: [ "BWG 6", "LIS KAYU 4 X 4", "KAWAT DURI BIASA", "BWG 12", "BWG 8" ]
+            },
+            "GALVALUM - BONDEX": {
+                form_url: "https://docs.google.com/forms/d/e/1FAIpQLSczD2h1E-KBX-23456/formResponse",
+                entry: {
+                    nama_produk: "entry.1111114", masuk: "entry.2222224", keluar: "entry.3333334", checker: "entry.4444444", lokasi: "entry.5555554"
+                },
+                products: [
+                    { name: "GALVALUM SOLID (0.3) 4 METER", filter: "4 meter" },
+                    { name: "GALVALUM KENCANA (0.3) 5 METER", filter: "5 meter" },
+                    { name: "GALVALUM KENCANA (0.25) 6 METER", filter: "6 meter" },
+                    { name: "GALVALUM KENCANA (0.3) 7 METER", filter: "7 meter" },
+                    { name: "GALVALUM KENCANA (0.25) 8 METER", filter: "8 meter" }
+                ],
+                filters: ["4 meter", "5 meter", "6 meter", "7 meter", "8 meter"],
+                filter_key: 'length'
+            },
+            "BAJA RINGAN - HOLO": {
+                form_url: "https://docs.google.com/forms/d/e/1FAIpQLScyW6j6E-KBX-12345/formResponse",
+                entry: {
+                    nama_produk: "entry.1111115", masuk: "entry.2222225", keluar: "entry.3333335", checker: "entry.4444445", lokasi: "entry.5555555"
+                },
+                products: [ "KANAL KENCANA 0.75", "RENG KENCANA", "HOLO 14 X 36 KENCANA", "HOLO 36 X 36 KENCANA", "KANAL SOLID" ]
+            },
+            "PIPA GALV KOTAK": {
+                form_url: "https://docs.google.com/forms/d/e/1FAIpQLSd9tK8Y0-KBX-09876/formResponse",
+                entry: {
+                    nama_produk: "entry.1111116", masuk: "entry.2222226", keluar: "entry.3333336", checker: "entry.4444446", lokasi: "entry.5555556"
+                },
+                products: [
+                    { name: "PIPA GALV KOTA 30X30 BIRU", filter: "BIRU" },
+                    { name: "PIPA GALV KOTA 30X40 PUTIH", filter: "PUTIH" },
+                    { name: "PIPA GALV KOTA 30X35 UNGU", filter: "UNGU" },
+                    { name: "PIPA GALV KOTA 10X32 HITAM", filter: "HITAM" },
+                    { name: "PIPA GALV KOTA 30X30 HIJAU", filter: "HIJAU" }
+                ],
+                filters: ["BIRU", "PUTIH", "UNGU", "HITAM", "HIJAU"],
+                filter_key: 'color'
+            }
+        };
 
-  <div id="toast" class="toast"></div>
+        let selectedFilter = null; // Menyimpan filter yang sedang aktif (untuk Galvalum/Pipa)
 
-<script>
-/* ============================
-   CONFIG — sesuaikan di sini
-   ============================ */
+        const $ = id => document.getElementById(id); // Fungsi shorthand untuk getElementById
 
-/*
- produkMap:
-  - setiap key = jenis produk
-  - setiap value berisi:
-     formUrl: URL formResponse (paste form action /formResponse)
-     namaProduk: array list nama (dropdown)
-     entryNamaProduk, entryMasuk, entryKeluar, entryChecker: entry IDs dari form
-*/
-const produkMap = {
-  BESI: {
-    formUrl: "https://docs.google.com/forms/u/0/d/e/1FAIpQLScvETNjdJnC9ZiFSsgRx5zP2dit95j_0Y4NzyqccCRf-Sl47Q/formResponse",
-    namaProduk: ["KAWAT 6 (ENAM)","KAWAT 8 (DELAPAN)","KAWAT 10 (SEPULUH)","KAWAT 12 (DUA BELAS)","KAWAT 4.7 X 12","KAWAT 8.4 X 12","KAWAT 22 ( DUA PULUH DUA ) ULIR","KAWAT 19 ( SEMBILAN BELAS ) ULIR","KAWAT 25 ( DUA PULUH LIMA ) ULIR","KAWAT 13 (TIGA BELAS) ULIR","KAWAT 7.1 X 12","KAWAT 16 (ENAM BELAS)","KAWAT 16 ( ENAM BELAS ) ULIR","KAWAT 14 (EMPAT BELAS)","KAWAT 11.4 X 12","KAWAT 10 ( SEPULUH ) ULIR"],
-    entryNamaProduk: "entry.566128663",
-    entryMasuk: "entry.969048917",
-    entryKeluar: "entry.1223821394",
-    entryChecker: "entry.843098471"
-  },
-  SEMEN: {
-    formUrl: "https://docs.google.com/forms/u/0/d/e/1FAIpQLSfLiOefYM1lh94iVd2QhLqYrP7emz8XaNJfF1xaGQJefzBk5A/formResponse",
-    namaProduk: ["SEMEN TIGA RODA 50 KG","SEMEN TONASA 50 KG","SEMEN PUTIH JAGUAR 40 KG","SB PEREKAT BATA RINGAN 40 KG"],
-    entryNamaProduk: "entry.152178025",
-    entryMasuk: "entry.1621335854",
-    entryKeluar: "entry.741061137",
-    entryChecker: "entry.1328592234"
-  },
-  BWG: {
-    formUrl: "https://docs.google.com/forms/u/0/d/e/1FAIpQLSf-VCMgLUhHMeiT5yRi5MMbdd80WU24ML30XIA8rHhJffxzPg/formResponse",
-    namaProduk: ["BENDRAT PUTIH ROL (25 KG)","BENDRAT HITAM ROL (20KG)","BWG 12","BWG 14","BWG 16","BWG 6","BWG 10","BWG 8","KAWAT DURI BIASA","KAWAT DURI 100M (ANTI KARAT)","LIS KAYU 4X4","BENDRAT STIK 20 KG","Razor"],
-    entryNamaProduk: "entry.1807916840",
-    entryMasuk: "entry.1282008846",
-    entryKeluar: "entry.181095592",
-    entryChecker: "entry.1600868911"
-  },
-  BAJA: {
-    formUrl: "https://docs.google.com/forms/u/0/d/e/1FAIpQLSextZdpd83aQ78X7g14qtW-yuk4ycgwn9d5Qv_Pky53LIYgcg/formResponse",
-    namaProduk: ["BAJA RINGAN KANAL KENCANA C 75 (0.70)","BAJA RINGAN KANAL KENCANA C 75 (0.75)","BAJA RINGAN KANAL S C 75","BAJA RINGAN KANAL SOLID KENCANA C 75 (0.75)","BAJA RINGAN RENG KENCANA 0.40","BAJA RINGAN RENG S 0.40","HOLO PLAFON 14X36 (0.25) KENCANA","HOLO PLAFON 36X36 (0.25) KENCANA","HOLO PLAFON 15X30 (0.25) S MINI","HOLO PLAFON 30X30 (0.25) S MINI","HOLO PLAFON 16X34 (0.25) S","HOLO PLAFON 33X36 (0.25) S"],
-    entryNamaProduk: "entry.415839597",
-    entryMasuk: "entry.1500221455",
-    entryKeluar: "entry.2000860025",
-    entryChecker: "entry.211138121"
-  },
-  GALVALUM: {
-    formUrl: "https://docs.google.com/forms/u/0/d/e/1FAIpQLSfe5IGqDtbUSb_3RKS7YP0Utqz7hUbCh-pU4SUg6yWMYEZdgQ/formResponse",
-    namaProduk: ["Galvalum 0.25","Bondex 0.30"],
-    entryNamaProduk: "entry.474436634",
-    entryMasuk: "entry.1112527206",
-    entryKeluar: "entry.1555381536",
-    entryChecker: "entry.1649894231"
-  }
-};
+        // Elemen DOM
+        const jenisProdukSelect = $('jenisProduk');
+        const namaProdukSelect = $('namaProduk');
+        const conditionalFiltersDiv = $('conditionalFilters');
+        const filterButtonsDiv = $('filterButtons');
+        const locationInputDiv = $('locationInput');
+        const lokasiInput = $('lokasi');
+        const statusMessageDiv = $('statusMessage');
+        const form = $('stockForm');
 
-/*
- spreadsheet2Map:
-  - mapping jenis -> WebApp URL Apps Script (Spreadsheet 2)
-  - jika tidak pakai WebApp/Versi2, biarkan nilai kosong or hapus
-  - NOTE: jika pemilik Spreadsheet2 memberi akses edit ke akun yang menjalankan Apps Script di Spreadsheet1,
-          kamu juga bisa gunakan mekanisme server-side appendRow (lihat Apps Script Spreadsheet1).
-*/
-const spreadsheet2Map = {
-  BESI: "https://script.google.com/macros/s/AKfycbzcr84U-TrzzF5SZPAa39YVfOLa6-CyMLvrb6Sy8CDCjwb-JscHcQtVvlGOsQnzEBAmYQ/exec",
-  SEMEN: "https://script.google.com/macros/s/WEB_APP_ID_SEMEN/exec",
-  BWG: "https://script.google.com/macros/s/WEB_APP_ID_BWG/exec",
-  BAJA: "https://script.google.com/macros/s/WEB_APP_ID_BAJA/exec",
-  GALVALUM: "https://script.google.com/macros/s/WEB_APP_ID_GALVALUM/exec"
-};
+        /**
+         * Mengisi dropdown Jenis Produk saat halaman dimuat
+         */
+        function initJenisProduk() {
+            const productTypes = Object.keys(PRODUCT_DATA);
+            productTypes.forEach(type => {
+                const option = document.createElement('option');
+                option.value = type;
+                option.textContent = type;
+                jenisProdukSelect.appendChild(option);
+            });
+        }
 
-/* ============================
-   UI & Logic (jangan ubah bagian lain)
-   ============================ */
+        /**
+         * Mengisi dropdown Nama Produk berdasarkan Jenis Produk dan Filter (jika ada)
+         * @param {string} selectedJenis Jenis Produk yang dipilih
+         * @param {string|null} filter Nilai filter (misalnya '4 meter' atau 'BIRU')
+         */
+        function populateNamaProduk(selectedJenis, filter = null) {
+            namaProdukSelect.innerHTML = '<option value="" disabled selected>Pilih Nama Produk</option>'; // Reset
+            
+            const data = PRODUCT_DATA[selectedJenis];
+            if (!data) return;
 
-const jenisEl = document.getElementById('jenis');
-const namaEl = document.getElementById('nama');
-const jumlahEl = document.getElementById('jumlah');
-const checkerEl = document.getElementById('checker');
-const toastEl = document.getElementById('toast');
+            let productsToDisplay = data.products;
 
-function showToast(msg, ok=true, ms=1400){
-  toastEl.textContent = msg;
-  toastEl.className = 'toast show ' + (ok ? 'ok' : 'err');
-  toastEl.style.background = ok ? '#16a34a' : '#dc2626';
-  setTimeout(()=> { toastEl.className = 'toast'; }, ms);
-}
+            // Logika Filter
+            if (filter && Array.isArray(productsToDisplay) && productsToDisplay.every(p => typeof p === 'object')) {
+                // Asumsi untuk Galvalum dan Pipa, produk adalah array objek dengan key 'filter'
+                productsToDisplay = productsToDisplay.filter(p => p.filter.toLowerCase() === filter.toLowerCase());
+            }
 
-// populate nama produk saat jenis berubah
-jenisEl.addEventListener('change', () => {
-  const jenis = jenisEl.value;
-  namaEl.innerHTML = '<option value="">— Pilih Nama Produk —</option>';
-  if (!jenis || !produkMap[jenis]) return;
-  produkMap[jenis].namaProduk.forEach(p => {
-    const o = document.createElement('option');
-    o.value = p; o.textContent = p;
-    namaEl.appendChild(o);
-  });
-});
+            // Tampilkan produk ke dropdown
+            productsToDisplay.forEach(product => {
+                const productName = typeof product === 'string' ? product : product.name;
+                const option = document.createElement('option');
+                option.value = productName;
+                option.textContent = productName;
+                namaProdukSelect.appendChild(option);
+            });
+        }
 
-// reset nama placeholder on load
-document.addEventListener('DOMContentLoaded', () => {
-  namaEl.innerHTML = '<option value="">— Pilih Nama Produk —</option>';
-});
+        /**
+         * Menampilkan atau menyembunyikan elemen filter kondisional (Lokasi & Tombol Filter)
+         * @param {string} selectedJenis Jenis Produk yang dipilih
+         */
+        function handleConditionalUI(selectedJenis) {
+            conditionalFiltersDiv.classList.add('hidden');
+            locationInputDiv.classList.add('hidden');
+            filterButtonsDiv.innerHTML = ''; // Reset tombol filter
+            lokasiInput.required = false;
 
-// validate
-function validateInputs(){
-  const jenis = jenisEl.value.trim();
-  const nama = namaEl.value.trim();
-  const jumlah = jumlahEl.value.trim();
-  const checker = checkerEl.value.trim();
-  if (!jenis) { showToast('Pilih Jenis Produk', false); return false; }
-  if (!nama) { showToast('Pilih Nama Produk', false); return false; }
-  if (!jumlah || Number(jumlah) <= 0) { showToast('Isi Jumlah (>0)', false); return false; }
-  if (!checker) { showToast('Isi Checker', false); return false; }
-  return { jenis, nama, jumlah: Number(jumlah), checker };
-}
+            if (selectedJenis === "GALVALUM - BONDEX") {
+                // Tampilkan filter tombol panjang untuk GALVALUM
+                conditionalFiltersDiv.classList.remove('hidden');
+                $('filterLabel').textContent = 'Filter Berdasarkan Panjang:';
+                
+                PRODUCT_DATA[selectedJenis].filters.forEach(filter => {
+                    filterButtonsDiv.appendChild(createFilterButton(filter, selectedJenis));
+                });
+                // Reset filter default
+                selectedFilter = null; 
+                populateNamaProduk(selectedJenis); // Tampilkan semua produk Galvalum tanpa filter
+            } else if (selectedJenis === "PIPA GALV KOTAK") {
+                // Tampilkan input Lokasi dan filter tombol warna
+                conditionalFiltersDiv.classList.remove('hidden');
+                locationInputDiv.classList.remove('hidden');
+                $('filterLabel').textContent = 'Filter Berdasarkan Kode Warna:';
+                lokasiInput.required = true; // Lokasi wajib diisi
+                
+                PRODUCT_DATA[selectedJenis].filters.forEach(filter => {
+                    filterButtonsDiv.appendChild(createFilterButton(filter, selectedJenis));
+                });
+                // Reset filter default
+                selectedFilter = null; 
+                populateNamaProduk(selectedJenis); // Tampilkan semua produk Pipa tanpa filter
+            } else {
+                // Untuk Jenis Produk lainnya, hanya panggil populate
+                populateNamaProduk(selectedJenis);
+            }
+        }
 
-// main submit handler: action = 'MASUK' or 'KELUAR'
-async function handleSubmit(action, buttonEl){
-  const v = validateInputs(); if (!v) return;
-  const cfg = produkMap[v.jenis];
-  if (!cfg) { showToast('Konfigurasi form tidak ditemukan', false); return; }
+        /**
+         * Membuat elemen tombol filter
+         * @param {string} text Teks yang akan ditampilkan pada tombol
+         * @param {string} jenis Jenis produk terkait
+         * @returns {HTMLElement} Tombol filter
+         */
+        function createFilterButton(text, jenis) {
+            const button = document.createElement('button');
+            button.type = 'button';
+            button.textContent = text;
+            button.classList.add('px-3', 'py-1', 'text-xs', 'font-medium', 'rounded-full', 'bg-indigo-100', 'text-indigo-700', 'hover:bg-indigo-200', 'transition', 'duration-150');
 
-  // prepare values
-  const masukVal = (action === 'MASUK') ? v.jumlah : '';
-  const keluarVal = (action === 'KELUAR') ? v.jumlah : '';
+            button.addEventListener('click', () => {
+                // Hapus kelas aktif dari semua tombol
+                filterButtonsDiv.querySelectorAll('button').forEach(btn => {
+                    btn.classList.remove('bg-indigo-600', 'text-white', 'scale-105');
+                    btn.classList.add('bg-indigo-100', 'text-indigo-700');
+                });
+                
+                // Tambahkan kelas aktif ke tombol yang baru diklik
+                button.classList.add('bg-indigo-600', 'text-white', 'scale-105');
+                button.classList.remove('bg-indigo-100', 'text-indigo-700');
+                
+                selectedFilter = text; // Set filter yang dipilih
+                populateNamaProduk(jenis, selectedFilter); // Populasikan ulang Nama Produk
+            });
 
-  // reset form IMMEDIATELY (user dapat input lagi)
-  jenisEl.value = '';
-  namaEl.innerHTML = '<option value="">— pilih nama produk —</option>';
-  jumlahEl.value = '';
-  checkerEl.value = '';
+            return button;
+        }
 
-  // show spinner on the clicked button
-  const spinner = buttonEl.querySelector('.spinner');
-  const text = buttonEl.querySelector('.btn-text');
-  if (text) text.style.display = 'none';
-  if (spinner) spinner.style.display = 'inline-block';
-  buttonEl.disabled = true;
+        /**
+         * Menampilkan pesan status di UI
+         * @param {string} message Pesan yang akan ditampilkan
+         * @param {boolean} isSuccess Menunjukkan apakah pesan sukses atau error
+         */
+        function showStatusMessage(message, isSuccess) {
+            statusMessageDiv.textContent = message;
+            statusMessageDiv.classList.remove('hidden', 'bg-green-100', 'text-green-800', 'bg-red-100', 'text-red-800');
+            statusMessageDiv.classList.add(isSuccess ? 'bg-green-100' : 'bg-red-100', isSuccess ? 'text-green-800' : 'text-red-800');
+            
+            // Sembunyikan pesan setelah 5 detik
+            setTimeout(() => {
+                statusMessageDiv.classList.add('hidden');
+            }, 5000);
+        }
 
-  // send to Google Form (no-cors)
-  let okForm = true;
-  try {
-    const fd = new FormData();
-    fd.append(cfg.entryNamaProduk, v.nama);
-    fd.append(cfg.entryMasuk, String(masukVal));
-    fd.append(cfg.entryKeluar, String(keluarVal));
-    fd.append(cfg.entryChecker, v.checker);
-    // fire-and-forget via no-cors
-    await fetch(cfg.formUrl, { method: 'POST', body: fd, mode: 'no-cors' });
-  } catch (err) {
-    okForm = false;
-    console.warn('Error send to Google Form (likely CORS suppressed):', err);
-  }
+        /**
+         * Mengirim data formulir ke Google Form yang sesuai
+         * @param {string} transactionType Tipe transaksi: 'masuk' atau 'keluar'
+         */
+        async function submitForm(transactionType) {
+            if (!form.checkValidity()) {
+                form.reportValidity(); // Tampilkan pesan validasi default browser
+                return;
+            }
 
-  // send to Spreadsheet2 (if configured) via WebApp URL (POST JSON)
-  let okSpreadsheet2 = true;
-  try {
-    const url = spreadsheet2Map[v.jenis];
-    if (url) {
-      const payload = { namaProduk: v.nama, masuk: masukVal, keluar: keluarVal, checker: v.checker, jenis: v.jenis, ts: new Date().toISOString() };
-      // we don't await too long (best-effort). still await to detect network errors.
-      await fetch(url, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload)
-      });
-    }
-  } catch (err) {
-    okSpreadsheet2 = false;
-    console.warn('Error send to Spreadsheet2 WebApp:', err);
-  }
+            const jenis = jenisProdukSelect.value;
+            const nama = namaProdukSelect.value;
+            const jumlah = $('jumlah').value;
+            const checker = $('checker').value;
+            const lokasi = lokasiInput.value || ''; // Kosongkan jika tidak ada
 
-  // feedback
-  if (okForm && okSpreadsheet2) showToast('Sukses tersimpan', true);
-  else if (!okForm && okSpreadsheet2) showToast('Gagal kirim ke Form', false);
-  else if (okForm && !okSpreadsheet2) showToast('Terkirim ke Form, gagal ke Spreadsheet2', false);
-  else showToast('Gagal menyimpan data', false);
+            const productConfig = PRODUCT_DATA[jenis];
+            if (!productConfig) {
+                showStatusMessage("Error: Jenis Produk tidak valid.", false);
+                return;
+            }
+            
+            // Tentukan URL dan Entry ID
+            const formURL = productConfig.form_url;
+            const entryIds = productConfig.entry;
+            
+            // Tentukan entry ID untuk jumlah (Masuk atau Keluar)
+            const jumlahEntryId = transactionType === 'masuk' ? entryIds.masuk : entryIds.keluar;
 
-  // restore button
-  if (text) text.style.display = 'inline';
-  if (spinner) spinner.style.display = 'none';
-  buttonEl.disabled = false;
-}
-</script>
+            // Data yang akan dikirim ke Google Form
+            const formData = new FormData();
+            formData.append(entryIds.nama_produk, nama);
+            formData.append(jumlahEntryId, jumlah); // Hanya salah satu (masuk atau keluar) yang diisi
+            formData.append(entryIds.checker, checker);
+            
+            // Jika lokasi wajib (PIPA GALV KOTAK)
+            if (lokasiInput.required && lokasi) {
+                 formData.append(entryIds.lokasi, lokasi);
+            } else if (lokasiInput.required && !lokasi) {
+                showStatusMessage("Lokasi wajib diisi untuk Jenis Produk ini.", false);
+                return;
+            }
+
+            const button = transactionType === 'masuk' ? $('btnBarangMasuk') : $('btnBarangKeluar');
+            const loading = transactionType === 'masuk' ? $('loadingMasuk') : $('loadingKeluar');
+
+            // Tampilkan loading dan nonaktifkan tombol
+            button.disabled = true;
+            loading.classList.remove('hidden');
+
+            try {
+                // Kirim data menggunakan fetch ke endpoint Google Form
+                const response = await fetch(formURL, {
+                    method: 'POST',
+                    mode: 'no-cors', // Penting untuk Google Form submission
+                    body: new URLSearchParams(formData)
+                });
+                
+                // Karena mode: 'no-cors', kita tidak bisa membaca respons, tapi asumsi berhasil
+                showStatusMessage(`✅ Data Stok ${nama} (${transactionType.toUpperCase()}) sejumlah ${jumlah} berhasil dikirim!`, true);
+                
+                // KETENTUAN 5: Form kembali kosong setelah submit
+                form.reset();
+                selectedFilter = null; // Reset filter
+                handleConditionalUI(""); // Reset UI kondisional
+                populateNamaProduk("");
+
+            } catch (error) {
+                console.error("Error submitting form:", error);
+                showStatusMessage("❌ Gagal mengirim data. Cek koneksi atau URL Google Form Anda.", false);
+            } finally {
+                // Sembunyikan loading dan aktifkan tombol kembali
+                button.disabled = false;
+                loading.classList.add('hidden');
+            }
+        }
+
+        // --- Event Listeners ---
+        document.addEventListener('DOMContentLoaded', () => {
+            initJenisProduk(); // Inisialisasi dropdown Jenis Produk
+            
+            // Event listener untuk Jenis Produk
+            jenisProdukSelect.addEventListener('change', (e) => {
+                const selectedJenis = e.target.value;
+                handleConditionalUI(selectedJenis); // Update UI dan Nama Produk
+            });
+
+            // Event listener untuk tombol submit
+            $('btnBarangMasuk').addEventListener('click', () => submitForm('masuk'));
+            $('btnBarangKeluar').addEventListener('click', () => submitForm('keluar'));
+        });
+    </script>
 </body>
 </html>
