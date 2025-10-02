@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aplikasi Akses Admin Spreadsheet (GAS)</title>
+    <!-- Memuat Tailwind CSS untuk Styling Responsif -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Gaya kustom untuk font Inter */
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f7f9fc;
+        }
+        .container {
+            max-width: 420px;
+        }
+    </style>
+</head>
+<body class="flex items-center justify-center min-h-screen p-4">
+    <div id="app" class="container bg-white shadow-2xl rounded-xl p-8 w-full transition-all duration-300">
+        <!-- Area Konten Utama: Login atau Dashboard -->
+        <div id="main-content">
+            <!-- Loader -->
+            <div id="loader" class="text-center p-4 hidden">
+                <svg class="animate-spin h-5 w-5 mr-3 text-indigo-500 mx-auto" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+                <p class="text-sm text-gray-500 mt-2">Memproses...</p>
+            </div>
+
+            <!-- Login/Signup Form -->
+            <div id="auth-view">
+                <h1 class="text-3xl font-bold text-gray-800 mb-6 text-center" id="auth-title">Masuk ke Sistem</h1>
+                
+                <!-- Toggle Tombol -->
+                <div class="flex justify-center mb-6">
+                    <button id="toggle-signin" class="px-4 py-2 text-sm font-medium rounded-l-lg transition-colors duration-200 bg-indigo-600 text-white shadow-md">Masuk</button>
+                    <button id="toggle-signup" class="px-4 py-2 text-sm font-medium rounded-r-lg transition-colors duration-200 bg-gray-200 text-gray-700 hover:bg-gray-300">Daftar</button>
+                </div>
+
+                <form id="auth-form" onsubmit="event.preventDefault(); submitAuth();">
+                    <div class="mb-4">
+                        <label for="email" class="block text-sm font-medium text-gray-700 mb-1">Email</label>
+                        <input type="email" id="email" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500 transition duration-150">
+                    </div>
+                    <div class="mb-6">
+                        <label for="password" class="block text-sm font-medium text-gray-700 mb-1">Kata Sandi</label>
+                        <input type="password" id="password" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500 transition duration-150">
+                    </div>
+                    
+                    <button type="submit" id="submit-button" class="w-full bg-indigo-600 text-white py-2.5 rounded-lg hover:bg-indigo-700 transition duration-200 font-semibold shadow-md">Masuk</button>
+                </form>
+
+                <!-- Area Pesan (Modal Kustom) -->
+                <div id="message-area" class="mt-6 p-3 rounded-lg text-sm hidden" role="alert"></div>
+            </div>
+
+            <!-- Dashboard View -->
+            <div id="dashboard-view" class="text-center p-6 hidden">
+                <h1 class="text-4xl font-extrabold text-indigo-600 mb-4">Akses Disetujui!</h1>
+                <p class="text-lg text-gray-700 mb-6">Selamat datang, <span id="user-display-email" class="font-semibold"></span>.</p>
+                <p class="text-gray-500 mb-8">Anda telah berhasil masuk! Sesi Anda disimpan di browser.</p>
+                <button onclick="logout()" class="bg-red-500 text-white py-2 px-4 rounded-lg hover:bg-red-600 transition duration-200 font-semibold shadow-md">Keluar (Logout)</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // =========================================================
+        // PENTING: GANTI DENGAN URL WEB APP GOOGLE APPS SCRIPT ANDA
+        // =========================================================
+        const WEB_APP_URL = 'PASTE_URL_WEB_APP_ANDA_DI_SINI'; 
+        
+        // Konstanta untuk status sesi
+        const STORAGE_KEY = 'user_session_approved';
+
+        // State UI
+        let isSigningUp = false;
+
+        // Elemen DOM
+        const app = document.getElementById('app');
+        const authView = document.getElementById('auth-view');
+        const dashboardView = document.getElementById('dashboard-view');
+        const authTitle = document.getElementById('auth-title');
+        const submitButton = document.getElementById('submit-button');
+        const messageArea = document.getElementById('message-area');
+        const loader = document.getElementById('loader');
+        const toggleSignin = document.getElementById('toggle-signin');
+        const toggleSignup = document.getElementById('toggle-signup');
+
+        /**
+         * Mengubah tampilan antara Sign In dan Sign Up
+         */
+        function toggleAuthMode(isSignUpMode) {
+            isSigningUp = isSignUpMode;
+            authTitle.textContent = isSigningUp ? 'Daftar Akun Baru' : 'Masuk ke Sistem';
+            submitButton.textContent = isSigningUp ? 'Daftar' : 'Masuk';
+            
+            // Perbarui gaya tombol toggle
+            if (isSigningUp) {
+                toggleSignup.classList.remove('bg-gray-200', 'text-gray-700', 'hover:bg-gray-300');
+                toggleSignup.classList.add('bg-indigo-600', 'text-white', 'shadow-md');
+                toggleSignin.classList.remove('bg-indigo-600', 'text-white', 'shadow-md');
+                toggleSignin.classList.add('bg-gray-200', 'text-gray-700', 'hover:bg-gray-300');
+            } else {
+                toggleSignin.classList.remove('bg-gray-200', 'text-gray-700', 'hover:bg-gray-300');
+                toggleSignin.classList.add('bg-indigo-600', 'text-white', 'shadow-md');
+                toggleSignup.classList.remove('bg-indigo-600', 'text-white', 'shadow-md');
+                toggleSignup.classList.add('bg-gray-200', 'text-gray-700', 'hover:bg-gray-300');
+            }
+
+            showMessage(null); // Bersihkan pesan
+        }
+
+        /**
+         * Menampilkan pesan notifikasi
+         */
+        function showMessage(msg, type = 'error') {
+            if (!msg) {
+                messageArea.classList.add('hidden');
+                return;
+            }
+            messageArea.textContent = msg;
+            messageArea.classList.remove('hidden', 'bg-red-100', 'bg-green-100', 'bg-yellow-100', 'text-red-700', 'text-green-700', 'text-yellow-700');
+            
+            if (type === 'success') {
+                messageArea.classList.add('bg-green-100', 'text-green-700');
+            } else if (type === 'warning') {
+                messageArea.classList.add('bg-yellow-100', 'text-yellow-700');
+            } else {
+                messageArea.classList.add('bg-red-100', 'text-red-700');
+            }
+        }
+
+        /**
+         * Mengaktifkan/menonaktifkan loader
+         */
+        function setLoading(isLoading) {
+            if (isLoading) {
+                loader.classList.remove('hidden');
+                authView.classList.add('hidden');
+                submitButton.disabled = true;
+            } else {
+                loader.classList.add('hidden');
+                authView.classList.remove('hidden');
+                submitButton.disabled = false;
+            }
+        }
+
+        /**
+         * Mengirim permintaan Sign Up atau Sign In ke Web App GAS
+         */
+        async function submitAuth() {
+            if (WEB_APP_URL === 'PASTE_URL_WEB_APP_ANDA_DI_SINI') {
+                showMessage("ERROR: Harap ganti 'WEB_APP_URL' dengan URL Google Apps Script yang sudah Anda deploy.", 'error');
+                return;
+            }
+
+            const emailInput = document.getElementById('email').value.trim();
+            const passwordInput = document.getElementById('password').value;
+            const action = isSigningUp ? 'signup' : 'signin';
+
+            if (!emailInput || !passwordInput) {
+                showMessage('Email dan Kata Sandi harus diisi.');
+                return;
+            }
+
+            setLoading(true);
+            showMessage(null);
+
+            try {
+                // Objek data yang dikirim ke Apps Script
+                const dataToSend = {
+                    action: action,
+                    email: emailInput,
+                    password: passwordInput 
+                };
+
+                const response = await fetch(WEB_APP_URL, {
+                    method: 'POST',
+                    // Penting: Content-Type form-urlencoded untuk Apps Script
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' }, 
+                    body: new URLSearchParams(dataToSend).toString() // Format body data
+                });
+
+                if (!response.ok) {
+                    throw new Error(`Permintaan API gagal dengan status: ${response.status}`);
+                }
+
+                const result = await response.json();
+
+                if (result.success) {
+                    if (action === 'signin') {
+                        if (result.is_approved) {
+                            // Menyimpan status sesi di localStorage
+                            localStorage.setItem(STORAGE_KEY, JSON.stringify({
+                                email: emailInput, 
+                                timestamp: Date.now()
+                            }));
+                            renderDashboard(emailInput);
+                        } else {
+                            showMessage(`Login berhasil, tetapi status persetujuan Anda adalah: ${result.status_persetujuan}. Harap tunggu persetujuan admin.`, 'warning');
+                        }
+                    } else if (action === 'signup') {
+                        showMessage(result.message, 'success');
+                        document.getElementById('email').value = '';
+                        document.getElementById('password').value = '';
+                        toggleAuthMode(false); // Arahkan kembali ke Sign In
+                    }
+
+                } else {
+                    showMessage(result.message || 'Terjadi kesalahan tidak diketahui.');
+                }
+
+            } catch (error) {
+                console.error('Fetch error:', error);
+                showMessage(`Terjadi kesalahan jaringan atau Web App URL salah: ${error.message}`);
+            } finally {
+                setLoading(false);
+            }
+        }
+
+        /**
+         * Menampilkan tampilan Dashboard
+         */
+        function renderDashboard(userEmail) {
+            authView.classList.add('hidden');
+            dashboardView.classList.remove('hidden');
+            document.getElementById('user-display-email').textContent = userEmail;
+            app.classList.add('bg-indigo-50');
+        }
+
+        /**
+         * Menghapus sesi dan kembali ke tampilan login
+         */
+        function logout() {
+            localStorage.removeItem(STORAGE_KEY);
+            dashboardView.classList.add('hidden');
+            authView.classList.remove('hidden');
+            app.classList.remove('bg-indigo-50');
+            showMessage("Anda telah berhasil keluar.", 'success');
+            checkSession();
+        }
+
+        /**
+         * Memeriksa sesi tersimpan saat halaman dimuat
+         */
+        function checkSession() {
+            const storedSession = localStorage.getItem(STORAGE_KEY);
+            if (storedSession) {
+                try {
+                    const sessionData = JSON.parse(storedSession);
+                    // Sesinya tidak akan kadaluarsa sampai dihapus, tapi bisa ditambahkan cek timestamp jika perlu.
+                    renderDashboard(sessionData.email);
+                    return;
+                } catch (e) {
+                    localStorage.removeItem(STORAGE_KEY);
+                }
+            }
+
+            // Jika tidak ada sesi yang valid, tampilkan form login
+            dashboardView.classList.add('hidden');
+            authView.classList.remove('hidden');
+            setLoading(false);
+            toggleAuthMode(false);
+        }
+
+        // Event Listeners
+        toggleSignin.addEventListener('click', () => toggleAuthMode(false));
+        toggleSignup.addEventListener('click', () => toggleAuthMode(true));
+
+        // Inisialisasi: Periksa sesi saat halaman dimuat
+        document.addEventListener('DOMContentLoaded', checkSession);
+
+    </script>
+</body>
+</html>
