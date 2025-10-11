@@ -1,108 +1,51 @@
-document.addEventListener('DOMContentLoaded', () => {
-    const form = document.getElementById('inventoryForm');
-    const tanggalInput = document.getElementById('tanggal');
-    const scanButton = document.getElementById('scanButton');
-    const scannerContainer = document.getElementById('scanner-container');
-    const barcodeInput = document.getElementById('barcode');
-    const messageElement = document.getElementById('message');
-    
-    // 1. Set Tanggal Hari Ini secara Otomatis
-    const today = new Date();
-    const yyyy = today.getFullYear();
-    const mm = String(today.getMonth() + 1).padStart(2, '0'); // Months start at 0!
-    const dd = String(today.getDate()).padStart(2, '0');
-    tanggalInput.value = `${yyyy}-${mm}-${dd}`;
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SMART SWALAYAN - Perekaman Barang Masuk</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+    <div class="container">
+        <h1>SMART SWALAYAN</h1>
+        <form id="inventoryForm">
 
-    // 2. Barcode Scanning Placeholder Logic
-    let isScanning = false;
-    scanButton.addEventListener('click', () => {
-        isScanning = !isScanning;
-        scannerContainer.classList.toggle('active', isScanning);
-        scanButton.innerHTML = isScanning 
-            ? '<i class="fas fa-stop-circle"></i> STOP' 
-            : '<i class="fas fa-camera-retro"></i>';
+            <div class="input-group">
+                <label for="lokasi"><i class="fas fa-warehouse"></i> Lokasi Penyimpanan</label>
+                <input type="text" id="lokasi" name="lokasi" placeholder="Contoh: RAK-A01" required>
+            </div>
 
-        if (isScanning) {
-            // **PENTING: INTEGRASI BARCODE SCANNER DI SINI**
-            // Di sini Anda perlu mengintegrasikan library pihak ketiga (misalnya: QuaggaJS)
-            // untuk mengaktifkan kamera dan mulai scanning.
-            // Contoh: Quagga.init({...}, (err) => { ... Quagga.start(); });
+            <div class="input-group barcode-group">
+                <label for="barcode"><i class="fas fa-barcode"></i> Barcode Barang</label>
+                <div class="input-with-icon">
+                    <input type="text" id="barcode" name="barcode" placeholder="Scan atau input Barcode" required>
+                    <button type="button" id="scanButton" class="scan-btn" title="Klik untuk Scan Barcode">
+                        <i class="fas fa-camera-retro"></i>
+                    </button>
+                </div>
+                <div id="scanner-container" class="scanner-placeholder">
+                    <p>Area Scanner Barcode</p>
+                </div>
+            </div>
 
-            // Placeholder: Simulasikan hasil scan setelah beberapa detik
-            messageElement.textContent = 'Mulai scanning... arahkan kamera ke barcode.';
-            setTimeout(() => {
-                if(isScanning) {
-                    const scannedCode = '8992745123456'; // Contoh hasil scan
-                    barcodeInput.value = scannedCode;
-                    isScanning = false;
-                    scannerContainer.classList.remove('active');
-                    scanButton.innerHTML = '<i class="fas fa-camera-retro"></i>';
-                    messageElement.textContent = `Barcode ${scannedCode} berhasil di-scan!`;
-                    
-                    // Setelah scan berhasil, fokuskan ke Qty
-                    document.getElementById('qty').focus();
-                    
-                    // **Catatan:** Dalam implementasi nyata, Anda akan memanggil Quagga.stop() di sini.
-                }
-            }, 3000); 
+            <div class="input-group">
+                <label for="qty"><i class="fas fa-boxes"></i> Kuantitas (QTY)</label>
+                <input type="number" id="qty" name="qty" min="1" placeholder="Masukkan jumlah barang" required>
+            </div>
 
-        } else {
-            // Placeholder: Logika untuk menghentikan scanning
-            // Contoh: Quagga.stop();
-            messageElement.textContent = 'Scanning dihentikan.';
-        }
-    });
+            <div class="input-group">
+                <label for="tanggal"><i class="fas fa-calendar-alt"></i> Tanggal Masuk</label>
+                <input type="date" id="tanggal" name="tanggal" value="" required>
+            </div>
 
+            <button type="submit" id="saveButton" class="save-btn"><i class="fas fa-save"></i> SIMPAN DATA</button>
+            <p id="message" class="message"></p>
+        </form>
+    </div>
 
-    // 3. Form Submission (Simpan Data ke Spreadsheet)
-    form.addEventListener('submit', (e) => {
-        e.preventDefault();
-
-        const data = {
-            lokasi: document.getElementById('lokasi').value, // Kolom A
-            barcode: document.getElementById('barcode').value, // Kolom B
-            qty: document.getElementById('qty').value, // Kolom C
-            tanggal: document.getElementById('tanggal').value // Kolom D
-        };
-
-        console.log('Data yang akan dikirim:', data);
-        
-        // **PENTING: LOGIKA PENGIRIMAN DATA KE SPREADSHEET DI SINI**
-        /*
-        * Untuk menyimpan data ke spreadsheet (misalnya Google Sheets):
-        * 1. Anda perlu membuat **Google Apps Script** sebagai API/Backend.
-        * 2. Script ini akan menerima permintaan POST dengan data 'data' di atas.
-        * 3. Script akan menulis data ke baris baru di Google Sheet.
-        * * Contoh AJAX (Asynchronous JavaScript and XML) untuk mengirim data:
-        
-        const SCRIPT_URL = 'URL_APPS_SCRIPT_ANDA'; 
-        fetch(SCRIPT_URL, {
-            method: 'POST',
-            mode: 'no-cors', // Penting untuk Apps Script
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(data),
-        })
-        .then(() => {
-            messageElement.textContent = '✅ Data berhasil disimpan!';
-            form.reset(); 
-            tanggalInput.value = `${yyyy}-${mm}-${dd}`; // Set ulang tanggal
-            document.getElementById('lokasi').focus(); // Fokus ke input pertama
-            // Sembunyikan pesan setelah 3 detik
-            setTimeout(() => { messageElement.textContent = ''; }, 3000);
-        })
-        .catch(error => {
-            messageElement.textContent = '❌ Gagal menyimpan data: ' + error.message;
-            console.error('Error:', error);
-        });
-        */
-
-        // Placeholder Logika Sukses tanpa backend:
-        messageElement.textContent = `✅ Data berhasil disimpan! Lokasi: ${data.lokasi}, Barcode: ${data.barcode}`;
-        form.reset(); 
-        tanggalInput.value = `${yyyy}-${mm}-${dd}`; // Set ulang tanggal
-        document.getElementById('lokasi').focus();
-        setTimeout(() => { messageElement.textContent = ''; }, 4000);
-    });
-});
+    <script src="script.js"></script>
+</body>
+</html>
