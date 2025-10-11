@@ -1,433 +1,108 @@
-<!DOCTYPE html>
-<html lang="id">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Stok Manual Gudang</title>
-    <!-- Memuat Tailwind CSS untuk styling modern dan responsif -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
-    <style>
-        /* Menggunakan font Inter dan styling dasar */
-        body {
-            font-family: 'Inter', sans-serif;
-            background-color: #f7f7f7;
-            padding: 1rem;
+document.addEventListener('DOMContentLoaded', () => {
+    const form = document.getElementById('inventoryForm');
+    const tanggalInput = document.getElementById('tanggal');
+    const scanButton = document.getElementById('scanButton');
+    const scannerContainer = document.getElementById('scanner-container');
+    const barcodeInput = document.getElementById('barcode');
+    const messageElement = document.getElementById('message');
+    
+    // 1. Set Tanggal Hari Ini secara Otomatis
+    const today = new Date();
+    const yyyy = today.getFullYear();
+    const mm = String(today.getMonth() + 1).padStart(2, '0'); // Months start at 0!
+    const dd = String(today.getDate()).padStart(2, '0');
+    tanggalInput.value = `${yyyy}-${mm}-${dd}`;
+
+    // 2. Barcode Scanning Placeholder Logic
+    let isScanning = false;
+    scanButton.addEventListener('click', () => {
+        isScanning = !isScanning;
+        scannerContainer.classList.toggle('active', isScanning);
+        scanButton.innerHTML = isScanning 
+            ? '<i class="fas fa-stop-circle"></i> STOP' 
+            : '<i class="fas fa-camera-retro"></i>';
+
+        if (isScanning) {
+            // **PENTING: INTEGRASI BARCODE SCANNER DI SINI**
+            // Di sini Anda perlu mengintegrasikan library pihak ketiga (misalnya: QuaggaJS)
+            // untuk mengaktifkan kamera dan mulai scanning.
+            // Contoh: Quagga.init({...}, (err) => { ... Quagga.start(); });
+
+            // Placeholder: Simulasikan hasil scan setelah beberapa detik
+            messageElement.textContent = 'Mulai scanning... arahkan kamera ke barcode.';
+            setTimeout(() => {
+                if(isScanning) {
+                    const scannedCode = '8992745123456'; // Contoh hasil scan
+                    barcodeInput.value = scannedCode;
+                    isScanning = false;
+                    scannerContainer.classList.remove('active');
+                    scanButton.innerHTML = '<i class="fas fa-camera-retro"></i>';
+                    messageElement.textContent = `Barcode ${scannedCode} berhasil di-scan!`;
+                    
+                    // Setelah scan berhasil, fokuskan ke Qty
+                    document.getElementById('qty').focus();
+                    
+                    // **Catatan:** Dalam implementasi nyata, Anda akan memanggil Quagga.stop() di sini.
+                }
+            }, 3000); 
+
+        } else {
+            // Placeholder: Logika untuk menghentikan scanning
+            // Contoh: Quagga.stop();
+            messageElement.textContent = 'Scanning dihentikan.';
         }
-        /* Styling untuk tombol submit */
-        .btn-submit {
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        }
-        .btn-submit:hover {
-            box-shadow: 0 8px 10px rgba(0, 0, 0, 0.2);
-            transform: translateY(-2px);
-        }
-    </style>
-</head>
-<body>
+    });
 
-    <!-- Kontainer Utama Aplikasi -->
-    <div class="max-w-xl mx-auto my-10 bg-white p-6 md:p-10 rounded-xl shadow-2xl border-t-8 border-indigo-600">
 
-        <!-- Header -->
-        <h1 class="text-3xl font-bold text-center text-gray-800 mb-2">Stok Manual Gudang</h1>
-        <p class="text-center text-sm text-gray-500 mb-8">Input Cepat & Real-time via Google Form</p>
+    // 3. Form Submission (Simpan Data ke Spreadsheet)
+    form.addEventListener('submit', (e) => {
+        e.preventDefault();
 
-        <!-- Pesan Status & Error -->
-        <div id="statusMessage" class="hidden p-3 mb-4 rounded-lg text-sm transition-all duration-300"></div>
-        
-        <!-- Formulir Stok -->
-        <form id="stockForm" action="#" method="POST">
-            
-            <!-- Dropdown Jenis Produk -->
-            <div class="mb-6">
-                <label for="jenisProduk" class="block text-sm font-medium text-gray-700 mb-2">Jenis Produk</label>
-                <select id="jenisProduk" name="jenisProduk" required
-                    class="w-full p-3 border border-gray-300 rounded-lg shadow-sm focus:ring-indigo-500 focus:border-indigo-500 bg-gray-50 transition duration-150 ease-in-out">
-                    <option value="" disabled selected>Pilih Jenis Produk</option>
-                    <!-- Opsi akan diisi oleh JavaScript -->
-                </select>
-            </div>
-
-            <!-- Bagian Filter Kondisional (Galvalum / Pipa) -->
-            <div id="conditionalFilters" class="mb-6 hidden">
-                <div id="locationInput" class="mb-4">
-                    <label for="lokasi" class="block text-sm font-medium text-gray-700 mb-2">Lokasi (Khusus PIPA GALV KOTAK)</label>
-                    <input type="text" id="lokasi" placeholder="Masukkan Kode/Nama Lokasi"
-                        class="w-full p-3 border border-gray-300 rounded-lg shadow-sm focus:ring-purple-500 focus:border-purple-500 transition duration-150 ease-in-out">
-                </div>
-
-                <label id="filterLabel" class="block text-sm font-medium text-gray-700 mb-2">Filter Nama Produk:</label>
-                <div id="filterButtons" class="flex flex-wrap gap-1">
-                    <!-- Tombol filter akan diisi oleh JavaScript -->
-                </div>
-            </div>
-
-            <!-- Dropdown Nama Produk -->
-            <div class="mb-6">
-                <label for="namaProduk" class="block text-sm font-medium text-gray-700 mb-2">Nama Produk</label>
-                <select id="namaProduk" name="namaProduk" required
-                    class="w-full p-3 border border-gray-300 rounded-lg shadow-sm focus:ring-indigo-500 focus:border-indigo-500 bg-gray-50 transition duration-150 ease-in-out">
-                    <option value="" disabled selected>Pilih Nama Produk</option>
-                </select>
-            </div>
-
-            <!-- Input Jumlah -->
-            <div class="mb-6">
-                <label for="jumlah" class="block text-sm font-medium text-gray-700 mb-2">Jumlah (Masuk/Keluar)</label>
-                <input type="number" id="jumlah" name="jumlah" required min="1" placeholder="Masukkan Jumlah Stok"
-                    class="w-full p-3 border border-gray-300 rounded-lg shadow-sm focus:ring-indigo-500 focus:border-indigo-500 transition duration-150 ease-in-out">
-            </div>
-
-            <!-- Input Checker -->
-            <div class="mb-8">
-                <label for="checker" class="block text-sm font-medium text-gray-700 mb-2">Checker</label>
-                <input type="text" id="checker" name="checker" required placeholder="Nama Checker"
-                    class="w-full p-3 border border-gray-300 rounded-lg shadow-sm focus:ring-indigo-500 focus:border-indigo-500 transition duration-150 ease-in-out">
-            </div>
-
-            <!-- Tombol Aksi -->
-            <div class="flex flex-col sm:flex-row gap-4">
-                <button type="button" id="btnBarangMasuk" data-type="masuk"
-                    class="btn-submit w-full sm:w-1/2 bg-green-600 hover:bg-green-700 text-white font-semibold py-3 px-4 rounded-lg focus:outline-none focus:ring-4 focus:ring-green-500 focus:ring-opacity-50">
-                    <span id="loadingMasuk" class="hidden spinner-border spinner-border-sm mr-2"></span> Barang Masuk (IN)
-                </button>
-                <button type="button" id="btnBarangKeluar" data-type="keluar"
-                    class="btn-submit w-full sm:w-1/2 bg-red-600 hover:bg-red-700 text-white font-semibold py-3 px-4 rounded-lg focus:outline-none focus:ring-4 focus:ring-red-500 focus:ring-opacity-50">
-                    <span id="loadingKeluar" class="hidden spinner-border spinner-border-sm mr-2"></span> Barang Keluar (OUT)
-                </button>
-            </div>
-
-            <!-- Catatan Penting -->
-            <p class="text-xs text-gray-400 mt-6 text-center">
-                *Form Hanya digunakan Untuk Keperluan Input barang masuk dan keluar gudang
-            </p>
-        </form>
-    </div>
-
-    <!-- JavaScript Logic -->
-    <script>
-        // Data Produk, URL Google Form, dan Entry ID (SANGAT PENTING: GANTI DENGAN ID ASLI ANDA)
-        const PRODUCT_DATA = {
-            "KAWAT BETON": {
-                // Ganti URL ini dengan URL 'formResponse' dari Google Form KAWAT BETON
-                form_url: "https://docs.google.com/forms/u/0/d/e/1FAIpQLScvETNjdJnC9ZiFSsgRx5zP2dit95j_0Y4NzyqccCRf-Sl47Q/formResponse", 
-                entry: {
-                    nama_produk: "entry.566128663", // ID Entry 'Nama Produk'
-                    masuk: "entry.969048917",      // ID Entry 'Masuk/In'
-                    keluar: "entry.1223821394",     // ID Entry 'Keluar/Out'
-                    checker: "entry.843098471",    // ID Entry 'Checker'
-                    lokasi: "entry.5555551"      // ID Entry 'Lokasi' (Jika Ada)
-                },
-                products: [ "KAWAT 6 (ENAM)","KAWAT 8 (DELAPAN)","KAWAT 10 (SEPULUH)","KAWAT 12 (DUA BELAS)","KAWAT 4.7 X 12","KAWAT 8.4 X 12","KAWAT 22 ( DUA PULUH DUA ) ULIR","KAWAT 19 ( SEMBILAN BELAS ) ULIR","KAWAT 25 ( DUA PULUH LIMA ) ULIR","KAWAT 13 (TIGA BELAS) ULIR","KAWAT 7.1 X 12","KAWAT 16 (ENAM BELAS)","KAWAT 16 ( ENAM BELAS ) ULIR","KAWAT 14 (EMPAT BELAS)","KAWAT 11.4 X 12","KAWAT 10 ( SEPULUH ) ULIR" ]
-            },
-            "SEMEN": {
-                form_url: "https://docs.google.com/forms/u/0/d/e/1FAIpQLSfLiOefYM1lh94iVd2QhLqYrP7emz8XaNJfF1xaGQJefzBk5A/formResponse",
-                entry: {
-                    nama_produk: "entry.152178025", 
-                    masuk: "entry.1621335854", 
-                    keluar: "entry.741061137", 
-                    checker: "entry.1328592234", 
-                    lokasi: "entry.5555552"
-                },
-                products: [ "SEMEN TIGA RODA 50 KG","SEMEN TONASA 50 KG","SEMEN PUTIH JAGUAR 40 KG","SB PEREKAT BATA RINGAN 40 KG" ]
-            },
-            "BWG - KAWAT DURI": {
-                form_url: "https://docs.google.com/forms/d/e/1FAIpQLSf5uS3Q2V-KBX-34567/formResponse",
-                entry: {
-                    nama_produk: "entry.1111113", 
-                    masuk: "entry.2222223", 
-                    keluar: "entry.3333333", 
-                    checker: "entry.4444443", 
-                    lokasi: "entry.5555553"
-                },
-                products: [ "BENDRAT PUTIH ROL (25 KG)","BENDRAT HITAM ROL (20KG)","BWG 12","BWG 14","BWG 16","BWG 6","BWG 10","BWG 8","KAWAT DURI BIASA","KAWAT DURI 100M (ANTI KARAT)","LIS KAYU 4X4","BENDRAT STIK 20 KG","Razor" ]
-            },
-            "GALVALUM - BONDEX": {
-                form_url: "https://docs.google.com/forms/d/e/1FAIpQLSczD2h1E-KBX-23456/formResponse",
-                entry: {
-                    nama_produk: "entry.1111114", 
-                    masuk: "entry.2222224", 
-                    keluar: "entry.3333334", 
-                    checker: "entry.4444444", 
-                    lokasi: "entry.5555554"
-                },
-                products: [
-                    { name: "GALVALUM SOLID (0.3) 4 METER", filter: "4 meter" },
-                    { name: "GALVALUM KENCANA (0.3) 5 METER", filter: "5 meter" },
-                    { name: "GALVALUM KENCANA (0.25) 6 METER", filter: "6 meter" },
-                    { name: "GALVALUM KENCANA (0.3) 7 METER", filter: "7 meter" },
-                    { name: "GALVALUM KENCANA (0.25) 8 METER", filter: "8 meter" }
-                ],
-                filters: ["4 meter", "5 meter", "6 meter", "7 meter", "8 meter"],
-                filter_key: 'length'
-            },
-            "BAJA RINGAN - HOLO": {
-                form_url: "https://docs.google.com/forms/d/e/1FAIpQLScyW6j6E-KBX-12345/formResponse",
-                entry: {
-                    nama_produk: "entry.1111115", 
-                    masuk: "entry.2222225", 
-                    keluar: "entry.3333335", 
-                    checker: "entry.4444445", 
-                    lokasi: "entry.5555555"
-                },
-                products: [ "BAJA RINGAN KANAL KENCANA C 75 (0.70)","BAJA RINGAN KANAL KENCANA C 75 (0.75)","BAJA RINGAN KANAL S C 75","BAJA RINGAN KANAL SOLID KENCANA C 75 (0.75)","BAJA RINGAN RENG KENCANA 0.40","BAJA RINGAN RENG S 0.40","HOLO PLAFON 14X36 (0.25) KENCANA","HOLO PLAFON 36X36 (0.25) KENCANA","HOLO PLAFON 15X30 (0.25) S MINI","HOLO PLAFON 30X30 (0.25) S MINI","HOLO PLAFON 16X34 (0.25) S","HOLO PLAFON 33X36 (0.25) S", ]
-            },
-            "PIPA GALV KOTAK": {
-                form_url: "https://docs.google.com/forms/d/e/1FAIpQLSd9tK8Y0-KBX-09876/formResponse",
-                entry: {
-                    nama_produk: "entry.1111116", 
-                    masuk: "entry.2222226", 
-                    keluar: "entry.3333336", 
-                    checker: "entry.4444446", 
-                    lokasi: "entry.5555556"
-                },
-                products: [
-                    { name: "PIPA GALV KOTA 30X30 BIRU", filter: "BIRU" },
-                    { name: "PIPA GALV KOTA 30X40 PUTIH", filter: "PUTIH" },
-                    { name: "PIPA GALV KOTA 30X35 UNGU", filter: "UNGU" },
-                    { name: "PIPA GALV KOTA 10X32 HITAM", filter: "HITAM" },
-                    { name: "PIPA GALV KOTA 30X30 HIJAU", filter: "HIJAU" }
-                ],
-                filters: ["BIRU", "PUTIH", "UNGU", "HITAM", "HIJAU"],
-                filter_key: 'color'
-            }
+        const data = {
+            lokasi: document.getElementById('lokasi').value, // Kolom A
+            barcode: document.getElementById('barcode').value, // Kolom B
+            qty: document.getElementById('qty').value, // Kolom C
+            tanggal: document.getElementById('tanggal').value // Kolom D
         };
 
-        let selectedFilter = null; // Menyimpan filter yang sedang aktif (untuk Galvalum/Pipa)
-
-        const $ = id => document.getElementById(id); // Fungsi shorthand untuk getElementById
-
-        // Elemen DOM
-        const jenisProdukSelect = $('jenisProduk');
-        const namaProdukSelect = $('namaProduk');
-        const conditionalFiltersDiv = $('conditionalFilters');
-        const filterButtonsDiv = $('filterButtons');
-        const locationInputDiv = $('locationInput');
-        const lokasiInput = $('lokasi');
-        const statusMessageDiv = $('statusMessage');
-        const form = $('stockForm');
-
-        /**
-         * Mengisi dropdown Jenis Produk saat halaman dimuat
-         */
-        function initJenisProduk() {
-            const productTypes = Object.keys(PRODUCT_DATA);
-            productTypes.forEach(type => {
-                const option = document.createElement('option');
-                option.value = type;
-                option.textContent = type;
-                jenisProdukSelect.appendChild(option);
-            });
-        }
-
-        /**
-         * Mengisi dropdown Nama Produk berdasarkan Jenis Produk dan Filter (jika ada)
-         * @param {string} selectedJenis Jenis Produk yang dipilih
-         * @param {string|null} filter Nilai filter (misalnya '4 meter' atau 'BIRU')
-         */
-        function populateNamaProduk(selectedJenis, filter = null) {
-            namaProdukSelect.innerHTML = '<option value="" disabled selected>Pilih Nama Produk</option>'; // Reset
-            
-            const data = PRODUCT_DATA[selectedJenis];
-            if (!data) return;
-
-            let productsToDisplay = data.products;
-
-            // Logika Filter
-            if (filter && Array.isArray(productsToDisplay) && productsToDisplay.every(p => typeof p === 'object')) {
-                // Asumsi untuk Galvalum dan Pipa, produk adalah array objek dengan key 'filter'
-                productsToDisplay = productsToDisplay.filter(p => p.filter.toLowerCase() === filter.toLowerCase());
-            }
-
-            // Tampilkan produk ke dropdown
-            productsToDisplay.forEach(product => {
-                const productName = typeof product === 'string' ? product : product.name;
-                const option = document.createElement('option');
-                option.value = productName;
-                option.textContent = productName;
-                namaProdukSelect.appendChild(option);
-            });
-        }
-
-        /**
-         * Menampilkan atau menyembunyikan elemen filter kondisional (Lokasi & Tombol Filter)
-         * @param {string} selectedJenis Jenis Produk yang dipilih
-         */
-        function handleConditionalUI(selectedJenis) {
-            conditionalFiltersDiv.classList.add('hidden');
-            locationInputDiv.classList.add('hidden');
-            filterButtonsDiv.innerHTML = ''; // Reset tombol filter
-            lokasiInput.required = false;
-
-            if (selectedJenis === "GALVALUM - BONDEX") {
-                // Tampilkan filter tombol panjang untuk GALVALUM
-                conditionalFiltersDiv.classList.remove('hidden');
-                $('filterLabel').textContent = 'Filter Berdasarkan Panjang:';
-                
-                PRODUCT_DATA[selectedJenis].filters.forEach(filter => {
-                    filterButtonsDiv.appendChild(createFilterButton(filter, selectedJenis));
-                });
-                // Reset filter default
-                selectedFilter = null; 
-                populateNamaProduk(selectedJenis); // Tampilkan semua produk Galvalum tanpa filter
-            } else if (selectedJenis === "PIPA GALV KOTAK") {
-                // Tampilkan input Lokasi dan filter tombol warna
-                conditionalFiltersDiv.classList.remove('hidden');
-                locationInputDiv.classList.remove('hidden');
-                $('filterLabel').textContent = 'Filter Berdasarkan Kode Warna:';
-                lokasiInput.required = true; // Lokasi wajib diisi
-                
-                PRODUCT_DATA[selectedJenis].filters.forEach(filter => {
-                    filterButtonsDiv.appendChild(createFilterButton(filter, selectedJenis));
-                });
-                // Reset filter default
-                selectedFilter = null; 
-                populateNamaProduk(selectedJenis); // Tampilkan semua produk Pipa tanpa filter
-            } else {
-                // Untuk Jenis Produk lainnya, hanya panggil populate
-                populateNamaProduk(selectedJenis);
-            }
-        }
-
-        /**
-         * Membuat elemen tombol filter
-         * @param {string} text Teks yang akan ditampilkan pada tombol
-         * @param {string} jenis Jenis produk terkait
-         * @returns {HTMLElement} Tombol filter
-         */
-        function createFilterButton(text, jenis) {
-            const button = document.createElement('button');
-            button.type = 'button';
-            button.textContent = text;
-            button.classList.add('px-3', 'py-1', 'text-xs', 'font-medium', 'rounded-full', 'bg-indigo-100', 'text-indigo-700', 'hover:bg-indigo-200', 'transition', 'duration-150');
-
-            button.addEventListener('click', () => {
-                // Hapus kelas aktif dari semua tombol
-                filterButtonsDiv.querySelectorAll('button').forEach(btn => {
-                    btn.classList.remove('bg-indigo-600', 'text-white', 'scale-105');
-                    btn.classList.add('bg-indigo-100', 'text-indigo-700');
-                });
-                
-                // Tambahkan kelas aktif ke tombol yang baru diklik
-                button.classList.add('bg-indigo-600', 'text-white', 'scale-105');
-                button.classList.remove('bg-indigo-100', 'text-indigo-700');
-                
-                selectedFilter = text; // Set filter yang dipilih
-                populateNamaProduk(jenis, selectedFilter); // Populasikan ulang Nama Produk
-            });
-
-            return button;
-        }
-
-        /**
-         * Menampilkan pesan status di UI
-         * @param {string} message Pesan yang akan ditampilkan
-         * @param {boolean} isSuccess Menunjukkan apakah pesan sukses atau error
-         */
-        function showStatusMessage(message, isSuccess) {
-            statusMessageDiv.textContent = message;
-            statusMessageDiv.classList.remove('hidden', 'bg-green-100', 'text-green-800', 'bg-red-100', 'text-red-800');
-            statusMessageDiv.classList.add(isSuccess ? 'bg-green-100' : 'bg-red-100', isSuccess ? 'text-green-800' : 'text-red-800');
-            
-            // Sembunyikan pesan setelah 5 detik
-            setTimeout(() => {
-                statusMessageDiv.classList.add('hidden');
-            }, 5000);
-        }
-
-        /**
-         * Mengirim data formulir ke Google Form yang sesuai
-         * @param {string} transactionType Tipe transaksi: 'masuk' atau 'keluar'
-         */
-        async function submitForm(transactionType) {
-            if (!form.checkValidity()) {
-                form.reportValidity(); // Tampilkan pesan validasi default browser
-                return;
-            }
-
-            const jenis = jenisProdukSelect.value;
-            const nama = namaProdukSelect.value;
-            const jumlah = $('jumlah').value;
-            const checker = $('checker').value;
-            const lokasi = lokasiInput.value || ''; // Kosongkan jika tidak ada
-
-            const productConfig = PRODUCT_DATA[jenis];
-            if (!productConfig) {
-                showStatusMessage("Error: Jenis Produk tidak valid.", false);
-                return;
-            }
-            
-            // Tentukan URL dan Entry ID
-            const formURL = productConfig.form_url;
-            const entryIds = productConfig.entry;
-            
-            // Tentukan entry ID untuk jumlah (Masuk atau Keluar)
-            const jumlahEntryId = transactionType === 'masuk' ? entryIds.masuk : entryIds.keluar;
-
-            // Data yang akan dikirim ke Google Form
-            const formData = new FormData();
-            formData.append(entryIds.nama_produk, nama);
-            formData.append(jumlahEntryId, jumlah); // Hanya salah satu (masuk atau keluar) yang diisi
-            formData.append(entryIds.checker, checker);
-            
-            // Jika lokasi wajib (PIPA GALV KOTAK)
-            if (lokasiInput.required && lokasi) {
-                 formData.append(entryIds.lokasi, lokasi);
-            } else if (lokasiInput.required && !lokasi) {
-                showStatusMessage("Lokasi wajib diisi untuk Jenis Produk ini.", false);
-                return;
-            }
-
-            const button = transactionType === 'masuk' ? $('btnBarangMasuk') : $('btnBarangKeluar');
-            const loading = transactionType === 'masuk' ? $('loadingMasuk') : $('loadingKeluar');
-
-            // Tampilkan loading dan nonaktifkan tombol
-            button.disabled = true;
-            loading.classList.remove('hidden');
-
-            try {
-                // Kirim data menggunakan fetch ke endpoint Google Form
-                const response = await fetch(formURL, {
-                    method: 'POST',
-                    mode: 'no-cors', // Penting untuk Google Form submission
-                    body: new URLSearchParams(formData)
-                });
-                
-                // Karena mode: 'no-cors', kita tidak bisa membaca respons, tapi asumsi berhasil
-                showStatusMessage(`✅ Data Stok ${nama} (${transactionType.toUpperCase()}) sejumlah ${jumlah} berhasil dikirim!`, true);
-                
-                // KETENTUAN 5: Form kembali kosong setelah submit
-                form.reset();
-                selectedFilter = null; // Reset filter
-                handleConditionalUI(""); // Reset UI kondisional
-                populateNamaProduk("");
-
-            } catch (error) {
-                console.error("Error submitting form:", error);
-                showStatusMessage("❌ Gagal mengirim data. Cek koneksi atau URL Google Form Anda.", false);
-            } finally {
-                // Sembunyikan loading dan aktifkan tombol kembali
-                button.disabled = false;
-                loading.classList.add('hidden');
-            }
-        }
-
-        // --- Event Listeners ---
-        document.addEventListener('DOMContentLoaded', () => {
-            initJenisProduk(); // Inisialisasi dropdown Jenis Produk
-            
-            // Event listener untuk Jenis Produk
-            jenisProdukSelect.addEventListener('change', (e) => {
-                const selectedJenis = e.target.value;
-                handleConditionalUI(selectedJenis); // Update UI dan Nama Produk
-            });
-
-            // Event listener untuk tombol submit
-            $('btnBarangMasuk').addEventListener('click', () => submitForm('masuk'));
-            $('btnBarangKeluar').addEventListener('click', () => submitForm('keluar'));
+        console.log('Data yang akan dikirim:', data);
+        
+        // **PENTING: LOGIKA PENGIRIMAN DATA KE SPREADSHEET DI SINI**
+        /*
+        * Untuk menyimpan data ke spreadsheet (misalnya Google Sheets):
+        * 1. Anda perlu membuat **Google Apps Script** sebagai API/Backend.
+        * 2. Script ini akan menerima permintaan POST dengan data 'data' di atas.
+        * 3. Script akan menulis data ke baris baru di Google Sheet.
+        * * Contoh AJAX (Asynchronous JavaScript and XML) untuk mengirim data:
+        
+        const SCRIPT_URL = 'URL_APPS_SCRIPT_ANDA'; 
+        fetch(SCRIPT_URL, {
+            method: 'POST',
+            mode: 'no-cors', // Penting untuk Apps Script
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(data),
+        })
+        .then(() => {
+            messageElement.textContent = '✅ Data berhasil disimpan!';
+            form.reset(); 
+            tanggalInput.value = `${yyyy}-${mm}-${dd}`; // Set ulang tanggal
+            document.getElementById('lokasi').focus(); // Fokus ke input pertama
+            // Sembunyikan pesan setelah 3 detik
+            setTimeout(() => { messageElement.textContent = ''; }, 3000);
+        })
+        .catch(error => {
+            messageElement.textContent = '❌ Gagal menyimpan data: ' + error.message;
+            console.error('Error:', error);
         });
-    </script>
-</body>
-</html>
+        */
+
+        // Placeholder Logika Sukses tanpa backend:
+        messageElement.textContent = `✅ Data berhasil disimpan! Lokasi: ${data.lokasi}, Barcode: ${data.barcode}`;
+        form.reset(); 
+        tanggalInput.value = `${yyyy}-${mm}-${dd}`; // Set ulang tanggal
+        document.getElementById('lokasi').focus();
+        setTimeout(() => { messageElement.textContent = ''; }, 4000);
+    });
+});
