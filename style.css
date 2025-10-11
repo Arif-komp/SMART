@@ -1,6 +1,5 @@
 /* ========================================= */
 /* FILE: style.css - SMART SWALAYAN */
-/* Desain Responsif, Modern, Gagah, dan Kompak */
 /* ========================================= */
 
 /* General Reset and Styling */
@@ -8,12 +7,11 @@
     box-sizing: border-box;
     margin: 0;
     padding: 0;
-    /* Menggunakan Font Poppins agar modern dan bersih */
     font-family: 'Poppins', sans-serif;
 }
 
 body {
-    background-color: #f4f7f6; /* Warna latar belakang lembut */
+    background-color: #f4f7f6; 
     display: flex;
     justify-content: center;
     align-items: flex-start; 
@@ -25,14 +23,14 @@ body {
     background-color: #ffffff;
     padding: 30px;
     border-radius: 15px;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1); /* Efek bayangan yang elegan */
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1); 
     width: 100%;
-    max-width: 500px; /* Lebar maksimal yang kompak */
+    max-width: 500px; 
     margin-top: 20px;
 }
 
 h1 {
-    color: #004d40; /* Warna hijau tua yang elegan */
+    color: #004d40; 
     text-align: center;
     margin-bottom: 30px;
     font-weight: 700;
@@ -66,7 +64,7 @@ input[type="date"] {
 }
 
 input:focus {
-    border-color: #00796b; /* Warna fokus yang keren */
+    border-color: #00796b; 
     box-shadow: 0 0 0 3px rgba(0, 121, 107, 0.2);
     outline: none;
 }
@@ -84,15 +82,20 @@ input:focus {
 }
 
 .scan-btn {
-    background-color: #00796b; /* Hijau keren */
+    background-color: #00796b; 
     color: white;
     border: none;
     padding: 12px 15px;
     border-radius: 0 8px 8px 0;
     cursor: pointer;
     transition: background-color 0.3s, transform 0.1s;
-    font-size: 1.1em;
-    min-width: 50px; 
+    font-size: 1.0em;
+    font-weight: 600;
+    min-width: 80px; 
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
 }
 
 .scan-btn:hover {
@@ -108,18 +111,17 @@ input:focus {
     margin-top: 15px;
     /* Teknik Rasio Aspek (3:2) untuk memastikan bentuk persegi panjang */
     width: 100%;
-    padding-bottom: 66.66%; /* Tinggi 2/3 dari lebar (3:2) */
+    padding-bottom: 66.66%; 
     position: relative; 
     
     background-color: #e0f2f1;
-    border: 3px solid #004d40; /* Border lebih tebal agar gagah */
+    border: 3px solid #004d40; 
     border-radius: 8px;
     
-    display: none; /* Sembunyikan secara default */
+    display: none; 
     overflow: hidden; 
 }
 
-/* Tampilkan placeholder saat class 'active' ditambahkan oleh JS */
 .scanner-placeholder.active {
     display: block; 
 }
@@ -133,16 +135,18 @@ input:focus {
     color: #004d40;
     font-style: italic;
     font-weight: 500;
+    text-align: center;
+    padding: 10px;
 }
 
-/* Style untuk elemen video (akan diisi oleh library scanner) */
+/* Style untuk elemen video (diisi oleh library scanner) */
 #video-feed {
     position: absolute;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    object-fit: cover; /* Memastikan video mengisi seluruh area persegi panjang */
+    object-fit: cover; 
 }
 
 
@@ -150,7 +154,7 @@ input:focus {
 .save-btn {
     width: 100%;
     padding: 15px;
-    background-color: #ff9800; /* Warna oranye yang gagah */
+    background-color: #ff9800; 
     color: white;
     border: none;
     border-radius: 8px;
@@ -177,8 +181,8 @@ input:focus {
     padding: 10px;
     border-radius: 5px;
     font-weight: 600;
-    background-color: #e8f5e9; /* Latar belakang hijau muda */
-    color: #2e7d32; /* Teks hijau tua */
+    background-color: #e8f5e9; 
+    color: #2e7d32; 
     border: 1px solid #c8e6c9;
     opacity: 0;
     transition: opacity 0.5s;
@@ -212,5 +216,8 @@ input:focus {
     .save-btn {
         padding: 10px;
         font-size: 0.95em;
+    }
+    .scan-btn {
+        min-width: 70px;
     }
 }
