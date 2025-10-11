@@ -1,10 +1,10 @@
 // =========================================
 // FILE: script.js - SMART SWALAYAN
-// Integrasi Barcode Scanner (ZXing-JS) dan Apps Script
+// Sensor Scanning Maksimal dan Optimis UI Reset
 // =========================================
 
 // --- PENTING: GANTI DENGAN URL APPS SCRIPT ANDA ---
-const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxiMiPYa1rIk9e7TDrRD4pvug2JshEGt2pj3fj7iJG9ASSOrO_z14Nvoq8M69xGHZ6mAw/exec'; 
+const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbz8PnGsB4LOiA2msZsx1p2-dspO1IITSZz_2uFtQ2uwmHb_9PlgC1MkVVgpcNjDFAzP8A/exec'; 
 // --- AKHIR PENTING ---
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -22,28 +22,52 @@ document.addEventListener('DOMContentLoaded', () => {
     
     let isScanning = false;
     
-    // Inisialisasi ZXing Reader
-    // Pastikan <script src="https://unpkg.com/@zxing/library@latest"></script> sudah ada di HTML
-    const codeReader = new ZXing.BrowserMultiFormatReader();
+    // Inisialisasi ZXing Reader dengan opsi sensitivitas tinggi
+    const hints = new Map();
+    // Tambahkan semua format Barcode/QR yang umum
+    hints.set(ZXing.DecodeHintType.POSSIBLE_FORMATS, [
+        ZXing.BarcodeFormat.CODE_128,
+        ZXing.BarcodeFormat.QR_CODE,
+        ZXing.BarcodeFormat.EAN_13,
+        ZXing.BarcodeFormat.EAN_8,
+        ZXing.BarcodeFormat.CODE_39,
+        ZXing.BarcodeFormat.ITF,
+        ZXing.BarcodeFormat.AZTEC,
+        ZXing.BarcodeFormat.DATA_MATRIX
+    ]);
+    // Set resolusi video yang lebih tinggi untuk deteksi yang lebih baik
+    const controls = {
+        video: {
+            width: { ideal: 1280 },
+            height: { ideal: 720 },
+            facingMode: 'environment' // Prioritaskan kamera belakang
+        }
+    };
+
+    const codeReader = new ZXing.BrowserMultiFormatReader(hints);
 
     // 2. Set Tanggal Otomatis
     const today = new Date();
     const yyyy = today.getFullYear();
     const mm = String(today.getMonth() + 1).padStart(2, '0');
     const dd = String(today.getDate()).padStart(2, '0');
-    tanggalInput.value = `${yyyy}-${mm}-${dd}`;
+    
+    const setTodayDate = () => {
+        tanggalInput.value = `${yyyy}-${mm}-${dd}`;
+    };
+
+    setTodayDate();
     lokasiInput.focus();
     
     // =========================================
     // 3. LOGIKA SCANNER BARCODE (ZXing-JS)
     // =========================================
 
-    // Fungsi untuk menghentikan scanner
     const stopScanner = () => {
         if (!isScanning) return;
         
         isScanning = false;
-        codeReader.reset(); // Menghentikan kamera
+        codeReader.reset();
         scannerContainer.classList.remove('active');
         videoFeed.style.display = 'none';
         scannerMessage.style.display = 'block';
@@ -51,7 +75,6 @@ document.addEventListener('DOMContentLoaded', () => {
         messageElement.textContent = 'Scanning dihentikan.';
     };
 
-    // Fungsi untuk memulai scanner
     const startScanner = () => {
         isScanning = true;
         scannerContainer.classList.add('active');
@@ -59,7 +82,9 @@ document.addEventListener('DOMContentLoaded', () => {
         scannerMessage.style.display = 'none';
         scanButton.innerHTML = '<i class="fas fa-stop-circle"></i> STOP';
         messageElement.textContent = 'Mengaktifkan kamera... Arahkan ke barcode.';
+        messageElement.classList.add('show');
         
+        // Memulai decode dengan kontrol video sensitif
         codeReader.decodeFromVideoDevice(
             undefined, 
             'video-feed', 
@@ -77,20 +102,18 @@ document.addEventListener('DOMContentLoaded', () => {
                     qtyInput.focus();
 
                 } else if (error && !(error instanceof ZXing.NotFoundException)) {
-                    // Tangani error lain selain 'Barcode tidak ditemukan'
+                    // Hanya log error non-fatal (seperti tidak menemukan barcode)
                     console.error('Scan Error:', error);
-                    messageElement.textContent = `⚠️ Error saat scan: ${error.message}`;
                 }
-            }
+            },
+            controls // Menggunakan kontrol resolusi tinggi
         ).catch(err => {
             console.error('Kamera gagal diakses:', err);
             stopScanner();
-            messageElement.textContent = '❌ Gagal mengakses kamera. Pastikan browser memiliki izin.';
+            messageElement.textContent = '❌ Gagal mengakses kamera. Pastikan browser memiliki izin HTTPS.';
         });
     };
 
-
-    // Event Listener untuk Tombol Scan
     scanButton.addEventListener('click', () => {
         if (isScanning) {
             stopScanner();
@@ -100,7 +123,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // =========================================
-    // 4. LOGIKA PENGIRIMAN FORM KE APPS SCRIPT
+    // 4. LOGIKA PENGIRIMAN FORM (Optimis UI Reset)
     // =========================================
     form.addEventListener('submit', (e) => {
         e.preventDefault();
@@ -110,10 +133,10 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         const data = {
-            lokasi: lokasiInput.value,    // Kolom A
-            barcode: barcodeInput.value,  // Kolom B
-            qty: qtyInput.value,          // Kolom C
-            tanggal: tanggalInput.value   // Kolom D
+            lokasi: lokasiInput.value,
+            barcode: barcodeInput.value,
+            qty: qtyInput.value,
+            tanggal: tanggalInput.value
         };
 
         if (!data.lokasi || !data.barcode || !data.qty) {
@@ -123,34 +146,38 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
-        messageElement.textContent = '⏳ Sedang menyimpan data...';
+        // --- OPTIMIS UI: RESET FORM INSTAN SEBELUM FETCH ---
+        messageElement.textContent = '⏳ Data sedang dikirim...';
         messageElement.classList.add('show');
-
+        
+        // 1. Reset Form dan Fokus Instan (membuat website terasa cepat)
+        form.reset(); 
+        setTodayDate();
+        lokasiInput.focus();
+        
+        // 2. Siapkan data untuk pengiriman
+        const formData = new URLSearchParams(data).toString();
+        
+        // 3. Lakukan pengiriman data di latar belakang
         fetch(SCRIPT_URL, {
             method: 'POST',
             mode: 'no-cors', 
             headers: {
-                'Content-Type': 'application/json',
+                'Content-Type': 'application/x-www-form-urlencoded',
             },
-            body: JSON.stringify(data),
+            body: formData, 
         })
         .then(() => {
-            // Asumsikan sukses jika fetch() tidak gagal karena mode 'no-cors'
-            messageElement.textContent = '✅ Data berhasil disimpan ke Spreadsheet!';
-            
-            // Reset Formulir
-            form.reset(); 
-            tanggalInput.value = `${yyyy}-${mm}-${dd}`; 
-            lokasiInput.focus(); 
-            
+            // Setelah pengiriman, berikan feedback sukses (di latar belakang)
+            messageElement.textContent = '✅ Data berhasil disimpan (di latar belakang)!';
             setTimeout(() => { 
                 messageElement.classList.remove('show');
             }, 4000);
         })
         .catch(error => {
+            // Jika ada error jaringan, informasikan pengguna
+            console.error('Error saat fetch:', error);
             messageElement.textContent = '❌ Gagal mengirim data. Cek URL Apps Script atau koneksi.';
-            console.error('Error:', error);
-            
             setTimeout(() => { messageElement.classList.remove('show'); }, 5000);
         });
     });
