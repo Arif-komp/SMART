@@ -1,0 +1,168 @@
+/* General Reset and Styling */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: 'Poppins', sans-serif;
+}
+
+body {
+    background-color: #f4f7f6; /* Warna latar belakang lembut */
+    display: flex;
+    justify-content: center;
+    align-items: flex-start; /* Ubah ke flex-start agar konten tetap di atas pada layar besar */
+    min-height: 100vh;
+    padding: 20px;
+}
+
+.container {
+    background-color: #ffffff;
+    padding: 30px;
+    border-radius: 15px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    max-width: 500px; /* Lebar maksimal yang kompak */
+    margin-top: 20px;
+}
+
+h1 {
+    color: #004d40; /* Warna hijau tua yang elegan */
+    text-align: center;
+    margin-bottom: 30px;
+    font-weight: 700;
+}
+
+/* Input Group Styling */
+.input-group {
+    margin-bottom: 20px;
+}
+
+.input-group label {
+    display: block;
+    margin-bottom: 8px;
+    color: #333;
+    font-weight: 600;
+    font-size: 0.95em;
+}
+
+/* Input Field Styling */
+input[type="text"],
+input[type="number"],
+input[type="date"] {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    font-size: 1em;
+    transition: border-color 0.3s, box-shadow 0.3s;
+}
+
+input:focus {
+    border-color: #00796b; /* Warna fokus yang keren */
+    box-shadow: 0 0 0 3px rgba(0, 121, 107, 0.2);
+    outline: none;
+}
+
+/* Barcode Specific Styling */
+.input-with-icon {
+    display: flex;
+    align-items: center;
+}
+
+.input-with-icon input {
+    flex-grow: 1;
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+}
+
+.scan-btn {
+    background-color: #00796b; /* Hijau keren */
+    color: white;
+    border: none;
+    padding: 12px 15px;
+    border-radius: 0 8px 8px 0;
+    cursor: pointer;
+    transition: background-color 0.3s, transform 0.1s;
+    font-size: 1.1em;
+    min-width: 50px; /* memastikan ikon terlihat */
+}
+
+.scan-btn:hover {
+    background-color: #004d40;
+}
+
+.scan-btn:active {
+    transform: scale(0.98);
+}
+
+.scanner-placeholder {
+    margin-top: 15px;
+    height: 150px;
+    background-color: #e0f2f1; /* Latar belakang untuk area scanner */
+    border: 2px dashed #00796b;
+    border-radius: 8px;
+    display: none; /* Sembunyikan secara default */
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    color: #004d40;
+    font-style: italic;
+}
+
+.scanner-placeholder.active {
+    display: flex;
+}
+
+/* Save Button Styling */
+.save-btn {
+    width: 100%;
+    padding: 15px;
+    background-color: #ff9800; /* Warna oranye yang gagah */
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 1.1em;
+    font-weight: 700;
+    cursor: pointer;
+    margin-top: 20px;
+    transition: background-color 0.3s, transform 0.1s;
+    box-shadow: 0 5px 15px rgba(255, 152, 0, 0.3);
+}
+
+.save-btn:hover {
+    background-color: #fb8c00;
+}
+
+.save-btn:active {
+    transform: scale(0.99);
+}
+
+/* Responsive Adjustments (Kompak dan Sempurna) */
+@media (max-width: 600px) {
+    .container {
+        padding: 20px;
+        margin-top: 10px;
+        box-shadow: none;
+        border-radius: 0;
+    }
+
+    h1 {
+        font-size: 1.8em;
+    }
+
+    input[type="text"],
+    input[type="number"],
+    input[type="date"],
+    .scan-btn,
+    .save-btn {
+        padding: 10px;
+    }
+}
+
+/* Message Display */
+.message {
+    text-align: center;
+    margin-top: 15px;
+    font-weight: 600;
+    color: green; /* Warna default untuk pesan sukses */
+}
