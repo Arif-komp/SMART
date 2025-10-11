@@ -4,38 +4,38 @@
 // =========================================
 
 // --- PENTING: GANTI DENGAN URL APPS SCRIPT ANDA ---
-const SCRIPT_URL = 'PASTE_URL_WEB_APP_APPS_SCRIPT_ANDA_DI_SINI'; 
+const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxiMiPYa1rIk9e7TDrRD4pvug2JshEGt2pj3fj7iJG9ASSOrO_z14Nvoq8M69xGHZ6mAw/exec'; 
 // --- AKHIR PENTING ---
 
 document.addEventListener('DOMContentLoaded', () => {
     // 1. Inisialisasi Variabel DOM
-    const form = document.getElementById('dataForm');
+    const form = document.getElementById('inventoryForm');
     const tanggalInput = document.getElementById('tanggal');
     const barcodeInput = document.getElementById('barcode');
     const lokasiInput = document.getElementById('lokasi');
+    const qtyInput = document.getElementById('qty');
     const scanButton = document.getElementById('scanButton');
     const scannerContainer = document.getElementById('scanner-container');
     const videoFeed = document.getElementById('video-feed');
+    const scannerMessage = document.getElementById('scanner-message');
     const messageElement = document.getElementById('message');
     
     let isScanning = false;
     
-    // Asumsi: Library ZXing telah dimuat melalui CDN di index.html
+    // Inisialisasi ZXing Reader
+    // Pastikan <script src="https://unpkg.com/@zxing/library@latest"></script> sudah ada di HTML
     const codeReader = new ZXing.BrowserMultiFormatReader();
 
-    // 2. Set Tanggal Otomatis (Tanggal Hari Ini)
+    // 2. Set Tanggal Otomatis
     const today = new Date();
     const yyyy = today.getFullYear();
-    const mm = String(today.getMonth() + 1).padStart(2, '0'); // Januari adalah 0!
+    const mm = String(today.getMonth() + 1).padStart(2, '0');
     const dd = String(today.getDate()).padStart(2, '0');
     tanggalInput.value = `${yyyy}-${mm}-${dd}`;
-    
-    // Fokuskan input pertama saat halaman dimuat
     lokasiInput.focus();
-
-
+    
     // =========================================
-    // 3. LOGIKA SCANNER BARCODE (Menggunakan ZXing-JS)
+    // 3. LOGIKA SCANNER BARCODE (ZXing-JS)
     // =========================================
 
     // Fungsi untuk menghentikan scanner
@@ -43,9 +43,10 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!isScanning) return;
         
         isScanning = false;
-        codeReader.reset(); // Menghentikan kamera dan video stream
+        codeReader.reset(); // Menghentikan kamera
         scannerContainer.classList.remove('active');
         videoFeed.style.display = 'none';
+        scannerMessage.style.display = 'block';
         scanButton.innerHTML = '<i class="fas fa-camera-retro"></i> SCAN';
         messageElement.textContent = 'Scanning dihentikan.';
     };
@@ -55,29 +56,28 @@ document.addEventListener('DOMContentLoaded', () => {
         isScanning = true;
         scannerContainer.classList.add('active');
         videoFeed.style.display = 'block';
+        scannerMessage.style.display = 'none';
         scanButton.innerHTML = '<i class="fas fa-stop-circle"></i> STOP';
         messageElement.textContent = 'Mengaktifkan kamera... Arahkan ke barcode.';
         
-        // Minta akses kamera dan mulai decoding
         codeReader.decodeFromVideoDevice(
-            undefined, // Membiarkan ZXing memilih kamera terbaik (biasanya belakang)
-            'video-feed', // ID elemen video
+            undefined, 
+            'video-feed', 
             (result, error) => {
                 if (result) {
                     // --- BARCODE BERHASIL DI-SCAN ---
                     const scannedCode = result.text;
                     barcodeInput.value = scannedCode;
                     
-                    stopScanner(); // Hentikan scanner setelah sukses
+                    stopScanner(); 
                     
                     messageElement.textContent = `✅ Barcode ${scannedCode} berhasil di-scan!`;
                     messageElement.classList.add('show');
                     
-                    // Pindah fokus ke QTY
-                    document.getElementById('qty').focus();
+                    qtyInput.focus();
 
                 } else if (error && !(error instanceof ZXing.NotFoundException)) {
-                    // Tangani error selain 'Barcode tidak ditemukan'
+                    // Tangani error lain selain 'Barcode tidak ditemukan'
                     console.error('Scan Error:', error);
                     messageElement.textContent = `⚠️ Error saat scan: ${error.message}`;
                 }
@@ -105,19 +105,17 @@ document.addEventListener('DOMContentLoaded', () => {
     form.addEventListener('submit', (e) => {
         e.preventDefault();
 
-        // Hentikan scanner jika masih berjalan
         if (isScanning) {
             stopScanner();
         }
 
         const data = {
-            lokasi: lokasiInput.value,
-            barcode: barcodeInput.value,
-            qty: document.getElementById('qty').value,
-            tanggal: tanggalInput.value
+            lokasi: lokasiInput.value,    // Kolom A
+            barcode: barcodeInput.value,  // Kolom B
+            qty: qtyInput.value,          // Kolom C
+            tanggal: tanggalInput.value   // Kolom D
         };
 
-        // Validasi minimal
         if (!data.lokasi || !data.barcode || !data.qty) {
             messageElement.textContent = '❌ Harap isi semua kolom wajib.';
             messageElement.classList.add('show');
@@ -125,13 +123,11 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
-        // Tampilkan pesan loading
         messageElement.textContent = '⏳ Sedang menyimpan data...';
         messageElement.classList.add('show');
 
         fetch(SCRIPT_URL, {
             method: 'POST',
-            // Gunakan mode 'no-cors' karena Apps Script sering diakses lintas domain
             mode: 'no-cors', 
             headers: {
                 'Content-Type': 'application/json',
@@ -139,10 +135,10 @@ document.addEventListener('DOMContentLoaded', () => {
             body: JSON.stringify(data),
         })
         .then(() => {
-            // Dalam mode 'no-cors', kita hanya bisa mengasumsikan sukses jika fetch() tidak gagal.
+            // Asumsikan sukses jika fetch() tidak gagal karena mode 'no-cors'
             messageElement.textContent = '✅ Data berhasil disimpan ke Spreadsheet!';
             
-            // Reset Formulir dan fokus
+            // Reset Formulir
             form.reset(); 
             tanggalInput.value = `${yyyy}-${mm}-${dd}`; 
             lokasiInput.focus(); 
