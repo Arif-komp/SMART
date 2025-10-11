@@ -1,108 +1,161 @@
+// =========================================
+// FILE: script.js - SMART SWALAYAN
+// Integrasi Barcode Scanner (ZXing-JS) dan Apps Script
+// =========================================
+
+// --- PENTING: GANTI DENGAN URL APPS SCRIPT ANDA ---
+const SCRIPT_URL = 'PASTE_URL_WEB_APP_APPS_SCRIPT_ANDA_DI_SINI'; 
+// --- AKHIR PENTING ---
+
 document.addEventListener('DOMContentLoaded', () => {
-    const form = document.getElementById('inventoryForm');
+    // 1. Inisialisasi Variabel DOM
+    const form = document.getElementById('dataForm');
     const tanggalInput = document.getElementById('tanggal');
+    const barcodeInput = document.getElementById('barcode');
+    const lokasiInput = document.getElementById('lokasi');
     const scanButton = document.getElementById('scanButton');
     const scannerContainer = document.getElementById('scanner-container');
-    const barcodeInput = document.getElementById('barcode');
+    const videoFeed = document.getElementById('video-feed');
     const messageElement = document.getElementById('message');
     
-    // 1. Set Tanggal Hari Ini secara Otomatis
+    let isScanning = false;
+    
+    // Asumsi: Library ZXing telah dimuat melalui CDN di index.html
+    const codeReader = new ZXing.BrowserMultiFormatReader();
+
+    // 2. Set Tanggal Otomatis (Tanggal Hari Ini)
     const today = new Date();
     const yyyy = today.getFullYear();
-    const mm = String(today.getMonth() + 1).padStart(2, '0'); // Months start at 0!
+    const mm = String(today.getMonth() + 1).padStart(2, '0'); // Januari adalah 0!
     const dd = String(today.getDate()).padStart(2, '0');
     tanggalInput.value = `${yyyy}-${mm}-${dd}`;
+    
+    // Fokuskan input pertama saat halaman dimuat
+    lokasiInput.focus();
 
-    // 2. Barcode Scanning Placeholder Logic
-    let isScanning = false;
-    scanButton.addEventListener('click', () => {
-        isScanning = !isScanning;
-        scannerContainer.classList.toggle('active', isScanning);
-        scanButton.innerHTML = isScanning 
-            ? '<i class="fas fa-stop-circle"></i> STOP' 
-            : '<i class="fas fa-camera-retro"></i>';
 
-        if (isScanning) {
-            // **PENTING: INTEGRASI BARCODE SCANNER DI SINI**
-            // Di sini Anda perlu mengintegrasikan library pihak ketiga (misalnya: QuaggaJS)
-            // untuk mengaktifkan kamera dan mulai scanning.
-            // Contoh: Quagga.init({...}, (err) => { ... Quagga.start(); });
+    // =========================================
+    // 3. LOGIKA SCANNER BARCODE (Menggunakan ZXing-JS)
+    // =========================================
 
-            // Placeholder: Simulasikan hasil scan setelah beberapa detik
-            messageElement.textContent = 'Mulai scanning... arahkan kamera ke barcode.';
-            setTimeout(() => {
-                if(isScanning) {
-                    const scannedCode = '8992745123456'; // Contoh hasil scan
+    // Fungsi untuk menghentikan scanner
+    const stopScanner = () => {
+        if (!isScanning) return;
+        
+        isScanning = false;
+        codeReader.reset(); // Menghentikan kamera dan video stream
+        scannerContainer.classList.remove('active');
+        videoFeed.style.display = 'none';
+        scanButton.innerHTML = '<i class="fas fa-camera-retro"></i> SCAN';
+        messageElement.textContent = 'Scanning dihentikan.';
+    };
+
+    // Fungsi untuk memulai scanner
+    const startScanner = () => {
+        isScanning = true;
+        scannerContainer.classList.add('active');
+        videoFeed.style.display = 'block';
+        scanButton.innerHTML = '<i class="fas fa-stop-circle"></i> STOP';
+        messageElement.textContent = 'Mengaktifkan kamera... Arahkan ke barcode.';
+        
+        // Minta akses kamera dan mulai decoding
+        codeReader.decodeFromVideoDevice(
+            undefined, // Membiarkan ZXing memilih kamera terbaik (biasanya belakang)
+            'video-feed', // ID elemen video
+            (result, error) => {
+                if (result) {
+                    // --- BARCODE BERHASIL DI-SCAN ---
+                    const scannedCode = result.text;
                     barcodeInput.value = scannedCode;
-                    isScanning = false;
-                    scannerContainer.classList.remove('active');
-                    scanButton.innerHTML = '<i class="fas fa-camera-retro"></i>';
-                    messageElement.textContent = `Barcode ${scannedCode} berhasil di-scan!`;
                     
-                    // Setelah scan berhasil, fokuskan ke Qty
+                    stopScanner(); // Hentikan scanner setelah sukses
+                    
+                    messageElement.textContent = `✅ Barcode ${scannedCode} berhasil di-scan!`;
+                    messageElement.classList.add('show');
+                    
+                    // Pindah fokus ke QTY
                     document.getElementById('qty').focus();
-                    
-                    // **Catatan:** Dalam implementasi nyata, Anda akan memanggil Quagga.stop() di sini.
-                }
-            }, 3000); 
 
+                } else if (error && !(error instanceof ZXing.NotFoundException)) {
+                    // Tangani error selain 'Barcode tidak ditemukan'
+                    console.error('Scan Error:', error);
+                    messageElement.textContent = `⚠️ Error saat scan: ${error.message}`;
+                }
+            }
+        ).catch(err => {
+            console.error('Kamera gagal diakses:', err);
+            stopScanner();
+            messageElement.textContent = '❌ Gagal mengakses kamera. Pastikan browser memiliki izin.';
+        });
+    };
+
+
+    // Event Listener untuk Tombol Scan
+    scanButton.addEventListener('click', () => {
+        if (isScanning) {
+            stopScanner();
         } else {
-            // Placeholder: Logika untuk menghentikan scanning
-            // Contoh: Quagga.stop();
-            messageElement.textContent = 'Scanning dihentikan.';
+            startScanner();
         }
     });
 
-
-    // 3. Form Submission (Simpan Data ke Spreadsheet)
+    // =========================================
+    // 4. LOGIKA PENGIRIMAN FORM KE APPS SCRIPT
+    // =========================================
     form.addEventListener('submit', (e) => {
         e.preventDefault();
 
+        // Hentikan scanner jika masih berjalan
+        if (isScanning) {
+            stopScanner();
+        }
+
         const data = {
-            lokasi: document.getElementById('lokasi').value, // Kolom A
-            barcode: document.getElementById('barcode').value, // Kolom B
-            qty: document.getElementById('qty').value, // Kolom C
-            tanggal: document.getElementById('tanggal').value // Kolom D
+            lokasi: lokasiInput.value,
+            barcode: barcodeInput.value,
+            qty: document.getElementById('qty').value,
+            tanggal: tanggalInput.value
         };
 
-        console.log('Data yang akan dikirim:', data);
-        
-        // **PENTING: LOGIKA PENGIRIMAN DATA KE SPREADSHEET DI SINI**
-        /*
-        * Untuk menyimpan data ke spreadsheet (misalnya Google Sheets):
-        * 1. Anda perlu membuat **Google Apps Script** sebagai API/Backend.
-        * 2. Script ini akan menerima permintaan POST dengan data 'data' di atas.
-        * 3. Script akan menulis data ke baris baru di Google Sheet.
-        * * Contoh AJAX (Asynchronous JavaScript and XML) untuk mengirim data:
-        
-        const SCRIPT_URL = 'URL_APPS_SCRIPT_ANDA'; 
+        // Validasi minimal
+        if (!data.lokasi || !data.barcode || !data.qty) {
+            messageElement.textContent = '❌ Harap isi semua kolom wajib.';
+            messageElement.classList.add('show');
+            setTimeout(() => { messageElement.classList.remove('show'); }, 3000);
+            return;
+        }
+
+        // Tampilkan pesan loading
+        messageElement.textContent = '⏳ Sedang menyimpan data...';
+        messageElement.classList.add('show');
+
         fetch(SCRIPT_URL, {
             method: 'POST',
-            mode: 'no-cors', // Penting untuk Apps Script
+            // Gunakan mode 'no-cors' karena Apps Script sering diakses lintas domain
+            mode: 'no-cors', 
             headers: {
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify(data),
         })
         .then(() => {
-            messageElement.textContent = '✅ Data berhasil disimpan!';
+            // Dalam mode 'no-cors', kita hanya bisa mengasumsikan sukses jika fetch() tidak gagal.
+            messageElement.textContent = '✅ Data berhasil disimpan ke Spreadsheet!';
+            
+            // Reset Formulir dan fokus
             form.reset(); 
-            tanggalInput.value = `${yyyy}-${mm}-${dd}`; // Set ulang tanggal
-            document.getElementById('lokasi').focus(); // Fokus ke input pertama
-            // Sembunyikan pesan setelah 3 detik
-            setTimeout(() => { messageElement.textContent = ''; }, 3000);
+            tanggalInput.value = `${yyyy}-${mm}-${dd}`; 
+            lokasiInput.focus(); 
+            
+            setTimeout(() => { 
+                messageElement.classList.remove('show');
+            }, 4000);
         })
         .catch(error => {
-            messageElement.textContent = '❌ Gagal menyimpan data: ' + error.message;
+            messageElement.textContent = '❌ Gagal mengirim data. Cek URL Apps Script atau koneksi.';
             console.error('Error:', error);
+            
+            setTimeout(() => { messageElement.classList.remove('show'); }, 5000);
         });
-        */
-
-        // Placeholder Logika Sukses tanpa backend:
-        messageElement.textContent = `✅ Data berhasil disimpan! Lokasi: ${data.lokasi}, Barcode: ${data.barcode}`;
-        form.reset(); 
-        tanggalInput.value = `${yyyy}-${mm}-${dd}`; // Set ulang tanggal
-        document.getElementById('lokasi').focus();
-        setTimeout(() => { messageElement.textContent = ''; }, 4000);
     });
 });
