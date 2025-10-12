@@ -24,7 +24,6 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // Inisialisasi ZXing Reader dengan opsi sensitivitas tinggi
     const hints = new Map();
-    // Tambahkan semua format Barcode/QR yang umum
     hints.set(ZXing.DecodeHintType.POSSIBLE_FORMATS, [
         ZXing.BarcodeFormat.CODE_128,
         ZXing.BarcodeFormat.QR_CODE,
@@ -35,12 +34,11 @@ document.addEventListener('DOMContentLoaded', () => {
         ZXing.BarcodeFormat.AZTEC,
         ZXing.BarcodeFormat.DATA_MATRIX
     ]);
-    // Set resolusi video yang lebih tinggi untuk deteksi yang lebih baik
     const controls = {
         video: {
             width: { ideal: 1280 },
             height: { ideal: 720 },
-            facingMode: 'environment' // Prioritaskan kamera belakang
+            facingMode: 'environment'
         }
     };
 
@@ -84,13 +82,11 @@ document.addEventListener('DOMContentLoaded', () => {
         messageElement.textContent = 'Mengaktifkan kamera... Arahkan ke barcode.';
         messageElement.classList.add('show');
         
-        // Memulai decode dengan kontrol video sensitif
         codeReader.decodeFromVideoDevice(
             undefined, 
             'video-feed', 
             (result, error) => {
                 if (result) {
-                    // --- BARCODE BERHASIL DI-SCAN ---
                     const scannedCode = result.text;
                     barcodeInput.value = scannedCode;
                     
@@ -102,11 +98,10 @@ document.addEventListener('DOMContentLoaded', () => {
                     qtyInput.focus();
 
                 } else if (error && !(error instanceof ZXing.NotFoundException)) {
-                    // Hanya log error non-fatal (seperti tidak menemukan barcode)
                     console.error('Scan Error:', error);
                 }
             },
-            controls // Menggunakan kontrol resolusi tinggi
+            controls
         ).catch(err => {
             console.error('Kamera gagal diakses:', err);
             stopScanner();
@@ -150,7 +145,7 @@ document.addEventListener('DOMContentLoaded', () => {
         messageElement.textContent = '⏳ Data sedang dikirim...';
         messageElement.classList.add('show');
         
-        // 1. Reset Form dan Fokus Instan (membuat website terasa cepat)
+        // 1. Reset Form dan Fokus Instan
         form.reset(); 
         setTodayDate();
         lokasiInput.focus();
@@ -168,14 +163,12 @@ document.addEventListener('DOMContentLoaded', () => {
             body: formData, 
         })
         .then(() => {
-            // Setelah pengiriman, berikan feedback sukses (di latar belakang)
             messageElement.textContent = '✅ Data berhasil disimpan (di latar belakang)!';
             setTimeout(() => { 
                 messageElement.classList.remove('show');
             }, 4000);
         })
         .catch(error => {
-            // Jika ada error jaringan, informasikan pengguna
             console.error('Error saat fetch:', error);
             messageElement.textContent = '❌ Gagal mengirim data. Cek URL Apps Script atau koneksi.';
             setTimeout(() => { messageElement.classList.remove('show'); }, 5000);
