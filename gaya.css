@@ -1,0 +1,296 @@
+/* ========================================= */
+/* FILE: style.css - SMART SWALAYAN */
+/* Desain Responsif, Modern, Gagah, dan Kompak */
+/* ========================================= */
+
+/* General Reset and Styling */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: 'Poppins', sans-serif;
+}
+
+body {
+    background-color: #f4f7f6; 
+    display: flex;
+    justify-content: center;
+    align-items: flex-start; 
+    min-height: 100vh;
+    padding: 20px;
+}
+
+.container {
+    background-color: #ffffff;
+    padding: 30px;
+    border-radius: 15px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1); 
+    width: 100%;
+    max-width: 500px; 
+    margin-top: 20px;
+}
+
+/* --- LOGO HEADER STYLING --- */
+.header-logo {
+    display: block;
+    max-width: 80%; 
+    height: auto; 
+    margin: 0 auto 30px auto; 
+    filter: drop-shadow(0 5px 10px rgba(0,0,0,0.1)); 
+    border-radius: 10px; 
+}
+
+/* --- Input Group Styling --- */
+.input-group {
+    margin-bottom: 20px;
+}
+
+.input-group label {
+    display: block;
+    margin-bottom: 8px;
+    color: #333;
+    font-weight: 600;
+    font-size: 0.95em;
+}
+
+/* Input Field Styling */
+input[type="text"],
+input[type="number"],
+input[type="date"] {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    font-size: 1em;
+    transition: border-color 0.3s, box-shadow 0.3s;
+}
+
+input:focus {
+    border-color: #00796b; 
+    box-shadow: 0 0 0 3px rgba(0, 121, 107, 0.2);
+    outline: none;
+}
+
+/* --- Input Group with Icon (Digunakan untuk Barcode dan QTY) --- */
+.input-with-icon {
+    display: flex;
+    align-items: center;
+}
+
+.input-with-icon input {
+    flex-grow: 1;
+    /* Reset border radius agar tombol bisa menempel */
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+}
+
+/* Style Khusus untuk Input Barcode */
+.barcode-group .input-with-icon input {
+    /* Hanya input barcode yang memiliki tombol scan */
+}
+
+/* Style Khusus untuk Input QTY (agar ada ruang untuk tombol minus) */
+.input-group:not(.barcode-group) .input-with-icon input {
+    /* Tidak perlu override, biarkan sama seperti yang di atas */
+}
+
+/* --- Tombol SCAN --- */
+.scan-btn {
+    background-color: #00796b; 
+    color: white;
+    border: none;
+    padding: 12px 15px;
+    border-radius: 0 8px 8px 0;
+    cursor: pointer;
+    transition: background-color 0.3s, transform 0.1s;
+    font-size: 1.0em;
+    font-weight: 600;
+    min-width: 80px; 
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+}
+
+.scan-btn:hover {
+    background-color: #004d40;
+}
+
+/* --- Tombol MINUS (BARU) --- */
+.minus-btn {
+    background-color: #ff5722; /* Warna merah/oranye untuk aksi negatif */
+    color: white;
+    border: none;
+    padding: 12px 15px;
+    border-radius: 0 8px 8px 0;
+    cursor: pointer;
+    transition: background-color 0.3s, transform 0.1s;
+    font-size: 1.0em;
+    font-weight: 600;
+    min-width: 50px; /* Ukuran lebih kecil dari tombol SCAN */
+}
+
+.minus-btn:hover {
+    background-color: #e64a19;
+}
+
+.scan-btn:active, .minus-btn:active {
+    transform: scale(0.98);
+}
+
+
+/* --- Area Scanner Kamera --- */
+.scanner-placeholder {
+    margin-top: 15px;
+    width: 100%;
+    padding-bottom: 66.66%; 
+    position: relative; 
+    background-color: #e0f2f1;
+    border: 3px solid #004d40; 
+    border-radius: 8px;
+    display: none; 
+    overflow: hidden; 
+}
+
+.scanner-placeholder.active {
+    display: block; 
+}
+
+.scanner-placeholder p {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: #004d40;
+    font-style: italic;
+    font-weight: 500;
+    text-align: center;
+    padding: 10px;
+}
+
+#video-feed {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover; 
+}
+
+/* ========================================= */
+/* ✅ KODE RADAR BARU DIMULAI DI SINI */
+/* ========================================= */
+
+.scanner-line {
+    /* Garis radar (sebelumnya sudah ada di HTML, hanya perlu CSS) */
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 4px; /* Sedikit lebih tebal */
+    background: #4CAF50; /* Warna hijau terang untuk radar */
+    box-shadow: 0 0 10px rgba(76, 175, 80, 0.8); /* Glow effect */
+    z-index: 50; /* Pastikan di atas video */
+    display: none; /* Sembunyikan default */
+}
+
+/* Tampilkan dan Mulai Animasi Radar saat scanner aktif */
+.scanner-placeholder.active .scanner-line {
+    display: block;
+    animation: scan-radar 2.5s infinite linear; /* Animasi bergerak lambat */
+}
+
+/* Keyframes untuk Animasi Radar */
+@keyframes scan-radar {
+    0% {
+        transform: translateY(0);
+        opacity: 0.1;
+    }
+    10% {
+        opacity: 0.8;
+    }
+    90% {
+        opacity: 0.8;
+    }
+    100% {
+        /* Pindah dari 0% ke 100% tinggi scanner container */
+        transform: translateY(100%); 
+        opacity: 0.1;
+    }
+}
+/* ========================================= */
+/* ❌ KODE RADAR BARU BERAKHIR DI SINI */
+/* ========================================= */
+
+
+/* --- Save Button Styling --- */
+.save-btn {
+    width: 100%;
+    padding: 15px;
+    background-color: #ff9800; 
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 1.1em;
+    font-weight: 700;
+    cursor: pointer;
+    margin-top: 20px;
+    transition: background-color 0.3s, transform 0.1s;
+    box-shadow: 0 5px 15px rgba(255, 152, 0, 0.3);
+}
+
+.save-btn:hover {
+    background-color: #fb8c00;
+}
+
+/* --- Message Display --- */
+.message {
+    text-align: center;
+    margin-top: 15px;
+    padding: 10px;
+    border-radius: 5px;
+    font-weight: 600;
+    background-color: #e8f5e9; 
+    color: #2e7d32; 
+    border: 1px solid #c8e6c9;
+    opacity: 0;
+    transition: opacity 0.5s;
+}
+
+.message.show {
+    opacity: 1;
+}
+
+/* --- Responsive Adjustments (untuk perangkat kecil) --- */
+@media (max-width: 600px) {
+    body {
+        padding: 10px;
+    }
+    .container {
+        padding: 20px;
+        margin-top: 0;
+        box-shadow: none;
+        border-radius: 0;
+    }
+
+    .header-logo {
+        max-width: 90%; 
+        margin-bottom: 20px;
+    }
+
+    input[type="text"],
+    input[type="number"],
+    input[type="date"],
+    .scan-btn,
+    .minus-btn,
+    .save-btn {
+        padding: 10px;
+        font-size: 0.95em;
+    }
+    .scan-btn {
+        min-width: 70px;
+    }
+    .minus-btn {
+        min-width: 40px;
+    }
+}
