@@ -49,18 +49,19 @@ body {
 /* --- 3. HEADER & JUDUL --- */
 .header-logo {
     display: block;
-    width: 90%; /* Menggunakan 90% dari lebar container untuk fleksibilitas */
-    max-width: 250px; /* Batas maksimum agar tidak terlalu besar di desktop */
+    width: auto; /* Biarkan lebar mengikuti konten asli */
+    max-width: 100%; /* Batas utama: TIDAK MELEBIHI lebar container */
     height: auto; /* Biarkan tinggi menyesuaikan agar tidak terdistorsi */
-    max-height: 100px; /* Batas tinggi agar tidak terlalu panjang */
-    object-fit: contain; /* Memastikan gambar sepenuhnya terlihat dalam batasnya */
+    max-height: 90px; /* Batas tinggi agar tetap kompak */
+    object-fit: contain; /* PENTING: Memastikan seluruh logo terlihat dan mempertahankan rasio aspek */
     margin: 0 auto 25px auto;
+    
+    /* Style Logo Rounded */
     border-radius: 10px;
     border: 3px solid var(--primary-color);
     box-shadow: 0 0 15px rgba(0, 121, 107, 0.4);
     filter: drop-shadow(0 5px 10px rgba(0,0,0,0.1));
 }
-
 /* --- 4. INPUT GROUP & FIELD --- */
 .input-group {
     margin-bottom: 20px;
@@ -170,7 +171,7 @@ button {
 .scanner-placeholder {
     margin-top: 15px;
     width: 100%;
-    padding-bottom: 60%; /* Rasio aspek 16:10 */
+    padding-bottom: 60%;
     position: relative;
     background-color: #1a1a1a;
     border: 3px solid #ccc;
@@ -257,10 +258,7 @@ button {
     }
 }
 
-/* ========================================= */
 /* KODE SPARKLE (Tidak ada perubahan di sini) */
-/* ========================================= */
-
 .scanner-placeholder.active::before {
     content: '';
     position: absolute;
@@ -310,10 +308,6 @@ button {
     }
 }
 
-/* ========================================= */
-/* AKHIR KODE SPARKLE */
-/* ========================================= */
-
 
 /* --- 8. MESSAGE DISPLAY --- */
 .message {
@@ -348,9 +342,9 @@ button {
     }
     
     .header-logo {
-        width: 100%; /* Menggunakan lebar penuh container mobile */
-        max-width: 200px; /* Tapi tetap batasi agar tidak terlalu besar */
-        max-height: 80px; /* Batasi tinggi di mobile juga */
+        width: 100%; 
+        max-width: 250px; /* Batasi agar tidak terlalu besar di mobile yang lebar */
+        max-height: 80px; 
         margin-bottom: 20px;
     }
     
