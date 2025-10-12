@@ -11,12 +11,12 @@
 </head>
 <body>
     <div class="container">
-        <h1>SMART SWALAYAN</h1>
+        <img src="logo.jpg" alt="Logo Smart Swalayan" class="header-logo"> 
         <form id="inventoryForm">
 
             <div class="input-group">
-                <label for="lokasi"><i class="fas fa-warehouse"></i> Lokasi Penyimpanan</label>
-                <input type="text" id="lokasi" name="lokasi" placeholder="Masukan Lokasi" required>
+                <label for="lokasi"><i class="fas fa-warehouse"></i> Lokasi </label>
+                <input type="text" id="lokasi" name="lokasi" placeholder="Input Lokasi" required>
             </div>
 
             <div class="input-group barcode-group">
@@ -35,15 +35,16 @@
             </div>
 
             <div class="input-group">
-    <label for="qty"><i class="fas fa-boxes"></i> Jumlah (QTY)</label>
-    <input type="number" id="qty" name="qty" placeholder="Masukkan jumlah" required>
-</div>
+                <label for="qty"><i class="fas fa-boxes"></i> Jumlah </label>
+                <input type="number" id="qty" name="qty" placeholder="Masukkan jumlah barang" required>
+            </div>
+
             <div class="input-group">
                 <label for="tanggal"><i class="fas fa-calendar-alt"></i> Tanggal</label>
                 <input type="date" id="tanggal" name="tanggal" value="" required>
             </div>
 
-            <button type="submit" id="saveButton" class="save-btn"><i class="fas fa-save"></i> SIMPAN</button>
+            <button type="submit" id="saveButton" class="save-btn"><i class="fas fa-save"></i> SIMPAN </button>
             <p id="message" class="message"></p>
         </form>
     </div>
