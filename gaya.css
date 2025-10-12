@@ -15,6 +15,7 @@
     --shadow-heavy: 0 10px 30px rgba(0, 0, 0, 0.15);
     --shadow-light: 0 4px 10px rgba(0, 0, 0, 0.08);
     --sparkle-color: #ffe082; /* Warna kuning muda untuk sparkle */
+    --scan-glow-color: #00ff00; /* Warna hijau neon untuk garis scan */
 }
 
 * {
@@ -49,11 +50,11 @@ body {
 /* --- 3. HEADER & JUDUL --- */
 .header-logo {
     display: block;
-    width: auto; /* Biarkan lebar mengikuti konten asli */
-    max-width: 100%; /* Batas utama: TIDAK MELEBIHI lebar container */
-    height: auto; /* Biarkan tinggi menyesuaikan agar tidak terdistorsi */
-    max-height: 90px; /* Batas tinggi agar tetap kompak */
-    object-fit: contain; /* PENTING: Memastikan seluruh logo terlihat dan mempertahankan rasio aspek */
+    width: auto;
+    max-width: 100%;
+    height: auto;
+    max-height: 90px;
+    object-fit: contain;
     margin: 0 auto 25px auto;
     
     /* Style Logo Rounded */
@@ -62,6 +63,7 @@ body {
     box-shadow: 0 0 15px rgba(0, 121, 107, 0.4);
     filter: drop-shadow(0 5px 10px rgba(0,0,0,0.1));
 }
+
 /* --- 4. INPUT GROUP & FIELD --- */
 .input-group {
     margin-bottom: 20px;
@@ -208,21 +210,49 @@ button {
     z-index: 5;
 }
 
-/* ELEMEN RADAR HIJAU BERANIMASI */
+/* ========================================= */
+/* ✅ KODE ANIMASI BLUR RADAR BARU DIMULAI */
+/* ========================================= */
+
+/* Elemen Radar menggunakan ::before untuk meniru beberapa garis blur */
+.scanner-placeholder.active::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 20; 
+    pointer-events: none;
+    
+    /* MENGHILANGKAN ANIMASI SPARKLE SEBELUMNYA KARENA BENTROK DENGAN ::before */
+    /* Kita akan pindahkan sparkle ke elemen .scanner-placeholder itu sendiri */
+    background: none; 
+    animation: none;
+}
+
+/* Ganti .scanner-line menjadi blur, tinggi lebih besar, dan buram */
 .scanner-line {
     position: absolute;
     top: 0;
     left: 0;
     width: 100%;
-    height: 3px;
-    background: limegreen;
-    box-shadow: 0 0 15px limegreen;
+    /* Gunakan gradient untuk menciptakan efek beberapa garis blur */
+    background: linear-gradient(to bottom, 
+                                rgba(0,0,0,0) 0%, 
+                                var(--scan-glow-color) 20%, 
+                                rgba(0,0,0,0) 50%,
+                                var(--scan-glow-color) 80%,
+                                rgba(0,0,0,0) 100%);
+    box-shadow: 0 0 20px var(--scan-glow-color); /* Glow lebih kuat */
+    height: 30%; /* Tinggi garis scan yang buram (30% dari area kamera) */
     z-index: 50; 
     display: none; 
-    transition: transform 0.1s;
+    opacity: 0.5; /* Agak transparan agar terlihat seperti cahaya */
 }
 
-/* Kotak Fokus (Viewfinder) */
+
+/* Kotak Fokus (Viewfinder) - Tetap sama */
 .scanner-placeholder.active::after {
     content: '';
     position: absolute;
@@ -239,26 +269,31 @@ button {
 /* Aktivasi Radar */
 .scanner-placeholder.active .scanner-line {
     display: block;
-    animation: scan-radar 2s infinite linear;
+    animation: scan-radar-blur 3s infinite ease-in-out; /* Animasi lebih lambat dan halus */
 }
 
-/* Keyframes untuk Animasi Radar */
-@keyframes scan-radar {
+/* Keyframes untuk Animasi Radar Blur */
+@keyframes scan-radar-blur {
     0% {
-        transform: translateY(0);
+        transform: translateY(-30%); /* Mulai di luar atas kamera (negatif sama dengan tinggi elemen) */
         opacity: 0.1;
     }
     50% {
-        transform: translateY(calc(100% - 3px));
-        opacity: 1;
+        transform: translateY(100%); /* Bergerak sampai ke bawah kamera */
+        opacity: 0.8;
     }
     100% {
-        transform: translateY(0);
+        transform: translateY(-30%);
         opacity: 0.1;
     }
 }
 
-/* KODE SPARKLE (Tidak ada perubahan di sini) */
+/* KODE SPARKLE DIPINDAHKAN KE ELEMEN .scanner-placeholder ITU SENDIRI */
+/* Catatan: Karena sudah menggunakan ::after untuk viewfinder dan ::before untuk sparkle, 
+   kita tidak bisa menggunakan pseudo-element lagi. Kita akan menggunakan box-shadow pada scanner-line 
+   atau mengubah .scanner-placeholder::before */
+
+/* MENGGANTI FUNGSI .scanner-placeholder::before MENJADI EFEK SPARKLE */
 .scanner-placeholder.active::before {
     content: '';
     position: absolute;
@@ -268,11 +303,10 @@ button {
     height: 100%;
     z-index: 20;
     pointer-events: none;
-    background: radial-gradient(circle at var(--mouse-x, 50%) var(--mouse-y, 50%), 
-                                rgba(255, 255, 255, 0.1) 0%, 
-                                transparent 20%);
-    animation: sparkle-scan 1.5s infinite linear;
-    animation-delay: 0.5s;
+    /* Hanya efek sparkle */
+    background: none;
+    animation: sparkle-scan 2s infinite linear; 
+    animation-delay: 1s; /* Diberi delay agar tidak bersamaan dengan radar */
 }
 
 @keyframes sparkle-scan {
@@ -285,9 +319,6 @@ button {
         opacity: 0;
         transform: scale(0.5) rotate(0deg);
     }
-    20% {
-        opacity: 0.8;
-    }
     50% {
         box-shadow: 
             -10px -10px 0 2px var(--sparkle-color),
@@ -295,7 +326,7 @@ button {
             -5px 20px 0 3px var(--sparkle-color),
             20px -15px 0 1px var(--sparkle-color);
         transform: scale(1) rotate(45deg);
-        opacity: 0.6;
+        opacity: 0.8;
     }
     100% {
         box-shadow: 
@@ -307,6 +338,9 @@ button {
         opacity: 0;
     }
 }
+/* ========================================= */
+/* AKHIR KODE ANIMASI BLUR RADAR BARU */
+/* ========================================= */
 
 
 /* --- 8. MESSAGE DISPLAY --- */
@@ -343,7 +377,7 @@ button {
     
     .header-logo {
         width: 100%; 
-        max-width: 250px; /* Batasi agar tidak terlalu besar di mobile yang lebar */
+        max-width: 250px; 
         max-height: 80px; 
         margin-bottom: 20px;
     }
