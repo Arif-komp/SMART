@@ -16,7 +16,7 @@
 
             <div class="input-group">
                 <label for="lokasi"><i class="fas fa-warehouse"></i> Lokasi Penyimpanan</label>
-                <input type="text" id="lokasi" name="lokasi" placeholder="Contoh: RAK-A01" required>
+                <input type="text" id="lokasi" name="lokasi" placeholder="Masukan Lokasi" required>
             </div>
 
             <div class="input-group barcode-group">
@@ -35,16 +35,15 @@
             </div>
 
             <div class="input-group">
-                <label for="qty"><i class="fas fa-boxes"></i> Kuantitas (QTY)</label>
-                <input type="text" id="qty" name="qty" min="1" placeholder="Masukkan jumlah barang" required>
-            </div>
-
+    <label for="qty"><i class="fas fa-boxes"></i> Jumlah (QTY)</label>
+    <input type="number" id="qty" name="qty" placeholder="Masukkan jumlah" required>
+</div>
             <div class="input-group">
-                <label for="tanggal"><i class="fas fa-calendar-alt"></i> Tanggal Masuk</label>
+                <label for="tanggal"><i class="fas fa-calendar-alt"></i> Tanggal</label>
                 <input type="date" id="tanggal" name="tanggal" value="" required>
             </div>
 
-            <button type="submit" id="saveButton" class="save-btn"><i class="fas fa-save"></i> SIMPAN DATA</button>
+            <button type="submit" id="saveButton" class="save-btn"><i class="fas fa-save"></i> SIMPAN</button>
             <p id="message" class="message"></p>
         </form>
     </div>
