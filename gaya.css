@@ -49,10 +49,13 @@ body {
 /* --- 3. HEADER & JUDUL --- */
 .header-logo {
     display: block;
-    width: 120px; /* Logo sedikit lebih besar */
+    width: 90%; /* Menggunakan 90% dari lebar container untuk fleksibilitas */
+    max-width: 250px; /* Batas maksimum agar tidak terlalu besar di desktop */
     height: auto; /* Biarkan tinggi menyesuaikan agar tidak terdistorsi */
+    max-height: 100px; /* Batas tinggi agar tidak terlalu panjang */
+    object-fit: contain; /* Memastikan gambar sepenuhnya terlihat dalam batasnya */
     margin: 0 auto 25px auto;
-    border-radius: 10px; /* Sudut membulat */
+    border-radius: 10px;
     border: 3px solid var(--primary-color);
     box-shadow: 0 0 15px rgba(0, 121, 107, 0.4);
     filter: drop-shadow(0 5px 10px rgba(0,0,0,0.1));
@@ -255,7 +258,7 @@ button {
 }
 
 /* ========================================= */
-/* ✅ KODE SPARKLE BARU DIMULAI DI SINI */
+/* KODE SPARKLE (Tidak ada perubahan di sini) */
 /* ========================================= */
 
 .scanner-placeholder.active::before {
@@ -265,13 +268,13 @@ button {
     left: 0;
     width: 100%;
     height: 100%;
-    z-index: 20; /* Di atas video, di bawah radar line */
+    z-index: 20;
     pointer-events: none;
     background: radial-gradient(circle at var(--mouse-x, 50%) var(--mouse-y, 50%), 
                                 rgba(255, 255, 255, 0.1) 0%, 
-                                transparent 20%); /* Efek sorotan lembut */
+                                transparent 20%);
     animation: sparkle-scan 1.5s infinite linear;
-    animation-delay: 0.5s; /* Mulai sparkle sedikit setelah radar */
+    animation-delay: 0.5s;
 }
 
 @keyframes sparkle-scan {
@@ -289,10 +292,10 @@ button {
     }
     50% {
         box-shadow: 
-            -10px -10px 0 2px var(--sparkle-color), /* Partikel 1 */
-            15px 5px 0 1px var(--sparkle-color),   /* Partikel 2 */
-            -5px 20px 0 3px var(--sparkle-color),   /* Partikel 3 */
-            20px -15px 0 1px var(--sparkle-color);  /* Partikel 4 */
+            -10px -10px 0 2px var(--sparkle-color),
+            15px 5px 0 1px var(--sparkle-color),
+            -5px 20px 0 3px var(--sparkle-color),
+            20px -15px 0 1px var(--sparkle-color);
         transform: scale(1) rotate(45deg);
         opacity: 0.6;
     }
@@ -307,21 +310,8 @@ button {
     }
 }
 
-/* Untuk menempatkan efek sparkle di sekitar area yang di-scan */
-/* Ini memerlukan sedikit Javascript untuk update custom property --mouse-x, --mouse-y */
-/* Namun untuk animasi umum, kita bisa membuatnya statis atau dengan variasi posisi random */
-
-/* Jika ingin sparkle muncul di posisi random, ini bisa menjadi alternatif */
-/* Alternatif sparkle jika tidak pakai JS untuk posisi mouse: */
-/* Anda bisa menggunakan multiple box-shadow dengan nilai random di keyframes,
-   atau membuat beberapa elemen dengan delay dan posisi berbeda */
-
-/* Untuk kesederhanaan dan agar tidak perlu JS tambahan, kita akan gunakan satu set
-   box-shadow yang bergerak dan memudar */
-
-
 /* ========================================= */
-/* ❌ KODE SPARKLE BARU BERAKHIR DI SINI */
+/* AKHIR KODE SPARKLE */
 /* ========================================= */
 
 
@@ -358,7 +348,9 @@ button {
     }
     
     .header-logo {
-        width: 100px; /* Sedikit lebih kecil di mobile */
+        width: 100%; /* Menggunakan lebar penuh container mobile */
+        max-width: 200px; /* Tapi tetap batasi agar tidak terlalu besar */
+        max-height: 80px; /* Batasi tinggi di mobile juga */
         margin-bottom: 20px;
     }
     
