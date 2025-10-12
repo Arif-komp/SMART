@@ -1,203 +1,240 @@
 /* ========================================= */
 /* FILE: style.css - SMART SWALAYAN */
-/* Desain Responsif, Modern, Gagah, dan Kompak */
+/* Desain Responsif, Modern, Keren, dan Fungsional */
 /* ========================================= */
 
-/* General Reset and Styling */
-* {
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
-    font-family: 'Poppins', sans-serif;
+/* --- 1. DEKLARASI VARIABEL & FONT --- */
+:root {
+    --primary-color: #00796b; /* Teal Dark - Warna Utama */
+    --secondary-color: #ff9800; /* Orange - Warna Aksi/Submit */
+    --danger-color: #f44336; /* Merah - Warna Minus/Bahaya */
+    --text-color: #333;
+    --bg-color: #eceff1; /* Background Abu-abu Muda */
+    --card-bg: #ffffff;
+    --border-radius: 12px;
+    --shadow-heavy: 0 10px 30px rgba(0, 0, 0, 0.15);
+    --shadow-light: 0 4px 10px rgba(0, 0, 0, 0.08);
 }
 
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: 'Poppins', sans-serif;
+}
+
+/* --- 2. BODY & CONTAINER LAYOUT --- */
 body {
-    background-color: #f4f7f6; 
-    display: flex;
-    justify-content: center;
-    align-items: flex-start; 
-    min-height: 100vh;
-    padding: 20px;
+    background-color: var(--bg-color);
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    min-height: 100vh;
+    padding: 20px; /* Padding sisi tetap ada agar tidak terlalu mepet */
+    color: var(--text-color);
 }
 
 .container {
-    background-color: #ffffff;
-    padding: 30px;
-    border-radius: 15px;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1); 
-    width: 100%;
-    max-width: 500px; 
-    margin-top: 20px;
+    background-color: var(--card-bg);
+    padding: 30px;
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow-heavy);
+    width: 100%;
+    max-width: 450px; /* Lebar Ideal agar elegan, tidak terlalu lebar */
+    margin-top: 20px;
+    transition: all 0.3s ease;
 }
 
-/* --- LOGO HEADER STYLING --- */
+/* --- 3. HEADER & JUDUL --- */
 .header-logo {
-    display: block;
-    max-width: 80%; 
-    height: auto; 
-    margin: 0 auto 30px auto; 
-    filter: drop-shadow(0 5px 10px rgba(0,0,0,0.1)); 
-    border-radius: 10px; 
+    display: block;
+    width: 100px; /* Diperbesar sedikit */
+    height: 100px;
+    object-fit: cover;
+    margin: 0 auto 25px auto;
+    border-radius: 50%; /* Membuat logo bulat */
+    border: 4px solid var(--primary-color);
+    box-shadow: 0 0 15px rgba(0, 121, 107, 0.4);
 }
 
-/* --- Input Group Styling --- */
+/* --- 4. INPUT GROUP & FIELD --- */
 .input-group {
-    margin-bottom: 20px;
+    margin-bottom: 20px; /* Jarak antar grup input yang nyaman */
 }
 
 .input-group label {
-    display: block;
-    margin-bottom: 8px;
-    color: #333;
-    font-weight: 600;
-    font-size: 0.95em;
+    display: block;
+    margin-bottom: 8px;
+    color: var(--primary-color);
+    font-weight: 700;
+    font-size: 0.95em;
 }
 
-/* Input Field Styling */
+.input-group label i {
+    margin-right: 5px;
+    color: var(--secondary-color);
+}
+
 input[type="text"],
 input[type="number"],
 input[type="date"] {
-    width: 100%;
-    padding: 12px;
-    border: 1px solid #ccc;
-    border-radius: 8px;
-    font-size: 1em;
-    transition: border-color 0.3s, box-shadow 0.3s;
+    width: 100%;
+    padding: 12px 15px; /* Padding yang lebih baik */
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    font-size: 1em;
+    color: var(--text-color);
+    transition: all 0.3s;
 }
 
 input:focus {
-    border-color: #00796b; 
-    box-shadow: 0 0 0 3px rgba(0, 121, 107, 0.2);
-    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 4px rgba(0, 121, 107, 0.2);
+    background-color: #f7fcfc;
+    outline: none;
 }
 
-/* --- Input Group with Icon (Digunakan untuk Barcode dan QTY) --- */
+/* --- 5. INPUT DENGAN TOMBOL (Barcode & QTY) --- */
 .input-with-icon {
-    display: flex;
-    align-items: center;
+    display: flex;
+    align-items: stretch; /* Memastikan input dan tombol memiliki tinggi yang sama */
 }
 
 .input-with-icon input {
-    flex-grow: 1;
-    /* Reset border radius agar tombol bisa menempel */
-    border-top-right-radius: 0;
-    border-bottom-right-radius: 0;
+    flex-grow: 1;
+    border-radius: 8px 0 0 8px; /* Sudut tumpul hanya di kiri */
+    border-right: none;
 }
 
-/* Style Khusus untuk Input Barcode */
-.barcode-group .input-with-icon input {
-    /* Hanya input barcode yang memiliki tombol scan */
+/* --- 6. TOMBOL (Buttons) --- */
+button {
+    cursor: pointer;
+    border: none;
+    font-weight: 600;
+    transition: background-color 0.3s, transform 0.1s, box-shadow 0.3s;
+    white-space: nowrap;
+    padding: 12px 15px;
+    font-size: 1.0em;
+    min-width: 40px;
 }
 
-/* Style Khusus untuk Input QTY (agar ada ruang untuk tombol minus) */
-.input-group:not(.barcode-group) .input-with-icon input {
-    /* Tidak perlu override, biarkan sama seperti yang di atas */
-}
-
-/* --- Tombol SCAN --- */
 .scan-btn {
-    background-color: #00796b; 
-    color: white;
-    border: none;
-    padding: 12px 15px;
-    border-radius: 0 8px 8px 0;
-    cursor: pointer;
-    transition: background-color 0.3s, transform 0.1s;
-    font-size: 1.0em;
-    font-weight: 600;
-    min-width: 80px; 
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 5px;
+    background-color: var(--primary-color);
+    color: white;
+    border-radius: 0 8px 8px 0;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
 }
 
 .scan-btn:hover {
-    background-color: #004d40;
+    background-color: #004d40;
 }
 
-/* --- Tombol MINUS (BARU) --- */
 .minus-btn {
-    background-color: #ff5722; /* Warna merah/oranye untuk aksi negatif */
-    color: white;
-    border: none;
-    padding: 12px 15px;
-    border-radius: 0 8px 8px 0;
-    cursor: pointer;
-    transition: background-color 0.3s, transform 0.1s;
-    font-size: 1.0em;
-    font-weight: 600;
-    min-width: 50px; /* Ukuran lebih kecil dari tombol SCAN */
+    background-color: var(--danger-color); /* Merah/Oranye */
+    color: white;
+    border-radius: 0 8px 8px 0;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    padding: 12px 18px;
 }
 
 .minus-btn:hover {
-    background-color: #e64a19;
+    background-color: #d32f2f;
 }
 
-.scan-btn:active, .minus-btn:active {
-    transform: scale(0.98);
+.scan-btn:active, .minus-btn:active, .save-btn:active {
+    transform: scale(0.98);
 }
 
+/* Tombol Submit */
+.save-btn {
+    width: 100%;
+    padding: 15px 20px;
+    background-color: var(--secondary-color);
+    color: white;
+    border-radius: 10px;
+    font-size: 1.15em;
+    font-weight: 700;
+    margin-top: 30px;
+    box-shadow: 0 5px 15px rgba(255, 152, 0, 0.4);
+}
 
-/* --- Area Scanner Kamera --- */
+.save-btn:hover {
+    background-color: #fb8c00;
+}
+
+/* --- 7. AREA SCANNER (Kamera & Radar Keren) --- */
 .scanner-placeholder {
-    margin-top: 15px;
-    width: 100%;
-    padding-bottom: 66.66%; 
-    position: relative; 
-    background-color: #e0f2f1;
-    border: 3px solid #004d40; 
-    border-radius: 8px;
-    display: none; 
-    overflow: hidden; 
+    margin-top: 15px;
+    width: 100%;
+    padding-bottom: 60%; /* Rasio aspek 16:10 */
+    position: relative;
+    background-color: #1a1a1a; /* Background Hitam saat non-aktif */
+    border: 3px solid #ccc;
+    border-radius: 10px;
+    display: none;
+    overflow: hidden;
+    transition: border-color 0.3s, background-color 0.3s;
 }
 
 .scanner-placeholder.active {
-    display: block; 
+    display: block;
+    border-color: var(--primary-color);
+    background-color: #000;
 }
 
 .scanner-placeholder p {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    color: #004d40;
-    font-style: italic;
-    font-weight: 500;
-    text-align: center;
-    padding: 10px;
+    color: #aaa;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+    padding: 10px;
+    z-index: 10;
 }
 
 #video-feed {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    object-fit: cover; 
-}
-
-/* ========================================= */
-/* ✅ KODE RADAR BARU DIMULAI DI SINI */
-/* ========================================= */
-
-.scanner-line {
-    /* Garis radar (sebelumnya sudah ada di HTML, hanya perlu CSS) */
     position: absolute;
     top: 0;
     left: 0;
     width: 100%;
-    height: 4px; /* Sedikit lebih tebal */
-    background: #4CAF50; /* Warna hijau terang untuk radar */
-    box-shadow: 0 0 10px rgba(76, 175, 80, 0.8); /* Glow effect */
-    z-index: 50; /* Pastikan di atas video */
-    display: none; /* Sembunyikan default */
+    height: 100%;
+    object-fit: cover;
+    z-index: 5;
 }
 
-/* Tampilkan dan Mulai Animasi Radar saat scanner aktif */
+/* ELEMEN RADAR HIJAU BERANIMASI */
+.scanner-line {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 3px; /* Ketebalan garis radar */
+    background: limegreen; /* Warna hijau neon */
+    box-shadow: 0 0 15px limegreen; /* Glow effect */
+    z-index: 50; 
+    display: none; 
+    transition: transform 0.1s;
+}
+
+/* Kotak Fokus (Viewfinder) */
+.scanner-placeholder.active::after {
+    content: '';
+    position: absolute;
+    width: 90%;
+    height: 80%;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    border: 2px solid rgba(76, 175, 80, 0.5); /* Border hijau transparan */
+    z-index: 10;
+    pointer-events: none;
+}
+
+/* Aktivasi Radar */
 .scanner-placeholder.active .scanner-line {
     display: block;
-    animation: scan-radar 2.5s infinite linear; /* Animasi bergerak lambat */
+    animation: scan-radar 2s infinite linear;
 }
 
 /* Keyframes untuk Animasi Radar */
@@ -206,91 +243,68 @@ input:focus {
         transform: translateY(0);
         opacity: 0.1;
     }
-    10% {
-        opacity: 0.8;
-    }
-    90% {
-        opacity: 0.8;
+    50% {
+        transform: translateY(calc(100% - 3px)); /* Gerak sampai bawah, dikurangi tebal garis */
+        opacity: 1;
     }
     100% {
-        /* Pindah dari 0% ke 100% tinggi scanner container */
-        transform: translateY(100%); 
+        transform: translateY(0);
         opacity: 0.1;
     }
 }
-/* ========================================= */
-/* ❌ KODE RADAR BARU BERAKHIR DI SINI */
-/* ========================================= */
 
-
-/* --- Save Button Styling --- */
-.save-btn {
-    width: 100%;
-    padding: 15px;
-    background-color: #ff9800; 
-    color: white;
-    border: none;
-    border-radius: 8px;
-    font-size: 1.1em;
-    font-weight: 700;
-    cursor: pointer;
-    margin-top: 20px;
-    transition: background-color 0.3s, transform 0.1s;
-    box-shadow: 0 5px 15px rgba(255, 152, 0, 0.3);
-}
-
-.save-btn:hover {
-    background-color: #fb8c00;
-}
-
-/* --- Message Display --- */
+/* --- 8. MESSAGE DISPLAY --- */
 .message {
-    text-align: center;
-    margin-top: 15px;
-    padding: 10px;
-    border-radius: 5px;
-    font-weight: 600;
-    background-color: #e8f5e9; 
-    color: #2e7d32; 
-    border: 1px solid #c8e6c9;
-    opacity: 0;
-    transition: opacity 0.5s;
+    text-align: center;
+    margin-top: 20px;
+    padding: 12px;
+    border-radius: 8px;
+    font-weight: 600;
+    background-color: #e8f5e9;
+    color: #2e7d32;
+    border: 1px solid #c8e6c9;
+    opacity: 0;
+    transition: opacity 0.5s, transform 0.5s;
+    transform: translateY(10px);
 }
 
 .message.show {
-    opacity: 1;
+    opacity: 1;
+    transform: translateY(0);
 }
 
-/* --- Responsive Adjustments (untuk perangkat kecil) --- */
+/* --- 9. RESPONSIVE ADJUSTMENTS --- */
 @media (max-width: 600px) {
-    body {
-        padding: 10px;
-    }
-    .container {
-        padding: 20px;
-        margin-top: 0;
-        box-shadow: none;
-        border-radius: 0;
-    }
+    body {
+        padding: 10px;
+    }
+    .container {
+        padding: 20px;
+        margin-top: 0;
+        border-radius: 0; /* Full screen look on mobile */
+        box-shadow: none;
+    }
+    
+    .header-logo {
+        width: 80px;
+        height: 80px;
+        margin-bottom: 20px;
+    }
+    
+    .input-group {
+        margin-bottom: 15px;
+    }
 
-    .header-logo {
-        max-width: 90%; 
-        margin-bottom: 20px;
-    }
+    input[type="text"],
+    input[type="date"],
+    .scan-btn,
+    .minus-btn {
+        padding: 10px;
+        font-size: 0.95em;
+    }
 
-    input[type="text"],
-    input[type="number"],
-    input[type="date"],
-    .scan-btn,
-    .minus-btn,
-    .save-btn {
-        padding: 10px;
-        font-size: 0.95em;
-    }
-    .scan-btn {
-        min-width: 70px;
-    }
-    .minus-btn {
-        min-width: 40px;
-    }
+    .save-btn {
+        padding: 15px;
+        margin-top: 25px;
+    }
 }
