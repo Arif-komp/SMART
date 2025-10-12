@@ -37,7 +37,7 @@ body {
     height: auto; 
     margin: 0 auto 30px auto; 
     filter: drop-shadow(0 5px 10px rgba(0,0,0,0.1)); 
-    border-radius: 10px; /* Sudut melengkung */
+    border-radius: 10px; 
 }
 
 /* --- Input Group Styling --- */
@@ -71,7 +71,7 @@ input:focus {
     outline: none;
 }
 
-/* --- Barcode Specific Styling --- */
+/* --- Input Group with Icon (Digunakan untuk Barcode dan QTY) --- */
 .input-with-icon {
     display: flex;
     align-items: center;
@@ -79,10 +79,22 @@ input:focus {
 
 .input-with-icon input {
     flex-grow: 1;
+    /* Reset border radius agar tombol bisa menempel */
     border-top-right-radius: 0;
     border-bottom-right-radius: 0;
 }
 
+/* Style Khusus untuk Input Barcode */
+.barcode-group .input-with-icon input {
+    /* Hanya input barcode yang memiliki tombol scan */
+}
+
+/* Style Khusus untuk Input QTY (agar ada ruang untuk tombol minus) */
+.input-group:not(.barcode-group) .input-with-icon input {
+    /* Tidak perlu override, biarkan sama seperti yang di atas */
+}
+
+/* --- Tombol SCAN --- */
 .scan-btn {
     background-color: #00796b; 
     color: white;
@@ -104,21 +116,38 @@ input:focus {
     background-color: #004d40;
 }
 
-.scan-btn:active {
+/* --- Tombol MINUS (BARU) --- */
+.minus-btn {
+    background-color: #ff5722; /* Warna merah/oranye untuk aksi negatif */
+    color: white;
+    border: none;
+    padding: 12px 15px;
+    border-radius: 0 8px 8px 0;
+    cursor: pointer;
+    transition: background-color 0.3s, transform 0.1s;
+    font-size: 1.0em;
+    font-weight: 600;
+    min-width: 50px; /* Ukuran lebih kecil dari tombol SCAN */
+}
+
+.minus-btn:hover {
+    background-color: #e64a19;
+}
+
+.scan-btn:active, .minus-btn:active {
     transform: scale(0.98);
 }
 
-/* --- Area Scanner Kamera (Persegi Panjang Keren) --- */
+
+/* --- Area Scanner Kamera --- */
 .scanner-placeholder {
     margin-top: 15px;
     width: 100%;
-    padding-bottom: 66.66%; /* Rasio Aspek 3:2 */
+    padding-bottom: 66.66%; 
     position: relative; 
-    
     background-color: #e0f2f1;
     border: 3px solid #004d40; 
     border-radius: 8px;
-    
     display: none; 
     overflow: hidden; 
 }
@@ -169,10 +198,6 @@ input:focus {
     background-color: #fb8c00;
 }
 
-.save-btn:active {
-    transform: scale(0.99);
-}
-
 /* --- Message Display --- */
 .message {
     text-align: center;
@@ -212,11 +237,15 @@ input:focus {
     input[type="number"],
     input[type="date"],
     .scan-btn,
+    .minus-btn,
     .save-btn {
         padding: 10px;
         font-size: 0.95em;
     }
     .scan-btn {
         min-width: 70px;
+    }
+    .minus-btn {
+        min-width: 40px;
     }
 }
