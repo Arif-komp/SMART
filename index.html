@@ -1,55 +1,62 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SMART SWALAYAN - Perekaman Barang Masuk</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    
-    <link rel="stylesheet" href="style.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SMART SWALAYAN</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div class="container">
-        <img src="smart.jpg" alt="Logo Smart Swalayan" class="header-logo"> 
-        <form id="inventoryForm">
+    <div class="container">
+        <img src="smart.jpg" alt="Logo Smart Swalayan" class="header-logo"> 
+        <form id="inventoryForm">
 
-            <div class="input-group">
-                <label for="lokasi"><i class="fas fa-warehouse"></i> Lokasi </label>
-                <input type="text" id="lokasi" name="lokasi" placeholder="Input Lokasi" required>
-            </div>
+            <div class="input-group">
+                <label for="lokasi"><i class="fas fa-warehouse"></i> Lokasi </label>
+                <input type="text" id="lokasi" name="lokasi" placeholder="Input Lokasi" required>
+            </div>
 
-            <div class="input-group barcode-group">
-                <label for="barcode"><i class="fas fa-barcode"></i> Barcode Barang</label>
-                <div class="input-with-icon">
-                    <input type="text" id="barcode" name="barcode" placeholder="Scan atau input Barcode" required>
-                    <button type="button" id="scanButton" class="scan-btn" title="Klik untuk Scan Barcode">
-                        <i class="fas fa-camera-retro"></i> SCAN
-                    </button>
-                </div>
-                
-                <div id="scanner-container" class="scanner-placeholder">
-                    <video id="video-feed" style="display: none;" playsinline></video>
-                    <p id="scanner-message">Area Scanner Barcode (Akan menampilkan kamera saat scan aktif)</p>
-                </div>
-            </div>
+            <div class="input-group barcode-group">
+                <label for="barcode"><i class="fas fa-barcode"></i> Barcode Barang</label>
+                <div class="input-with-icon">
+                    <input type="text" id="barcode" name="barcode" placeholder="Scan atau input Barcode" required>
+                    <button type="button" id="scanButton" class="scan-btn" title="Klik untuk Scan Barcode">
+                        <i class="fas fa-camera-retro"></i> SCAN
+                    </button>
+                </div>
+                
+                <div id="scanner-container" class="scanner-placeholder">
+                    <video id="video-feed" style="display: none;" playsinline></video>
+                    <p id="scanner-message">Area Scanner Barcode (Akan menampilkan kamera saat scan aktif)</p>
+                </div>
+            </div>
 
-            <div class="input-group">
-                <label for="qty"><i class="fas fa-boxes"></i> Jumlah </label>
-                <input type="number" id="qty" name="qty" placeholder="Masukkan jumlah barang" required>
-            </div>
+            <div class="input-group">
+                <label for="qty"><i class="fas fa-boxes"></i> Jumlah </label>
+                                <input type="text" 
+                       id="qty" 
+                       name="qty" 
+                       placeholder="Masukkan jumlah barang" 
+                       required
+                       inputmode="decimal"
+                       pattern="^-?\d*$"
+                       style="text-align: right;"> 
+            </div>
 
-            <div class="input-group">
-                <label for="tanggal"><i class="fas fa-calendar-alt"></i> Tanggal</label>
-                <input type="date" id="tanggal" name="tanggal" value="" required>
-            </div>
+            <div class="input-group">
+                <label for="tanggal"><i class="fas fa-calendar-alt"></i> Tanggal</label>
+                <input type="date" id="tanggal" name="tanggal" value="" required>
+            </div>
 
-            <button type="submit" id="saveButton" class="save-btn"><i class="fas fa-save"></i> SIMPAN </button>
-            <p id="message" class="message"></p>
-        </form>
-    </div>
+            <button type="submit" id="saveButton" class="save-btn"><i class="fas fa-save"></i> SIMPAN </button>
+            <p id="message" class="message"></p>
+        </form>
+    </div>
 
-    <script src="https://unpkg.com/@zxing/library@latest"></script> 
-    <script src="script.js"></script>
+    <script src="https://unpkg.com/@zxing/library@latest"></script> 
+    <script src="script.js"></script>
 </body>
 </html>
