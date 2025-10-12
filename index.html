@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SMART SWALAYAN</title>
+    <title>SMART SWALAYAN - Perekaman Barang Masuk</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     
@@ -36,14 +36,20 @@
 
             <div class="input-group">
                 <label for="qty"><i class="fas fa-boxes"></i> Jumlah </label>
-                <input type="text" 
-                       id="qty" 
-                       name="qty" 
-                       placeholder="Masukkan jumlah barang" 
-                       required
-                       inputmode="decimal"
-                       pattern="^-?\d*$"
-            </div>
+                <div class="input-with-icon"> 
+                    <input type="text" 
+                        id="qty" 
+                        name="qty" 
+                        placeholder="Masukkan jumlah barang" 
+                        required
+                        inputmode="decimal"
+                        pattern="^-?\d*$">
+                    
+                    <button type="button" id="minusButton" class="minus-btn" title="Klik untuk Tambah Tanda Minus">
+                        <i class="fas fa-minus"></i>
+                    </button>
+                </div>
+                </div>
 
             <div class="input-group">
                 <label for="tanggal"><i class="fas fa-calendar-alt"></i> Tanggal</label>
