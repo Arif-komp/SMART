@@ -4,7 +4,7 @@
 // =========================================
 
 // --- PENTING: GANTI DENGAN URL APPS SCRIPT ANDA ---
-const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycby0DX_CY7HujzFYIIPZugBNZdiRIMtpodQBne932kyVRd5mpSiRNIitWWjZCCabyD9Z/exec'; 
+const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxYWri_i9Fnsq49enmFqqjR7IL6FLN083DHdSqx2mlT1GhQ_Job-dfYfUhLJfLa21Qt/exec'; 
 // --- AKHIR PENTING ---
 
 document.addEventListener('DOMContentLoaded', () => {
