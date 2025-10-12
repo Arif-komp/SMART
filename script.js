@@ -1,6 +1,5 @@
 // =========================================
 // FILE: script.js - SMART SWALAYAN
-// Sensor Scanning Maksimal dan Optimis UI Reset
 // =========================================
 
 // --- PENTING: GANTI DENGAN URL APPS SCRIPT ANDA ---
@@ -15,6 +14,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const lokasiInput = document.getElementById('lokasi');
     const qtyInput = document.getElementById('qty');
     const scanButton = document.getElementById('scanButton');
+    const minusButton = document.getElementById('minusButton'); // BARU
     const scannerContainer = document.getElementById('scanner-container');
     const videoFeed = document.getElementById('video-feed');
     const scannerMessage = document.getElementById('scanner-message');
@@ -22,7 +22,7 @@ document.addEventListener('DOMContentLoaded', () => {
     
     let isScanning = false;
     
-    // Inisialisasi ZXing Reader dengan opsi sensitivitas tinggi
+    // Inisialisasi ZXing Reader (Kode sisanya sama)
     const hints = new Map();
     hints.set(ZXing.DecodeHintType.POSSIBLE_FORMATS, [
         ZXing.BarcodeFormat.CODE_128,
@@ -58,9 +58,26 @@ document.addEventListener('DOMContentLoaded', () => {
     lokasiInput.focus();
     
     // =========================================
-    // 3. LOGIKA SCANNER BARCODE (ZXing-JS)
+    // 3. LOGIKA TOMBOL MINUS (BARU)
     // =========================================
+    minusButton.addEventListener('click', () => {
+        const value = qtyInput.value;
+        if (value.startsWith('-')) {
+            // Jika sudah ada minus, hilangkan (misalnya: -10 -> 10)
+            qtyInput.value = value.substring(1); 
+        } else {
+            // Jika belum ada minus, tambahkan (misalnya: 10 -> -10)
+            qtyInput.value = '-' + value;
+        }
+        // Fokuskan kembali ke input setelah menambahkan minus
+        qtyInput.focus();
+    });
 
+    // =========================================
+    // 4. LOGIKA SCANNER BARCODE 
+    // =========================================
+    
+    // ... (Kode startScanner dan stopScanner sama seperti sebelumnya) ...
     const stopScanner = () => {
         if (!isScanning) return;
         
@@ -117,8 +134,9 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
+
     // =========================================
-    // 4. LOGIKA PENGIRIMAN FORM (Optimis UI Reset)
+    // 5. LOGIKA PENGIRIMAN FORM (Optimis UI Reset)
     // =========================================
     form.addEventListener('submit', (e) => {
         e.preventDefault();
