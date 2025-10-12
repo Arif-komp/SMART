@@ -14,6 +14,7 @@
     --border-radius: 12px;
     --shadow-heavy: 0 10px 30px rgba(0, 0, 0, 0.15);
     --shadow-light: 0 4px 10px rgba(0, 0, 0, 0.08);
+    --sparkle-color: #ffe082; /* Warna kuning muda untuk sparkle */
 }
 
 * {
@@ -30,7 +31,7 @@ body {
     justify-content: center;
     align-items: flex-start;
     min-height: 100vh;
-    padding: 20px; /* Padding sisi tetap ada agar tidak terlalu mepet */
+    padding: 20px;
     color: var(--text-color);
 }
 
@@ -40,7 +41,7 @@ body {
     border-radius: var(--border-radius);
     box-shadow: var(--shadow-heavy);
     width: 100%;
-    max-width: 450px; /* Lebar Ideal agar elegan, tidak terlalu lebar */
+    max-width: 450px;
     margin-top: 20px;
     transition: all 0.3s ease;
 }
@@ -48,18 +49,18 @@ body {
 /* --- 3. HEADER & JUDUL --- */
 .header-logo {
     display: block;
-    width: 100px; /* Diperbesar sedikit */
-    height: 100px;
-    object-fit: cover;
+    width: 120px; /* Logo sedikit lebih besar */
+    height: auto; /* Biarkan tinggi menyesuaikan agar tidak terdistorsi */
     margin: 0 auto 25px auto;
-    border-radius: 50%; /* Membuat logo bulat */
-    border: 4px solid var(--primary-color);
+    border-radius: 10px; /* Sudut membulat */
+    border: 3px solid var(--primary-color);
     box-shadow: 0 0 15px rgba(0, 121, 107, 0.4);
+    filter: drop-shadow(0 5px 10px rgba(0,0,0,0.1));
 }
 
 /* --- 4. INPUT GROUP & FIELD --- */
 .input-group {
-    margin-bottom: 20px; /* Jarak antar grup input yang nyaman */
+    margin-bottom: 20px;
 }
 
 .input-group label {
@@ -79,7 +80,7 @@ input[type="text"],
 input[type="number"],
 input[type="date"] {
     width: 100%;
-    padding: 12px 15px; /* Padding yang lebih baik */
+    padding: 12px 15px;
     border: 1px solid #ddd;
     border-radius: 8px;
     font-size: 1em;
@@ -97,12 +98,12 @@ input:focus {
 /* --- 5. INPUT DENGAN TOMBOL (Barcode & QTY) --- */
 .input-with-icon {
     display: flex;
-    align-items: stretch; /* Memastikan input dan tombol memiliki tinggi yang sama */
+    align-items: stretch;
 }
 
 .input-with-icon input {
     flex-grow: 1;
-    border-radius: 8px 0 0 8px; /* Sudut tumpul hanya di kiri */
+    border-radius: 8px 0 0 8px;
     border-right: none;
 }
 
@@ -130,7 +131,7 @@ button {
 }
 
 .minus-btn {
-    background-color: var(--danger-color); /* Merah/Oranye */
+    background-color: var(--danger-color);
     color: white;
     border-radius: 0 8px 8px 0;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
@@ -162,13 +163,13 @@ button {
     background-color: #fb8c00;
 }
 
-/* --- 7. AREA SCANNER (Kamera & Radar Keren) --- */
+/* --- 7. AREA SCANNER (Kamera, Radar & Sparkle Keren) --- */
 .scanner-placeholder {
     margin-top: 15px;
     width: 100%;
     padding-bottom: 60%; /* Rasio aspek 16:10 */
     position: relative;
-    background-color: #1a1a1a; /* Background Hitam saat non-aktif */
+    background-color: #1a1a1a;
     border: 3px solid #ccc;
     border-radius: 10px;
     display: none;
@@ -209,9 +210,9 @@ button {
     top: 0;
     left: 0;
     width: 100%;
-    height: 3px; /* Ketebalan garis radar */
-    background: limegreen; /* Warna hijau neon */
-    box-shadow: 0 0 15px limegreen; /* Glow effect */
+    height: 3px;
+    background: limegreen;
+    box-shadow: 0 0 15px limegreen;
     z-index: 50; 
     display: none; 
     transition: transform 0.1s;
@@ -226,7 +227,7 @@ button {
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    border: 2px solid rgba(76, 175, 80, 0.5); /* Border hijau transparan */
+    border: 2px solid rgba(76, 175, 80, 0.5);
     z-index: 10;
     pointer-events: none;
 }
@@ -244,7 +245,7 @@ button {
         opacity: 0.1;
     }
     50% {
-        transform: translateY(calc(100% - 3px)); /* Gerak sampai bawah, dikurangi tebal garis */
+        transform: translateY(calc(100% - 3px));
         opacity: 1;
     }
     100% {
@@ -252,6 +253,77 @@ button {
         opacity: 0.1;
     }
 }
+
+/* ========================================= */
+/* ✅ KODE SPARKLE BARU DIMULAI DI SINI */
+/* ========================================= */
+
+.scanner-placeholder.active::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 20; /* Di atas video, di bawah radar line */
+    pointer-events: none;
+    background: radial-gradient(circle at var(--mouse-x, 50%) var(--mouse-y, 50%), 
+                                rgba(255, 255, 255, 0.1) 0%, 
+                                transparent 20%); /* Efek sorotan lembut */
+    animation: sparkle-scan 1.5s infinite linear;
+    animation-delay: 0.5s; /* Mulai sparkle sedikit setelah radar */
+}
+
+@keyframes sparkle-scan {
+    0% {
+        box-shadow: 
+            0 0 0 0px var(--sparkle-color),
+            0 0 0 0px var(--sparkle-color),
+            0 0 0 0px var(--sparkle-color),
+            0 0 0 0px var(--sparkle-color);
+        opacity: 0;
+        transform: scale(0.5) rotate(0deg);
+    }
+    20% {
+        opacity: 0.8;
+    }
+    50% {
+        box-shadow: 
+            -10px -10px 0 2px var(--sparkle-color), /* Partikel 1 */
+            15px 5px 0 1px var(--sparkle-color),   /* Partikel 2 */
+            -5px 20px 0 3px var(--sparkle-color),   /* Partikel 3 */
+            20px -15px 0 1px var(--sparkle-color);  /* Partikel 4 */
+        transform: scale(1) rotate(45deg);
+        opacity: 0.6;
+    }
+    100% {
+        box-shadow: 
+            -20px -20px 0 0px transparent,
+            30px 10px 0 0px transparent,
+            -10px 40px 0 0px transparent,
+            40px -30px 0 0px transparent;
+        transform: scale(0) rotate(90deg);
+        opacity: 0;
+    }
+}
+
+/* Untuk menempatkan efek sparkle di sekitar area yang di-scan */
+/* Ini memerlukan sedikit Javascript untuk update custom property --mouse-x, --mouse-y */
+/* Namun untuk animasi umum, kita bisa membuatnya statis atau dengan variasi posisi random */
+
+/* Jika ingin sparkle muncul di posisi random, ini bisa menjadi alternatif */
+/* Alternatif sparkle jika tidak pakai JS untuk posisi mouse: */
+/* Anda bisa menggunakan multiple box-shadow dengan nilai random di keyframes,
+   atau membuat beberapa elemen dengan delay dan posisi berbeda */
+
+/* Untuk kesederhanaan dan agar tidak perlu JS tambahan, kita akan gunakan satu set
+   box-shadow yang bergerak dan memudar */
+
+
+/* ========================================= */
+/* ❌ KODE SPARKLE BARU BERAKHIR DI SINI */
+/* ========================================= */
+
 
 /* --- 8. MESSAGE DISPLAY --- */
 .message {
@@ -281,13 +353,12 @@ button {
     .container {
         padding: 20px;
         margin-top: 0;
-        border-radius: 0; /* Full screen look on mobile */
+        border-radius: 0;
         box-shadow: none;
     }
     
     .header-logo {
-        width: 80px;
-        height: 80px;
+        width: 100px; /* Sedikit lebih kecil di mobile */
         margin-bottom: 20px;
     }
     
