@@ -1,6 +1,5 @@
 /* ========================================= */
 /* FILE: style.css - SMART SWALAYAN */
-/* Desain Responsif, Modern, Gagah, dan Kompak */
 /* ========================================= */
 
 /* General Reset and Styling */
@@ -30,24 +29,19 @@ body {
     margin-top: 20px;
 }
 
-/* --- LOGO HEADER STYLING --- */
+/* --- LOGO HEADER STYLING (Perubahan di sini) --- */
 .header-logo {
-    display: block; /* Agar bisa pakai margin auto untuk tengah */
-    max-width: 80%; /* Batasi lebar agar tidak terlalu besar */
-    height: auto; /* Jaga rasio aspek */
-    margin: 0 auto 30px auto; /* Tengah dan beri jarak bawah */
-    filter: drop-shadow(0 5px 10px rgba(0,0,0,0.1)); /* Efek shadow lembut */
+    display: block; 
+    max-width: 80%; 
+    height: auto; 
+    margin: 0 auto 30px auto; 
+    filter: drop-shadow(0 5px 10px rgba(0,0,0,0.1)); 
+    /* --- PERUBAHAN BARU: Membuat sudut gambar melengkung --- */
+    border-radius: 10px; /* Atur nilai (misalnya 10px) untuk kebulatan sudut */
+    /* Opsional: border: 1px solid #ddd; jika ingin ada garis tepi tipis */
 }
 
 /* H1 disembunyikan atau dihapus, sehingga style ini tidak lagi relevan */
-/* h1 {
-    color: #004d40; 
-    text-align: center;
-    margin-bottom: 30px;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-} */
 
 /* --- Input Group Styling --- */
 .input-group {
@@ -213,7 +207,7 @@ input:focus {
     }
 
     .header-logo {
-        max-width: 90%; /* Sedikit lebih besar di mobile */
+        max-width: 90%; 
         margin-bottom: 20px;
     }
 
