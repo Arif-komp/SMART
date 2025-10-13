@@ -1,0 +1,707 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SMART SWALAYAN - Perekaman Barang Masuk</title>
+    <!-- Google Font: Poppins -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <!-- ZXing Library for Barcode Scanning (Digunakan oleh kode.js) -->
+    <script src="https://unpkg.com/@zxing/library@latest"></script>
+    
+    <style>
+        /* ========================================= */
+        /* CSS: GAYA SMART SWALAYAN (Konsolidasi dari style.css) */
+        /* ========================================= */
+
+        /* --- START: 1. DEKLARASI VARIABEL & FONT --- */
+        :root {
+            --primary-color: #00796b; /* Teal Dark - Warna Utama */
+            --secondary-color: #ff9800; /* Orange - Warna Aksi/Submit */
+            --danger-color: #f44336; /* Merah - Warna Minus/Bahaya */
+            --text-color: #333;
+            --bg-color: #eceff1; /* Background Abu-abu Muda */
+            --card-bg: #ffffff;
+            --border-radius: 12px;
+            --shadow-heavy: 0 10px 30px rgba(0, 0, 0, 0.15);
+            --shadow-light: 0 4px 10px rgba(0, 0, 0, 0.08);
+            --sparkle-color: #ffe082; /* Warna kuning muda untuk sparkle */
+            --scan-glow-color: #00ff00; /* Warna hijau neon untuk garis scan */
+
+            /* Variabel Sparkle dinamis, diatur oleh JavaScript */
+            --mouse-x: 50%;
+            --mouse-y: 50%;
+        }
+        
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Poppins', sans-serif;
+        }
+        /* --- END: 1. DEKLARASI VARIABEL & FONT --- */
+        
+        /* ------------------------------------------- */
+        
+        /* --- START: 2. BODY & CONTAINER LAYOUT --- */
+        body {
+            background-color: var(--bg-color);
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            min-height: 100vh;
+            padding: 20px;
+            color: var(--text-color);
+        }
+        
+        .container {
+            background-color: var(--card-bg);
+            padding: 30px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-heavy);
+            width: 100%;
+            max-width: 450px;
+            margin-top: 20px;
+            transition: all 0.3s ease;
+        }
+        /* --- END: 2. BODY & CONTAINER LAYOUT --- */
+        
+        /* ------------------------------------------- */
+        
+        /* --- START: 3. HEADER & LOGO --- */
+        .header-logo {
+            display: block;
+            width: auto;
+            max-width: 100%;
+            height: auto;
+            max-height: 90px;
+            object-fit: contain;
+            margin: 0 auto 25px auto;
+            border-radius: 10px;
+            border: 3px solid var(--primary-color);
+            box-shadow: 0 0 15px rgba(0, 121, 107, 0.4);
+            filter: drop-shadow(0 5px 10px rgba(0,0,0,0.1));
+        }
+        /* --- END: 3. HEADER & LOGO --- */
+        
+        /* ------------------------------------------- */
+        
+        /* --- START: 4. INPUT GROUP & FIELD UMUM --- */
+        .input-group {
+            margin-bottom: 20px;
+        }
+        
+        .input-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: var(--primary-color);
+            font-weight: 700;
+            font-size: 0.95em;
+        }
+        
+        .input-group label i {
+            margin-right: 5px;
+            color: var(--secondary-color);
+        }
+        
+        input[type="text"],
+        input[type="number"],
+        input[type="date"] {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 1em;
+            color: var(--text-color);
+            transition: all 0.3s;
+        }
+        
+        input:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 4px rgba(0, 121, 107, 0.2);
+            background-color: #f7fcfc;
+            outline: none;
+        }
+        /* --- END: 4. INPUT GROUP & FIELD UMUM --- */
+        
+        /* ------------------------------------------- */
+        
+        /* --- START: 5. INPUT DENGAN TOMBOL (Barcode & QTY) --- */
+        .input-with-icon {
+            display: flex;
+            align-items: stretch;
+        }
+        
+        .input-with-icon input {
+            flex-grow: 1;
+            /* Hapus border radius di kanan untuk input yang diapit tombol */
+            border-radius: 8px 0 0 8px; 
+            border-right: none;
+        }
+        /* --- END: 5. INPUT DENGAN TOMBOL (Barcode & QTY) --- */
+        
+        /* ------------------------------------------- */
+        
+        /* --- START: 6. TOMBOL (Buttons) --- */
+        button {
+            cursor: pointer;
+            border: none;
+            font-weight: 600;
+            transition: background-color 0.3s, transform 0.1s, box-shadow 0.3s;
+            white-space: nowrap;
+            padding: 12px 15px;
+            font-size: 1.0em;
+            min-width: 40px;
+        }
+
+        .scan-btn, .minus-btn {
+            color: white;
+            border-radius: 0 8px 8px 0;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+            min-width: 80px; /* Lebar minimum untuk tombol SCAN */
+        }
+        
+        .scan-btn {
+            background-color: var(--primary-color);
+        }
+        
+        .scan-btn:hover {
+            background-color: #004d40;
+        }
+        
+        .minus-btn {
+            background-color: var(--danger-color);
+            padding: 12px 18px;
+            min-width: 50px; /* Lebar minimum untuk tombol Minus */
+        }
+        
+        .minus-btn:hover {
+            background-color: #d32f2f;
+        }
+        
+        .scan-btn:active, .minus-btn:active, .save-btn:active {
+            transform: scale(0.98);
+        }
+        
+        /* Tombol Submit */
+        .save-btn {
+            width: 100%;
+            padding: 15px 20px;
+            background-color: var(--secondary-color);
+            color: white;
+            border-radius: 10px;
+            font-size: 1.15em;
+            font-weight: 700;
+            margin-top: 30px;
+            box-shadow: 0 5px 15px rgba(255, 152, 0, 0.4);
+        }
+        
+        .save-btn:hover {
+            background-color: #fb8c00;
+        }
+        /* --- END: 6. TOMBOL (Buttons) --- */
+        
+        /* ------------------------------------------- */
+        
+        /* --- START: 7. AREA SCANNER (Kamera & Radar Line) --- */
+        .scanner-placeholder {
+            margin-top: 15px;
+            width: 100%;
+            padding-bottom: 60%; /* Rasio aspek 16:10 */
+            position: relative;
+            background-color: #1a1a1a;
+            border: 3px solid #ccc;
+            border-radius: 10px;
+            display: none; /* Default tersembunyi */
+            overflow: hidden;
+            transition: border-color 0.3s, background-color 0.3s;
+        }
+
+        /* --- AKTIFKAN SCANNER (Saat class 'active' ditambahkan) --- */
+        .scanner-placeholder.active {
+            display: block;
+            border-color: var(--primary-color);
+            background-color: #000;
+            /* Efek SPARKLE/GLOW yang mengikuti mouse/touch */
+            background-image: radial-gradient(
+                circle at var(--mouse-x, 50%) var(--mouse-y, 50%),
+                var(--sparkle-color) 0%,
+                rgba(0, 0, 0, 0) 25%
+            );
+        }
+        
+        .scanner-placeholder p {
+            color: #aaa;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            padding: 10px;
+            z-index: 10;
+        }
+        
+        #video-feed {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            z-index: 5;
+            /* Perubahan: video feed disembunyikan/ditampilkan oleh JS, bukan hanya melalui 'display: none' di awal */
+        }
+        
+        /* ELEMEN RADAR HIJAU BERANIMASI (Neon Line) */
+        .scanner-line {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 5px; 
+            background: linear-gradient(to right,
+                transparent 0%,
+                var(--scan-glow-color) 30%,
+                var(--scan-glow-color) 70%,
+                transparent 100%);
+            box-shadow: 0 0 10px 5px rgba(0, 255, 0, 0.5), 
+                0 0 20px 8px rgba(0, 255, 0, 0.2);
+            z-index: 50;
+            display: none; /* Hanya tampil saat .active */
+        }
+        
+        /* Kotak Fokus (Viewfinder) */
+        .scanner-placeholder.active::after {
+            content: '';
+            position: absolute;
+            width: 90%;
+            height: 80%;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            border: 2px solid rgba(76, 175, 80, 0.5);
+            z-index: 10;
+            pointer-events: none;
+        }
+        
+        /* Aktivasi Radar & Animasi */
+        .scanner-placeholder.active .scanner-line {
+            display: block;
+            animation: scan-radar 2s infinite linear;
+        }
+        
+        /* Keyframes untuk Animasi Radar (Garis Bergerak Naik-Turun) */
+        @keyframes scan-radar {
+            0% {
+                transform: translateY(0);
+                opacity: 0.1;
+            }
+            55% {
+                transform: translateY(calc(100% - 5px)); 
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(0);
+                opacity: 0.1;
+            }
+        }
+        /* --- END: 7. AREA SCANNER (Kamera & Radar Line) --- */
+        
+        /* ------------------------------------------- */
+        
+        /* --- START: 8. MESSAGE DISPLAY --- */
+        .message {
+            text-align: center;
+            margin-top: 20px;
+            padding: 12px;
+            border-radius: 8px;
+            font-weight: 600;
+            /* Default: Success look */
+            background-color: #e8f5e9;
+            color: #2e7d32;
+            border: 1px solid #c8e6c9; 
+            opacity: 0;
+            transition: opacity 0.5s, transform 0.5s;
+            transform: translateY(10px);
+        }
+        
+        /* Tambahkan kelas untuk Error, jika dibutuhkan oleh JS */
+        .message.error {
+            background-color: #fce4e4; /* Light red */
+            color: #c62828;      /* Dark red */
+            border-color: #ef9a9a;
+        }
+
+        .message.loading {
+             background-color: #fffde7; /* Light yellow */
+            color: #fbc02d;      /* Dark yellow */
+            border-color: #fff9c4;
+        }
+        
+        .message.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        /* --- END: 8. MESSAGE DISPLAY --- */
+        
+        /* ------------------------------------------- */
+        
+        /* --- START: 9. RESPONSIVE ADJUSTMENTS (@media) --- */
+        @media (max-width: 600px) {
+            body {
+                padding: 10px;
+            }
+            .container {
+                padding: 20px;
+                margin-top: 0;
+                border-radius: 0;
+                box-shadow: none;
+            }
+        
+            .header-logo {
+                max-width: 250px; 
+                max-height: 80px;
+                margin-bottom: 20px;
+            }
+        
+            .input-group {
+                margin-bottom: 15px;
+            }
+        
+            input[type="text"],
+            input[type="date"],
+            .scan-btn,
+            .minus-btn {
+                padding: 10px;
+                font-size: 0.95em;
+            }
+        
+            .save-btn {
+                padding: 15px;
+                margin-top: 25px;
+            }
+        }
+        /* --- END: 9. RESPONSIVE ADJUSTMENTS (@media) --- */
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Logo Header -->
+        <img src="smart.jpg" alt="Logo Smart Swalayan" class="header-logo">
+        
+        <form id="inventoryForm">
+
+            <div class="input-group">
+                <label for="lokasi"><i class="fas fa-warehouse"></i> Lokasi </label>
+                <input type="text" id="lokasi" name="lokasi" placeholder="Input Lokasi" required>
+            </div>
+
+            <!-- Barcode Group -->
+            <div class="input-group barcode-group">
+                <label for="barcode"><i class="fas fa-barcode"></i> Barcode Barang</label>
+                <div class="input-with-icon">
+                    <input type="text" id="barcode" name="barcode" placeholder="Scan atau input Barcode" required>
+                    <button type="button" id="scanButton" class="scan-btn" title="Klik untuk Scan Barcode">
+                        <i class="fas fa-camera-retro"></i> SCAN
+                    </button>
+                </div>
+                
+                <!-- Area Scanner Barcode (TERMASUK VIDEO FEED & RADAR LINE) -->
+                <div id="scanner-container" class="scanner-placeholder">
+                    <video id="video-feed" playsinline></video>
+                    <!-- ELEMEN RADAR/SCANNER LINE BARU -->
+                    <div class="scanner-line"></div> 
+                    <p id="scanner-message">Area Scanner Barcode (Akan menampilkan kamera saat scan aktif)</p>
+                </div>
+            </div>
+
+            <!-- QTY Group -->
+            <div class="input-group">
+                <label for="qty"><i class="fas fa-boxes"></i> Jumlah </label>
+                <div class="input-with-icon"> 
+                    <input type="text" 
+                        id="qty" 
+                        name="qty" 
+                        placeholder="Masukkan jumlah barang" 
+                        required
+                        inputmode="decimal"
+                        pattern="^-?\d*$">
+                        
+                    <button type="button" id="minusButton" class="minus-btn" title="Klik untuk Tambah Tanda Minus">
+                        <i class="fas fa-minus"></i>
+                    </button>
+                </div>
+            </div>
+
+            <div class="input-group">
+                <label for="tanggal"><i class="fas fa-calendar-alt"></i> Tanggal</label>
+                <input type="date" id="tanggal" name="tanggal" value="" required>
+            </div>
+
+            <button type="submit" id="saveButton" class="save-btn"><i class="fas fa-save"></i> SIMPAN </button>
+            <p id="message" class="message"></p>
+        </form>
+    </div>
+
+    <script>
+        // =========================================
+        // JAVASCRIPT LOGIC - SMART SWALAYAN (Kode ZXing)
+        // =========================================
+        
+        // --- PENTING: GANTI DENGAN URL APPS SCRIPT ANDA ---
+        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxYWri_i9Fnsq49enmFqqjR7IL6FLN083DHdSqx2mlT1GhQ_Job-dfYfUhLJfLa21Qt/exec'; 
+        // --- AKHIR PENTING ---
+
+        document.addEventListener('DOMContentLoaded', () => {
+            // 1. Inisialisasi Variabel DOM
+            const form = document.getElementById('inventoryForm');
+            const tanggalInput = document.getElementById('tanggal');
+            const barcodeInput = document.getElementById('barcode');
+            const lokasiInput = document.getElementById('lokasi');
+            const qtyInput = document.getElementById('qty');
+            const scanButton = document.getElementById('scanButton');
+            const minusButton = document.getElementById('minusButton');
+            const scannerContainer = document.getElementById('scanner-container');
+            const videoFeed = document.getElementById('video-feed');
+            const scannerMessage = document.getElementById('scanner-message');
+            const messageElement = document.getElementById('message');
+            const scannerLine = document.querySelector('.scanner-line'); // Ambil elemen radar line
+            
+            let isScanning = false;
+            
+            // Inisialisasi ZXing Reader
+            const hints = new Map();
+            hints.set(ZXing.DecodeHintType.POSSIBLE_FORMATS, [
+                ZXing.BarcodeFormat.CODE_128,
+                ZXing.BarcodeFormat.QR_CODE,
+                ZXing.BarcodeFormat.EAN_13,
+                ZXing.BarcodeFormat.EAN_8,
+                ZXing.BarcodeFormat.CODE_39,
+                ZXing.BarcodeFormat.ITF,
+                ZXing.BarcodeFormat.AZTEC,
+                ZXing.BarcodeFormat.DATA_MATRIX
+            ]);
+            
+            // Konfigurasi Video ZXing
+            const controls = {
+                video: {
+                    width: { ideal: 1280 },
+                    height: { ideal: 720 },
+                    facingMode: 'environment'
+                }
+            };
+
+            const codeReader = new ZXing.BrowserMultiFormatReader(hints);
+
+            /**
+             * Menampilkan pesan status di UI dengan styling dinamis.
+             * @param {string} text - Teks pesan
+             * @param {string} type - 'success', 'error', atau 'loading'
+             */
+            function displayMessage(text, type = 'success') {
+                messageElement.textContent = text;
+                messageElement.classList.remove('show', 'error', 'loading');
+                
+                if (type === 'error') {
+                    messageElement.classList.add('error');
+                } else if (type === 'loading') {
+                    messageElement.classList.add('loading');
+                }
+
+                setTimeout(() => {
+                    messageElement.classList.add('show');
+                }, 10); 
+
+                if (type !== 'loading') {
+                    // Hilangkan pesan (kecuali loading) setelah 5 detik
+                    setTimeout(() => {
+                        messageElement.classList.remove('show');
+                    }, 5000);
+                }
+            }
+
+
+            // 2. Set Tanggal Otomatis
+            const setTodayDate = () => {
+                const today = new Date();
+                const yyyy = today.getFullYear();
+                const mm = String(today.getMonth() + 1).padStart(2, '0');
+                const dd = String(today.getDate()).padStart(2, '0');
+                tanggalInput.value = `${yyyy}-${mm}-${dd}`;
+            };
+
+            setTodayDate();
+            lokasiInput.focus();
+            
+            // =========================================
+            // 3. LOGIKA TOMBOL MINUS 
+            // =========================================
+            minusButton.addEventListener('click', () => {
+                const value = qtyInput.value.trim();
+                
+                if (!value) {
+                    qtyInput.value = '-1';
+                } else if (value.startsWith('-')) {
+                    // Jika sudah minus, hilangkan minusnya
+                    qtyInput.value = value.substring(1); 
+                } else {
+                    // Jika positif, tambahkan minus
+                    qtyInput.value = '-' + value;
+                }
+                qtyInput.focus();
+            });
+
+            // =========================================
+            // 4A. FUNGSI SPARKLE DINAMIS (Menggunakan CSS Variables)
+            // =========================================
+            const updateSparklePosition = (e) => {
+                if (!isScanning) return;
+                
+                let clientX, clientY;
+
+                // Ambil posisi dari mouse atau sentuhan (touch)
+                if (e.touches && e.touches.length > 0) {
+                    clientX = e.touches[0].clientX;
+                    clientY = e.touches[0].clientY;
+                } else {
+                    clientX = e.clientX;
+                    clientY = e.clientY;
+                }
+
+                // Hitung posisi relatif terhadap container scanner
+                const rect = scannerContainer.getBoundingClientRect();
+                const x = (clientX - rect.left) / rect.width * 100;
+                const y = (clientY - rect.top) / rect.height * 100;
+
+                // Atur custom property CSS
+                scannerContainer.style.setProperty('--mouse-x', `${x}%`);
+                scannerContainer.style.setProperty('--mouse-y', `${y}%`);
+            };
+
+            // Tambahkan event listener untuk mouse dan touch saat scanner aktif
+            scannerContainer.addEventListener('mousemove', updateSparklePosition);
+            scannerContainer.addEventListener('touchmove', updateSparklePosition);
+            
+            // =========================================
+            // 4B. LOGIKA SCANNER BARCODE (ZXing)
+            // =========================================
+            
+            const stopScanner = () => {
+                if (!isScanning) return;
+                
+                isScanning = false;
+                codeReader.reset();
+                scannerContainer.classList.remove('active');
+                videoFeed.style.display = 'none';
+                scannerMessage.style.display = 'block';
+                scanButton.innerHTML = '<i class="fas fa-camera-retro"></i> SCAN';
+                displayMessage('Scanning dihentikan.', 'error'); // Tampilkan pesan bahwa scan dihentikan
+            };
+
+            const startScanner = () => {
+                isScanning = true;
+                scannerContainer.classList.add('active');
+                videoFeed.style.display = 'block';
+                scannerMessage.style.display = 'none';
+                scanButton.innerHTML = '<i class="fas fa-stop-circle"></i> STOP';
+                displayMessage('Mengaktifkan kamera... Arahkan ke barcode.', 'loading');
+                
+                codeReader.decodeFromVideoDevice(
+                    undefined, 
+                    'video-feed', 
+                    (result, error) => {
+                        if (result) {
+                            const scannedCode = result.text;
+                            barcodeInput.value = scannedCode;
+                            
+                            stopScanner(); 
+                            
+                            displayMessage(`✅ Barcode ${scannedCode} berhasil di-scan!`);
+                            
+                            qtyInput.focus();
+
+                        } else if (error && !(error instanceof ZXing.NotFoundException)) {
+                            console.error('Scan Error:', error);
+                        }
+                    },
+                    controls
+                ).catch(err => {
+                    console.error('Kamera gagal diakses:', err);
+                    stopScanner();
+                    displayMessage('❌ Gagal mengakses kamera. Pastikan browser memiliki izin HTTPS.', 'error');
+                });
+            };
+
+            scanButton.addEventListener('click', () => {
+                if (isScanning) {
+                    stopScanner();
+                } else {
+                    startScanner();
+                }
+            });
+
+
+            // =========================================
+            // 5. LOGIKA PENGIRIMAN FORM (Optimis UI Reset)
+            // =========================================
+            form.addEventListener('submit', (e) => {
+                e.preventDefault();
+
+                if (isScanning) {
+                    stopScanner();
+                }
+
+                const data = {
+                    lokasi: lokasiInput.value,
+                    barcode: barcodeInput.value,
+                    qty: qtyInput.value,
+                    tanggal: tanggalInput.value
+                };
+
+                if (!data.lokasi || !data.barcode || !data.qty) {
+                    displayMessage('❌ Harap isi semua kolom wajib.', 'error');
+                    return;
+                }
+
+                // --- OPTIMIS UI: RESET FORM INSTAN SEBELUM FETCH ---
+                displayMessage('⏳ Data sedang dikirim...', 'loading');
+                
+                // 1. Reset Form dan Fokus Instan
+                form.reset(); 
+                setTodayDate();
+                lokasiInput.focus();
+                
+                // 2. Siapkan data untuk pengiriman
+                const formData = new URLSearchParams(data).toString();
+                
+                // 3. Lakukan pengiriman data di latar belakang
+                fetch(SCRIPT_URL, {
+                    method: 'POST',
+                    mode: 'no-cors', 
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    body: formData, 
+                })
+                .then(() => {
+                    // Walaupun menggunakan no-cors, kita anggap sukses karena form sudah direset
+                    displayMessage('✅ Data berhasil disimpan (di latar belakang)!');
+                })
+                .catch(error => {
+                    console.error('Error saat fetch:', error);
+                    displayMessage('❌ Gagal mengirim data. Cek URL Apps Script atau koneksi.', 'error');
+                });
+            });
+
+            // Pastikan ZXing dihentikan jika jendela ditutup 
+            window.addEventListener('beforeunload', () => {
+                 if (isScanning) {
+                    codeReader.reset();
+                }
+            });
+        });
+    </script>
+</body>
+</html>
