@@ -240,7 +240,7 @@ display: none;
 transition: transform 0.1s;
 }
 
-/* Kotak Fokus (Viewfinder) */
+/* Kotak Fokus (Viewfinder) 
 .scanner-placeholder.active::after {
 content: '';
 position: absolute;
@@ -253,7 +253,7 @@ border: 2px solid rgba(76, 175, 80, 0.5);
 z-index: 10;
 pointer-events: none;
 }
-
+*/
 /* Aktivasi Radar */
 .scanner-placeholder.active .scanner-line {
 display: block;
