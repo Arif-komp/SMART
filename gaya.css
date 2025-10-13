@@ -226,21 +226,27 @@ object-fit: cover;
 z-index: 5;
 }
 
-/* ELEMEN RADAR HIJAU BERANIMASI /
+/* ELEMEN RADAR HIJAU BERANIMASI (Efek Alfagift: Gradien Sorotan Neon) /
 .scanner-line {
 position: absolute;
 top: 0;
 left: 0;
 width: 100%;
-height: 3px;
-background: var(--scan-glow-color); / Menggunakan variabel glow */
-box-shadow: 0 0 15px var(--scan-glow-color);
+height: 5px; / Dibuat lebih tebal untuk efek sorot yang lebih jelas /
+/ Mengubah background menjadi gradient agar terlihat seperti sorotan yang memudar di tepi, seperti scanner modern /
+background: linear-gradient(to right,
+transparent 0%,
+var(--scan-glow-color) 30%,
+var(--scan-glow-color) 70%,
+transparent 100%);
+box-shadow: 0 0 10px 5px rgba(0, 255, 0, 0.5), / Efek glow neon */
+0 0 20px 8px rgba(0, 255, 0, 0.2);
 z-index: 50;
 display: none;
 transition: transform 0.1s;
 }
 
-/* Kotak Fokus (Viewfinder) 
+/* Kotak Fokus (Viewfinder) */
 .scanner-placeholder.active::after {
 content: '';
 position: absolute;
@@ -253,21 +259,21 @@ border: 2px solid rgba(76, 175, 80, 0.5);
 z-index: 10;
 pointer-events: none;
 }
-*/
+
 /* Aktivasi Radar */
 .scanner-placeholder.active .scanner-line {
 display: block;
 animation: scan-radar 2s infinite linear;
 }
 
-/* Keyframes untuk Animasi Radar (Garis Bergerak Naik-Turun) */
+/* Keyframes untuk Animasi Radar (Garis Bergerak Naik-Turun) /
 @keyframes scan-radar {
 0% {
 transform: translateY(0);
 opacity: 0.1;
 }
 50% {
-transform: translateY(calc(100% - 3px));
+transform: translateY(calc(100% - 5px)); / Diubah menyesuaikan height: 5px */
 opacity: 1;
 }
 100% {
@@ -317,28 +323,27 @@ box-shadow: none;
 }
 
 .header-logo {
-    width: 100%; 
-    max-width: 250px; /* FIX: Lebih fleksibel di mobile */
-    max-height: 80px; 
-    margin-bottom: 20px;
+width: 100%;
+max-width: 250px; /* FIX: Lebih fleksibel di mobile */
+max-height: 80px;
+margin-bottom: 20px;
 }
 
 .input-group {
-    margin-bottom: 15px;
+margin-bottom: 15px;
 }
 
 input[type="text"],
 input[type="date"],
 .scan-btn,
 .minus-btn {
-    padding: 10px;
-    font-size: 0.95em;
+padding: 10px;
+font-size: 0.95em;
 }
 
 .save-btn {
-    padding: 15px;
-    margin-top: 25px;
+padding: 15px;
+margin-top: 25px;
 }
-
 }
 /* --- END: 9. RESPONSIVE ADJUSTMENTS (@media) --- */
