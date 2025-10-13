@@ -13,7 +13,7 @@
     
     <style>
         /* ========================================= */
-        /* CSS: GAYA SMART SWALAYAN (Konsolidasi dari style.css) */
+        /* CSS: GAYA SMART SWALAYAN (Konsolidasi) */
         /* ========================================= */
 
         /* --- START: 1. DEKLARASI VARIABEL & FONT --- */
@@ -41,6 +41,7 @@
             padding: 0;
             font-family: 'Poppins', sans-serif;
         }
+        
         /* --- END: 1. DEKLARASI VARIABEL & FONT --- */
         
         /* ------------------------------------------- */
@@ -66,6 +67,7 @@
             margin-top: 20px;
             transition: all 0.3s ease;
         }
+        
         /* --- END: 2. BODY & CONTAINER LAYOUT --- */
         
         /* ------------------------------------------- */
@@ -84,6 +86,7 @@
             box-shadow: 0 0 15px rgba(0, 121, 107, 0.4);
             filter: drop-shadow(0 5px 10px rgba(0,0,0,0.1));
         }
+        
         /* --- END: 3. HEADER & LOGO --- */
         
         /* ------------------------------------------- */
@@ -124,6 +127,7 @@
             background-color: #f7fcfc;
             outline: none;
         }
+        
         /* --- END: 4. INPUT GROUP & FIELD UMUM --- */
         
         /* ------------------------------------------- */
@@ -140,6 +144,7 @@
             border-radius: 8px 0 0 8px; 
             border-right: none;
         }
+        
         /* --- END: 5. INPUT DENGAN TOMBOL (Barcode & QTY) --- */
         
         /* ------------------------------------------- */
@@ -201,6 +206,7 @@
         .save-btn:hover {
             background-color: #fb8c00;
         }
+        
         /* --- END: 6. TOMBOL (Buttons) --- */
         
         /* ------------------------------------------- */
@@ -251,7 +257,6 @@
             height: 100%;
             object-fit: cover;
             z-index: 5;
-            /* Perubahan: video feed disembunyikan/ditampilkan oleh JS, bukan hanya melalui 'display: none' di awal */
         }
         
         /* ELEMEN RADAR HIJAU BERANIMASI (Neon Line) */
@@ -307,6 +312,7 @@
                 opacity: 0.1;
             }
         }
+        
         /* --- END: 7. AREA SCANNER (Kamera & Radar Line) --- */
         
         /* ------------------------------------------- */
@@ -344,6 +350,7 @@
             opacity: 1;
             transform: translateY(0);
         }
+        
         /* --- END: 8. MESSAGE DISPLAY --- */
         
         /* ------------------------------------------- */
@@ -467,7 +474,7 @@
             const videoFeed = document.getElementById('video-feed');
             const scannerMessage = document.getElementById('scanner-message');
             const messageElement = document.getElementById('message');
-            const scannerLine = document.querySelector('.scanner-line'); // Ambil elemen radar line
+            const scannerLine = document.querySelector('.scanner-line'); 
             
             let isScanning = false;
             
@@ -536,25 +543,23 @@
             lokasiInput.focus();
             
             // =========================================
-            // 3. LOGIKA TOMBOL MINUS 
+            // 3. LOGIKA TOMBOL MINUS (Telah diperbaiki sesuai permintaan)
             // =========================================
             minusButton.addEventListener('click', () => {
                 const value = qtyInput.value.trim();
                 
-                if (!value) {
-                    qtyInput.value = '-1';
-                } else if (value.startsWith('-')) {
+                if (value.startsWith('-')) {
                     // Jika sudah minus, hilangkan minusnya
                     qtyInput.value = value.substring(1); 
                 } else {
-                    // Jika positif, tambahkan minus
+                    // Jika positif atau kosong, tambahkan minus
                     qtyInput.value = '-' + value;
                 }
                 qtyInput.focus();
             });
 
             // =========================================
-            // 4A. FUNGSI SPARKLE DINAMIS (Menggunakan CSS Variables)
+            // 4A. FUNGSI SPARKLE DINAMIS
             // =========================================
             const updateSparklePosition = (e) => {
                 if (!isScanning) return;
@@ -597,7 +602,7 @@
                 videoFeed.style.display = 'none';
                 scannerMessage.style.display = 'block';
                 scanButton.innerHTML = '<i class="fas fa-camera-retro"></i> SCAN';
-                displayMessage('Scanning dihentikan.', 'error'); // Tampilkan pesan bahwa scan dihentikan
+                displayMessage('Scanning dihentikan.', 'error');
             };
 
             const startScanner = () => {
@@ -686,7 +691,7 @@
                     body: formData, 
                 })
                 .then(() => {
-                    // Walaupun menggunakan no-cors, kita anggap sukses karena form sudah direset
+                    // Karena menggunakan no-cors, ini akan selalu resolve. Kita asumsikan sukses.
                     displayMessage('✅ Data berhasil disimpan (di latar belakang)!');
                 })
                 .catch(error => {
