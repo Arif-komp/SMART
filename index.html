@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SMART SWALAYAN - Perekaman Barang Masuk</title>
+    <title>SMART SWALAYAN</title>
     <!-- Google Font: Poppins -->
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
     <!-- Font Awesome Icons -->
@@ -354,8 +354,21 @@
         /* --- END: 8. MESSAGE DISPLAY --- */
         
         /* ------------------------------------------- */
+
+        /* --- START: 9. COPYRIGHT FOOTER --- */
+        .footer-copyright {
+            margin-top: 20px;
+            padding-top: 10px;
+            border-top: 1px solid #ddd;
+            text-align: center;
+            font-size: 0.75em;
+            color: #777;
+        }
+        /* --- END: 9. COPYRIGHT FOOTER --- */
         
-        /* --- START: 9. RESPONSIVE ADJUSTMENTS (@media) --- */
+        /* ------------------------------------------- */
+        
+        /* --- START: 10. RESPONSIVE ADJUSTMENTS (@media) --- */
         @media (max-width: 600px) {
             body {
                 padding: 10px;
@@ -390,7 +403,7 @@
                 margin-top: 25px;
             }
         }
-        /* --- END: 9. RESPONSIVE ADJUSTMENTS (@media) --- */
+        /* --- END: 10. RESPONSIVE ADJUSTMENTS (@media) --- */
     </style>
 </head>
 <body>
@@ -431,7 +444,7 @@
                     <input type="text" 
                         id="qty" 
                         name="qty" 
-                        placeholder="Masukkan jumlah barang" 
+                        placeholder="Masukkan jumlah" 
                         required
                         inputmode="decimal"
                         pattern="^-?\d*$">
@@ -450,6 +463,9 @@
             <button type="submit" id="saveButton" class="save-btn"><i class="fas fa-save"></i> SIMPAN </button>
             <p id="message" class="message"></p>
         </form>
+        
+        <!-- Wadah untuk Teks Copyright (Diisi oleh JavaScript) -->
+        <div id="app-footer-copyright" class="footer-copyright"></div>
     </div>
 
     <script>
@@ -475,6 +491,7 @@
             const scannerMessage = document.getElementById('scanner-message');
             const messageElement = document.getElementById('message');
             const scannerLine = document.querySelector('.scanner-line'); 
+            const copyrightContainer = document.getElementById('app-footer-copyright'); // NEW: Kontainer Copyright
             
             let isScanning = false;
             
@@ -699,6 +716,24 @@
                     displayMessage('❌ Gagal mengirim data. Cek URL Apps Script atau koneksi.', 'error');
                 });
             });
+
+            // =========================================
+            // 6. LOGIKA COPYRIGHT (Diatur dari JS agar tidak mudah diubah)
+            // =========================================
+            
+            /**
+             * DEVELOPE COMMENT:
+             * Perubahan teks copyright HANYA dilakukan pada konstanta di bawah ini.
+             * Teks ditaruh di sini untuk memastikan konsistensi dan mempersulit perubahan
+             * oleh pengguna yang tidak berkepentingan (meskipun tidak sepenuhnya mengamankan).
+             */
+            const currentYear = new Date().getFullYear();
+            const copyrightText = `© ${currentYear} Smart Swalayan.`;
+
+            if (copyrightContainer) {
+                copyrightContainer.textContent = copyrightText;
+            }
+            // =========================================
 
             // Pastikan ZXing dihentikan jika jendela ditutup 
             window.addEventListener('beforeunload', () => {
