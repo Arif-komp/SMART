@@ -15,7 +15,6 @@
     --shadow-heavy: 0 10px 30px rgba(0, 0, 0, 0.15);
     --shadow-light: 0 4px 10px rgba(0, 0, 0, 0.08);
     --sparkle-color: #ffe082; /* Warna kuning muda untuk sparkle */
-    --scan-glow-color: #00ff00; /* Warna hijau neon untuk garis scan */
 }
 
 * {
@@ -50,13 +49,10 @@ body {
 /* --- 3. HEADER & JUDUL --- */
 .header-logo {
     display: block;
-    width: auto;
-    max-width: 100%;
-    height: auto;
-    max-height: 90px; /* Batas tinggi agar tetap kompak */
-    object-fit: contain;
+    width: 120px; /* Logo sedikit lebih besar */
+    height: auto; /* Biarkan tinggi menyesuaikan agar tidak terdistorsi */
     margin: 0 auto 25px auto;
-    border-radius: 10px;
+    border-radius: 10px; /* Sudut membulat */
     border: 3px solid var(--primary-color);
     box-shadow: 0 0 15px rgba(0, 121, 107, 0.4);
     filter: drop-shadow(0 5px 10px rgba(0,0,0,0.1));
@@ -208,32 +204,18 @@ button {
     z-index: 5;
 }
 
-/* ========================================= */
-/* ✅ KODE RADAR BARU (Multiple Blur Lines, Bottom to Top) */
-/* ========================================= */
-
-/* Elemen Radar: Kini berupa area blur yang bergerak ke atas */
+/* ELEMEN RADAR HIJAU BERANIMASI */
 .scanner-line {
     position: absolute;
-    bottom: 0; /* Mulai dari bawah */
+    top: 0;
     left: 0;
     width: 100%;
-    height: 60%; /* Membuat area blur cukup besar (60% dari tinggi kamera) */
-    
-    /* Gradient yang menghasilkan 3 garis/lapisan blur hijau */
-    background: linear-gradient(to top, 
-                                rgba(0, 255, 0, 0.8) 0%, /* Garis 1 (paling bawah) */
-                                rgba(0, 255, 0, 0.05) 10%, 
-                                rgba(0, 255, 0, 0.4) 20%, /* Garis 2 */
-                                rgba(0, 255, 0, 0.05) 30%,
-                                rgba(0, 255, 0, 0.2) 40%, /* Garis 3 (paling atas) */
-                                rgba(0, 255, 0, 0) 50%); /* Memudar ke atas */
-
-    box-shadow: 0 0 20px rgba(0, 255, 0, 0.8); /* Glow kuat di area bawah */
+    height: 3px;
+    background: limegreen;
+    box-shadow: 0 0 15px limegreen;
     z-index: 50; 
     display: none; 
-    transform: translateY(100%); /* Sembunyikan sepenuhnya di bawah */
-    transition: none; /* Nonaktifkan transisi lama */
+    transition: transform 0.1s;
 }
 
 /* Kotak Fokus (Viewfinder) */
@@ -253,27 +235,29 @@ button {
 /* Aktivasi Radar */
 .scanner-placeholder.active .scanner-line {
     display: block;
-    animation: scan-upwards 4s infinite linear; /* Animasi ke atas, durasi lebih lama */
+    animation: scan-radar 2s infinite linear;
 }
 
-/* Keyframes untuk Animasi Multiple Lines UPWARDS */
-@keyframes scan-upwards {
+/* Keyframes untuk Animasi Radar */
+@keyframes scan-radar {
     0% {
-        transform: translateY(100%); /* Mulai dari bawah (tersembunyi) */
+        transform: translateY(0);
+        opacity: 0.1;
     }
-    10% {
+    50% {
+        transform: translateY(calc(100% - 3px));
         opacity: 1;
     }
-    90% {
-        transform: translateY(-100%); /* Bergerak hingga keluar dari atas (tinggi 100% dari kamera) */
-    }
     100% {
-        transform: translateY(-100%);
-        opacity: 0; /* Memudar saat hilang di atas */
+        transform: translateY(0);
+        opacity: 0.1;
     }
 }
 
-/* KODE SPARKLE (Tanpa Perubahan pada keyframes, hanya pada pseudo-element) */
+/* ========================================= */
+/* ✅ KODE SPARKLE BARU DIMULAI DI SINI */
+/* ========================================= */
+
 .scanner-placeholder.active::before {
     content: '';
     position: absolute;
@@ -281,11 +265,13 @@ button {
     left: 0;
     width: 100%;
     height: 100%;
-    z-index: 20;
+    z-index: 20; /* Di atas video, di bawah radar line */
     pointer-events: none;
-    background: none; /* Menghapus radial-gradient */
-    animation: sparkle-scan 2s infinite linear; 
-    animation-delay: 1s; 
+    background: radial-gradient(circle at var(--mouse-x, 50%) var(--mouse-y, 50%), 
+                                rgba(255, 255, 255, 0.1) 0%, 
+                                transparent 20%); /* Efek sorotan lembut */
+    animation: sparkle-scan 1.5s infinite linear;
+    animation-delay: 0.5s; /* Mulai sparkle sedikit setelah radar */
 }
 
 @keyframes sparkle-scan {
@@ -296,18 +282,19 @@ button {
             0 0 0 0px var(--sparkle-color),
             0 0 0 0px var(--sparkle-color);
         opacity: 0;
-        /* HILANGKAN SEMUA TRANSFORM SCALE/ROTATE UNTUK MENGHILANGKAN EFEK ZOOM/Z-AXIS */
-        transform: none; 
+        transform: scale(0.5) rotate(0deg);
+    }
+    20% {
+        opacity: 0.8;
     }
     50% {
         box-shadow: 
-            -10px -10px 0 2px var(--sparkle-color),
-            15px 5px 0 1px var(--sparkle-color),
-            -5px 20px 0 3px var(--sparkle-color),
-            20px -15px 0 1px var(--sparkle-color);
-        /* HILANGKAN TRANSFORM SCALE/ROTATE */
-        transform: none; 
-        opacity: 0.8;
+            -10px -10px 0 2px var(--sparkle-color), /* Partikel 1 */
+            15px 5px 0 1px var(--sparkle-color),   /* Partikel 2 */
+            -5px 20px 0 3px var(--sparkle-color),   /* Partikel 3 */
+            20px -15px 0 1px var(--sparkle-color);  /* Partikel 4 */
+        transform: scale(1) rotate(45deg);
+        opacity: 0.6;
     }
     100% {
         box-shadow: 
@@ -315,13 +302,26 @@ button {
             30px 10px 0 0px transparent,
             -10px 40px 0 0px transparent,
             40px -30px 0 0px transparent;
-        /* HILANGKAN TRANSFORM SCALE/ROTATE */
-        transform: none; 
+        transform: scale(0) rotate(90deg);
         opacity: 0;
     }
 }
+
+/* Untuk menempatkan efek sparkle di sekitar area yang di-scan */
+/* Ini memerlukan sedikit Javascript untuk update custom property --mouse-x, --mouse-y */
+/* Namun untuk animasi umum, kita bisa membuatnya statis atau dengan variasi posisi random */
+
+/* Jika ingin sparkle muncul di posisi random, ini bisa menjadi alternatif */
+/* Alternatif sparkle jika tidak pakai JS untuk posisi mouse: */
+/* Anda bisa menggunakan multiple box-shadow dengan nilai random di keyframes,
+   atau membuat beberapa elemen dengan delay dan posisi berbeda */
+
+/* Untuk kesederhanaan dan agar tidak perlu JS tambahan, kita akan gunakan satu set
+   box-shadow yang bergerak dan memudar */
+
+
 /* ========================================= */
-/* AKHIR KODE RADAR BARU */
+/* ❌ KODE SPARKLE BARU BERAKHIR DI SINI */
 /* ========================================= */
 
 
@@ -358,9 +358,7 @@ button {
     }
     
     .header-logo {
-        width: 100%; 
-        max-width: 250px; 
-        max-height: 80px; 
+        width: 100px; /* Sedikit lebih kecil di mobile */
         margin-bottom: 20px;
     }
     
