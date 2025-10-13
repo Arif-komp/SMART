@@ -1,381 +1,344 @@
-/* ========================================= */
-/* FILE: style.css - SMART SWALAYAN */
-/* Desain Responsif, Modern, Keren, dan Fungsional */
-/* ========================================= */
+/* ========================================= /
+/ FILE: style.css - SMART SWALAYAN /
+/ Desain Responsif, Modern, Keren, dan Fungsional /
+/ ========================================= */
 
-/* --- 1. DEKLARASI VARIABEL & FONT --- */
+/* --- START: 1. DEKLARASI VARIABEL & FONT --- /
 :root {
-    --primary-color: #00796b; /* Teal Dark - Warna Utama */
-    --secondary-color: #ff9800; /* Orange - Warna Aksi/Submit */
-    --danger-color: #f44336; /* Merah - Warna Minus/Bahaya */
-    --text-color: #333;
-    --bg-color: #eceff1; /* Background Abu-abu Muda */
-    --card-bg: #ffffff;
-    --border-radius: 12px;
-    --shadow-heavy: 0 10px 30px rgba(0, 0, 0, 0.15);
-    --shadow-light: 0 4px 10px rgba(0, 0, 0, 0.08);
-    --sparkle-color: #ffe082; /* Warna kuning muda untuk sparkle */
+--primary-color: #00796b; / Teal Dark - Warna Utama /
+--secondary-color: #ff9800; / Orange - Warna Aksi/Submit /
+--danger-color: #f44336; / Merah - Warna Minus/Bahaya /
+--text-color: #333;
+--bg-color: #eceff1; / Background Abu-abu Muda /
+--card-bg: #ffffff;
+--border-radius: 12px;
+--shadow-heavy: 0 10px 30px rgba(0, 0, 0, 0.15);
+--shadow-light: 0 4px 10px rgba(0, 0, 0, 0.08);
+--sparkle-color: #ffe082; / Warna kuning muda untuk sparkle /
+--scan-glow-color: #00ff00; / Warna hijau neon untuk garis scan (Dipakai oleh radar) */
 }
 
-* {
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
-    font-family: 'Poppins', sans-serif;
+{
+box-sizing: border-box;
+margin: 0;
+padding: 0;
+font-family: 'Poppins', sans-serif;
 }
+/* --- END: 1. DEKLARASI VARIABEL & FONT --- */
 
-/* --- 2. BODY & CONTAINER LAYOUT --- */
+/* ------------------------------------------- */
+
+/* --- START: 2. BODY & CONTAINER LAYOUT --- */
 body {
-    background-color: var(--bg-color);
-    display: flex;
-    justify-content: center;
-    align-items: flex-start;
-    min-height: 100vh;
-    padding: 20px;
-    color: var(--text-color);
+background-color: var(--bg-color);
+display: flex;
+justify-content: center;
+align-items: flex-start;
+min-height: 100vh;
+padding: 20px;
+color: var(--text-color);
 }
 
 .container {
-    background-color: var(--card-bg);
-    padding: 30px;
-    border-radius: var(--border-radius);
-    box-shadow: var(--shadow-heavy);
-    width: 100%;
-    max-width: 450px;
-    margin-top: 20px;
-    transition: all 0.3s ease;
+background-color: var(--card-bg);
+padding: 30px;
+border-radius: var(--border-radius);
+box-shadow: var(--shadow-heavy);
+width: 100%;
+max-width: 450px;
+margin-top: 20px;
+transition: all 0.3s ease;
 }
+/* --- END: 2. BODY & CONTAINER LAYOUT --- */
 
-/* --- 3. HEADER & JUDUL --- */
+/* ------------------------------------------- */
+
+/* --- START: 3. HEADER & LOGO --- /
 .header-logo {
-    display: block;
-    width: 120px; /* Logo sedikit lebih besar */
-    height: auto; /* Biarkan tinggi menyesuaikan agar tidak terdistorsi */
-    margin: 0 auto 25px auto;
-    border-radius: 10px; /* Sudut membulat */
-    border: 3px solid var(--primary-color);
-    box-shadow: 0 0 15px rgba(0, 121, 107, 0.4);
-    filter: drop-shadow(0 5px 10px rgba(0,0,0,0.1));
+display: block;
+width: auto; / FIX: DIBERIKAN AUTO /
+max-width: 100%; / FIX: BATAS MAKSIMUM 100% UNTUK RESPONSIVITAS /
+height: auto;
+max-height: 90px; / Batas tinggi agar tetap kompak /
+object-fit: contain;
+margin: 0 auto 25px auto;
+border-radius: 10px;
+border: 3px solid var(--primary-color);
+box-shadow: 0 0 15px rgba(0, 121, 107, 0.4);
+filter: drop-shadow(0 5px 10px rgba(0,0,0,0.1));
 }
+/ --- END: 3. HEADER & LOGO --- */
 
-/* --- 4. INPUT GROUP & FIELD --- */
+/* ------------------------------------------- */
+
+/* --- START: 4. INPUT GROUP & FIELD UMUM --- */
 .input-group {
-    margin-bottom: 20px;
+margin-bottom: 20px;
 }
 
 .input-group label {
-    display: block;
-    margin-bottom: 8px;
-    color: var(--primary-color);
-    font-weight: 700;
-    font-size: 0.95em;
+display: block;
+margin-bottom: 8px;
+color: var(--primary-color);
+font-weight: 700;
+font-size: 0.95em;
 }
 
 .input-group label i {
-    margin-right: 5px;
-    color: var(--secondary-color);
+margin-right: 5px;
+color: var(--secondary-color);
 }
 
 input[type="text"],
 input[type="number"],
 input[type="date"] {
-    width: 100%;
-    padding: 12px 15px;
-    border: 1px solid #ddd;
-    border-radius: 8px;
-    font-size: 1em;
-    color: var(--text-color);
-    transition: all 0.3s;
+width: 100%;
+padding: 12px 15px;
+border: 1px solid #ddd;
+border-radius: 8px;
+font-size: 1em;
+color: var(--text-color);
+transition: all 0.3s;
 }
 
 input:focus {
-    border-color: var(--primary-color);
-    box-shadow: 0 0 0 4px rgba(0, 121, 107, 0.2);
-    background-color: #f7fcfc;
-    outline: none;
+border-color: var(--primary-color);
+box-shadow: 0 0 0 4px rgba(0, 121, 107, 0.2);
+background-color: #f7fcfc;
+outline: none;
 }
+/* --- END: 4. INPUT GROUP & FIELD UMUM --- */
 
-/* --- 5. INPUT DENGAN TOMBOL (Barcode & QTY) --- */
+/* ------------------------------------------- */
+
+/* --- START: 5. INPUT DENGAN TOMBOL (Barcode & QTY) --- */
 .input-with-icon {
-    display: flex;
-    align-items: stretch;
+display: flex;
+align-items: stretch;
 }
 
 .input-with-icon input {
-    flex-grow: 1;
-    border-radius: 8px 0 0 8px;
-    border-right: none;
+flex-grow: 1;
+border-radius: 8px 0 0 8px;
+border-right: none;
 }
+/* --- END: 5. INPUT DENGAN TOMBOL (Barcode & QTY) --- */
 
-/* --- 6. TOMBOL (Buttons) --- */
+/* ------------------------------------------- */
+
+/* --- START: 6. TOMBOL (Buttons) --- */
 button {
-    cursor: pointer;
-    border: none;
-    font-weight: 600;
-    transition: background-color 0.3s, transform 0.1s, box-shadow 0.3s;
-    white-space: nowrap;
-    padding: 12px 15px;
-    font-size: 1.0em;
-    min-width: 40px;
+cursor: pointer;
+border: none;
+font-weight: 600;
+transition: background-color 0.3s, transform 0.1s, box-shadow 0.3s;
+white-space: nowrap;
+padding: 12px 15px;
+font-size: 1.0em;
+min-width: 40px;
 }
 
 .scan-btn {
-    background-color: var(--primary-color);
-    color: white;
-    border-radius: 0 8px 8px 0;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+background-color: var(--primary-color);
+color: white;
+border-radius: 0 8px 8px 0;
+box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
 }
 
 .scan-btn:hover {
-    background-color: #004d40;
+background-color: #004d40;
 }
 
 .minus-btn {
-    background-color: var(--danger-color);
-    color: white;
-    border-radius: 0 8px 8px 0;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-    padding: 12px 18px;
+background-color: var(--danger-color);
+color: white;
+border-radius: 0 8px 8px 0;
+box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+padding: 12px 18px;
 }
 
 .minus-btn:hover {
-    background-color: #d32f2f;
+background-color: #d32f2f;
 }
 
 .scan-btn:active, .minus-btn:active, .save-btn:active {
-    transform: scale(0.98);
+transform: scale(0.98);
 }
 
 /* Tombol Submit */
 .save-btn {
-    width: 100%;
-    padding: 15px 20px;
-    background-color: var(--secondary-color);
-    color: white;
-    border-radius: 10px;
-    font-size: 1.15em;
-    font-weight: 700;
-    margin-top: 30px;
-    box-shadow: 0 5px 15px rgba(255, 152, 0, 0.4);
+width: 100%;
+padding: 15px 20px;
+background-color: var(--secondary-color);
+color: white;
+border-radius: 10px;
+font-size: 1.15em;
+font-weight: 700;
+margin-top: 30px;
+box-shadow: 0 5px 15px rgba(255, 152, 0, 0.4);
 }
 
 .save-btn:hover {
-    background-color: #fb8c00;
+background-color: #fb8c00;
 }
+/* --- END: 6. TOMBOL (Buttons) --- */
 
-/* --- 7. AREA SCANNER (Kamera, Radar & Sparkle Keren) --- */
+/* ------------------------------------------- */
+
+/* --- START: 7. AREA SCANNER (Kamera & Radar Line) --- /
 .scanner-placeholder {
-    margin-top: 15px;
-    width: 100%;
-    padding-bottom: 60%; /* Rasio aspek 16:10 */
-    position: relative;
-    background-color: #1a1a1a;
-    border: 3px solid #ccc;
-    border-radius: 10px;
-    display: none;
-    overflow: hidden;
-    transition: border-color 0.3s, background-color 0.3s;
+margin-top: 15px;
+width: 100%;
+padding-bottom: 60%; / Rasio aspek 16:10 */
+position: relative;
+background-color: #1a1a1a;
+border: 3px solid #ccc;
+border-radius: 10px;
+display: none;
+overflow: hidden;
+transition: border-color 0.3s, background-color 0.3s;
 }
 
 .scanner-placeholder.active {
-    display: block;
-    border-color: var(--primary-color);
-    background-color: #000;
+display: block;
+border-color: var(--primary-color);
+background-color: #000;
 }
 
 .scanner-placeholder p {
-    color: #aaa;
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    text-align: center;
-    padding: 10px;
-    z-index: 10;
+color: #aaa;
+position: absolute;
+top: 50%;
+left: 50%;
+transform: translate(-50%, -50%);
+text-align: center;
+padding: 10px;
+z-index: 10;
 }
 
 #video-feed {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    z-index: 5;
+position: absolute;
+top: 0;
+left: 0;
+width: 100%;
+height: 100%;
+object-fit: cover;
+z-index: 5;
 }
 
-/* ELEMEN RADAR HIJAU BERANIMASI */
+/* ELEMEN RADAR HIJAU BERANIMASI /
 .scanner-line {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 3px;
-    background: limegreen;
-    box-shadow: 0 0 15px limegreen;
-    z-index: 50; 
-    display: none; 
-    transition: transform 0.1s;
+position: absolute;
+top: 0;
+left: 0;
+width: 100%;
+height: 3px;
+background: var(--scan-glow-color); / Menggunakan variabel glow */
+box-shadow: 0 0 15px var(--scan-glow-color);
+z-index: 50;
+display: none;
+transition: transform 0.1s;
 }
 
 /* Kotak Fokus (Viewfinder) */
 .scanner-placeholder.active::after {
-    content: '';
-    position: absolute;
-    width: 90%;
-    height: 80%;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    border: 2px solid rgba(76, 175, 80, 0.5);
-    z-index: 10;
-    pointer-events: none;
+content: '';
+position: absolute;
+width: 90%;
+height: 80%;
+top: 50%;
+left: 50%;
+transform: translate(-50%, -50%);
+border: 2px solid rgba(76, 175, 80, 0.5);
+z-index: 10;
+pointer-events: none;
 }
 
 /* Aktivasi Radar */
 .scanner-placeholder.active .scanner-line {
-    display: block;
-    animation: scan-radar 2s infinite linear;
+display: block;
+animation: scan-radar 2s infinite linear;
 }
 
-/* Keyframes untuk Animasi Radar */
+/* Keyframes untuk Animasi Radar (Garis Bergerak Naik-Turun) */
 @keyframes scan-radar {
-    0% {
-        transform: translateY(0);
-        opacity: 0.1;
-    }
-    50% {
-        transform: translateY(calc(100% - 3px));
-        opacity: 1;
-    }
-    100% {
-        transform: translateY(0);
-        opacity: 0.1;
-    }
+0% {
+transform: translateY(0);
+opacity: 0.1;
+}
+50% {
+transform: translateY(calc(100% - 3px));
+opacity: 1;
+}
+100% {
+transform: translateY(0);
+opacity: 0.1;
+}
 }
 
-/* ========================================= */
-/* ✅ KODE SPARKLE BARU DIMULAI DI SINI */
-/* ========================================= */
+/* CATATAN: Animasi Sparkle telah dihapus /
+/ --- END: 7. AREA SCANNER (Kamera & Radar Line) --- */
 
-.scanner-placeholder.active::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    z-index: 20; /* Di atas video, di bawah radar line */
-    pointer-events: none;
-    background: radial-gradient(circle at var(--mouse-x, 50%) var(--mouse-y, 50%), 
-                                rgba(255, 255, 255, 0.1) 0%, 
-                                transparent 20%); /* Efek sorotan lembut */
-    animation: sparkle-scan 1.5s infinite linear;
-    animation-delay: 0.5s; /* Mulai sparkle sedikit setelah radar */
-}
+/* ------------------------------------------- */
 
-@keyframes sparkle-scan {
-    0% {
-        box-shadow: 
-            0 0 0 0px var(--sparkle-color),
-            0 0 0 0px var(--sparkle-color),
-            0 0 0 0px var(--sparkle-color),
-            0 0 0 0px var(--sparkle-color);
-        opacity: 0;
-        transform: scale(0.5) rotate(0deg);
-    }
-    20% {
-        opacity: 0.8;
-    }
-    50% {
-        box-shadow: 
-            -10px -10px 0 2px var(--sparkle-color), /* Partikel 1 */
-            15px 5px 0 1px var(--sparkle-color),   /* Partikel 2 */
-            -5px 20px 0 3px var(--sparkle-color),   /* Partikel 3 */
-            20px -15px 0 1px var(--sparkle-color);  /* Partikel 4 */
-        transform: scale(1) rotate(45deg);
-        opacity: 0.6;
-    }
-    100% {
-        box-shadow: 
-            -20px -20px 0 0px transparent,
-            30px 10px 0 0px transparent,
-            -10px 40px 0 0px transparent,
-            40px -30px 0 0px transparent;
-        transform: scale(0) rotate(90deg);
-        opacity: 0;
-    }
-}
-
-/* Untuk menempatkan efek sparkle di sekitar area yang di-scan */
-/* Ini memerlukan sedikit Javascript untuk update custom property --mouse-x, --mouse-y */
-/* Namun untuk animasi umum, kita bisa membuatnya statis atau dengan variasi posisi random */
-
-/* Jika ingin sparkle muncul di posisi random, ini bisa menjadi alternatif */
-/* Alternatif sparkle jika tidak pakai JS untuk posisi mouse: */
-/* Anda bisa menggunakan multiple box-shadow dengan nilai random di keyframes,
-   atau membuat beberapa elemen dengan delay dan posisi berbeda */
-
-/* Untuk kesederhanaan dan agar tidak perlu JS tambahan, kita akan gunakan satu set
-   box-shadow yang bergerak dan memudar */
-
-
-/* ========================================= */
-/* ❌ KODE SPARKLE BARU BERAKHIR DI SINI */
-/* ========================================= */
-
-
-/* --- 8. MESSAGE DISPLAY --- */
+/* --- START: 8. MESSAGE DISPLAY --- */
 .message {
-    text-align: center;
-    margin-top: 20px;
-    padding: 12px;
-    border-radius: 8px;
-    font-weight: 600;
-    background-color: #e8f5e9;
-    color: #2e7d32;
-    border: 1px solid #c8e6c9;
-    opacity: 0;
-    transition: opacity 0.5s, transform 0.5s;
-    transform: translateY(10px);
+text-align: center;
+margin-top: 20px;
+padding: 12px;
+border-radius: 8px;
+font-weight: 600;
+background-color: #e8f5e9;
+color: #2e7d32;
+border: 1px solid #c8e6c9;
+opacity: 0;
+transition: opacity 0.5s, transform 0.5s;
+transform: translateY(10px);
 }
 
 .message.show {
-    opacity: 1;
-    transform: translateY(0);
+opacity: 1;
+transform: translateY(0);
 }
+/* --- END: 8. MESSAGE DISPLAY --- */
 
-/* --- 9. RESPONSIVE ADJUSTMENTS --- */
+/* ------------------------------------------- */
+
+/* --- START: 9. RESPONSIVE ADJUSTMENTS (@media) --- */
 @media (max-width: 600px) {
-    body {
-        padding: 10px;
-    }
-    .container {
-        padding: 20px;
-        margin-top: 0;
-        border-radius: 0;
-        box-shadow: none;
-    }
-    
-    .header-logo {
-        width: 100px; /* Sedikit lebih kecil di mobile */
-        margin-bottom: 20px;
-    }
-    
-    .input-group {
-        margin-bottom: 15px;
-    }
-
-    input[type="text"],
-    input[type="date"],
-    .scan-btn,
-    .minus-btn {
-        padding: 10px;
-        font-size: 0.95em;
-    }
-
-    .save-btn {
-        padding: 15px;
-        margin-top: 25px;
-    }
+body {
+padding: 10px;
 }
+.container {
+padding: 20px;
+margin-top: 0;
+border-radius: 0;
+box-shadow: none;
+}
+
+.header-logo {
+    width: 100%; 
+    max-width: 250px; /* FIX: Lebih fleksibel di mobile */
+    max-height: 80px; 
+    margin-bottom: 20px;
+}
+
+.input-group {
+    margin-bottom: 15px;
+}
+
+input[type="text"],
+input[type="date"],
+.scan-btn,
+.minus-btn {
+    padding: 10px;
+    font-size: 0.95em;
+}
+
+.save-btn {
+    padding: 15px;
+    margin-top: 25px;
+}
+
+}
+/* --- END: 9. RESPONSIVE ADJUSTMENTS (@media) --- */
