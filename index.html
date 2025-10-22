@@ -447,10 +447,12 @@ function handleSheetsData(result) {
         configDataCache = result.config || {}; 
         
         if (Object.keys(inventoryDataCache).length === 0) {
+            // Data kosong, tampilkan error dan gunakan fallback
             useFallbackData('Data produk dari Apps Script kosong.');
             return;
         }
-        displayMessage('✔️ Data produk dan konfigurasi berhasil dimuat.', 'success');
+        // ✔️ Data berhasil dimuat, TAPI KARENA PERMINTAAN, PESAN SUKSES DIHILANGKAN
+        // displayMessage('✔️ Data produk dan konfigurasi berhasil dimuat.', 'success'); 
     } else {
         useFallbackData(result.error || 'Respon Apps Script tidak valid.');
     }
@@ -484,6 +486,7 @@ function useFallbackData(reason) {
 }
 
 function fetchInitialData() {
+    // ⏳ Pesan Loading TETAP ditampikan
     displayMessage('⏳ Memuat semua data produk dan konfigurasi (JSONP)...', 'loading');
     
     const urlWithCallback = `${SCRIPT_URL}?callback=handleSheetsData`;
@@ -512,10 +515,8 @@ function fetchInitialData() {
 // =================================================================
 
 function setupUppercaseListeners() {
-    // Memastikan listener hanya ditambahkan ke input type="text"
     document.querySelectorAll('input[type="text"]').forEach(input => {
         input.addEventListener('input', function() {
-            // Konversi nilai input menjadi huruf kapital
             this.value = this.value.toUpperCase();
         });
     });
@@ -572,7 +573,7 @@ function setupEventListeners() {
         } else {
             namaBarangInput.disabled = true;
             productNamesCache = [];
-            displayMessage(`Pilih Jenis Produk.`); 
+            // PESAN TIDAK DITAMPILKAN JIKA BUKAN ERROR/LOADING
         }
     });
 
@@ -640,8 +641,8 @@ function updateJenisProdukDropdown(data) {
         });
         jenisProdukSelect.disabled = false;
         
-        // PESAN INFORMATIF DIBUAT NETRAL
-        displayMessage(`Kategori ${currentCategory} dipilih. Pilih Jenis Produk.`);
+        // PESAN SUKSES/INFO DIHILANGKAN
+        // displayMessage(`Kategori ${currentCategory} dipilih. Pilih Jenis Produk.`);
     } else {
         jenisProdukSelect.innerHTML = '<option value="">-- Tidak ada Jenis Produk ditemukan --</option>';
         jenisProdukSelect.disabled = true;
@@ -690,6 +691,7 @@ async function handleFormSubmit(e, action) {
         keluarOut: (action === 'Keluar' ? jumlah : '')
     };
 
+    // ⏳ Pesan Loading TETAP ditampikan
     displayMessage(`⏳ Mengirim data Barang **${action.toUpperCase()}** (${jumlahInt}) dengan Format ${formatSimpan} Kolom...`, 'loading');
     
     // Konversi object data ke format URL-encoded
@@ -713,8 +715,12 @@ async function handleFormSubmit(e, action) {
         const result = await response.json();
         
         if (result.status === 'success') {
-            displayMessage(`✅ Data Barang **${action.toUpperCase()}** (${jumlahInt}) BERHASIL disimpan!`, 'success');
+            // ✔️ Data berhasil disimpan, TAPI KARENA PERMINTAAN, PESAN SUKSES DIHILANGKAN
+            // displayMessage(`✅ Data Barang **${action.toUpperCase()}** (${jumlahInt}) BERHASIL disimpan!`, 'success');
             
+            // HANYA HILANGKAN PESAN (efeknya sama seperti pesan sukses hilang)
+            displayMessage('', 'info'); // Menghapus pesan loading
+
             // Reset fields
             document.getElementById('jumlah').value = '';
             jenisProdukSelect.value = '';
@@ -728,27 +734,39 @@ async function handleFormSubmit(e, action) {
             productNamesCache = [];
             autocompleteList.innerHTML = '';
         } else {
+            // ❌ Pesan GAGAL TETAP ditampikan
             displayMessage('❌ Gagal menyimpan data: ' + (result.error || 'Terjadi kesalahan tidak diketahui.'), 'error');
         }
     } catch (error) {
         console.error('Submit error:', error);
+        // ❌ Pesan GAGAL TETAP ditampikan
         displayMessage('❌ Terjadi kesalahan jaringan. Cek koneksi Anda atau Deployment Apps Script.', 'error');
     }
 }
 
 /**
  * Menampilkan pesan status kepada pengguna.
+ * NOTE: Pesan type 'success' (berhasil) akan dihapus secara visual.
  */
 function displayMessage(message, type = 'info') {
     messageArea.classList.remove('show', 'success', 'error', 'loading');
     
+    // Jika tipe bukan error atau loading (i.e., sukses/info/netral), jangan tampilkan pesan.
+    if (type !== 'error' && type !== 'loading') {
+        // Hapus elemen pesan secara visual (dengan transisi)
+        messageArea.innerHTML = '';
+        return; 
+    }
+    
+    // Tampilkan pesan untuk Error dan Loading
     setTimeout(() => {
         messageArea.className = `message ${type}`;
         messageArea.innerHTML = message;
         messageArea.classList.add('show');
     }, 10);
 
-    if (type !== 'loading' && type !== 'error') {
+    // Otomatis hilangkan pesan error/loading setelah 5 detik, kecuali ada loading baru.
+    if (type !== 'loading') {
         setTimeout(() => {
             messageArea.classList.remove('show');
         }, 5000);
