@@ -8,7 +8,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
         /* ========================================= */
-        /* CSS: GAYA SMART SWALAYAN (Konsolidasi) */
+        /* CSS: GAYA SMART SWALAYAN */
         /* ========================================= */
 
         /* --- START: 1. DEKLARASI VARIABEL & FONT --- */
@@ -72,8 +72,6 @@
             color: var(--secondary-color);
         }
 
-        /* Logo Header dihapus */
-        
         /* --- END: 2. BODY & CONTAINER LAYOUT --- */
         
         /* ------------------------------------------- */
@@ -107,7 +105,7 @@
             font-size: 1em;
             color: var(--text-color);
             transition: all 0.3s;
-            appearance: none; /* Untuk konsistensi style dropdown */
+            appearance: none; 
             background-color: var(--card-bg);
         }
         
@@ -134,11 +132,11 @@
         .category-btn {
             flex-grow: 1;
             padding: 15px;
-            background-color: #b2dfdb; /* Warna netral */
+            background-color: #b2dfdb; 
             color: var(--primary-color);
             border-radius: 8px;
             font-weight: 600;
-            border: none; /* Tambahkan ini agar button terlihat konsisten */
+            border: none; 
             cursor: pointer;
             transition: background-color 0.2s, transform 0.1s;
         }
@@ -181,12 +179,12 @@
         }
 
         #masukButton {
-            background-color: var(--success-color); /* Hijau */
+            background-color: var(--success-color); 
             box-shadow: 0 5px 15px rgba(76, 175, 80, 0.4);
         }
 
         #keluarButton {
-            background-color: var(--danger-color); /* Merah */
+            background-color: var(--danger-color); 
             box-shadow: 0 5px 15px rgba(244, 67, 54, 0.4);
         }
 
@@ -370,8 +368,10 @@
 
 <script>
 // =================================================================
-// 🚨 PENTING: Ganti dengan URL Deployment Apps Script Anda yang sudah di-publish!
+// Kode JS (FRONTEND)
 // =================================================================
+
+// 🚨 PENTING: Ganti dengan URL Deployment Apps Script Anda yang sudah di-publish!
 const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbz-siwPKU2MeK3GkNrp7NXIrJjl4iQgQWaMPJIMc99Z7bTQwcv1z8bu4fdMMjwdfLLO0Q/exec'; 
 
 // Elemen DOM
@@ -393,7 +393,7 @@ let currentCategoryData = {}; 
 let productNamesCache = []; 
 
 // =========================================================
-// 💡 DATA DUMMY (FALLBACK) - Hanya digunakan jika JSONP gagal
+// 💡 DATA DUMMY (FALLBACK) - Hanya digunakan jika JSONP gagal atau data kosong
 // =========================================================
 const FALLBACK_DATA = {
     "BESI": {
@@ -439,8 +439,9 @@ function handleSheetsData(result) {
 
     if (result && result.status === 'ok') {
         inventoryDataCache = result.data;
-        if (Object.keys(inventoryDataCache).length === 0) {
-            displayMessage('⚠️ Data produk berhasil dimuat, tetapi kosong. Pilih kategori untuk mencoba.', 'error');
+        if (Object.keys(inventoryDataCache).length === 0 || Object.keys(inventoryDataCache.BESI || {}).length === 0 || Object.keys(inventoryDataCache.KERAMIK || {}).length === 0) {
+            // Jika data dari Apps Script kosong atau tidak valid (seperti error sebelumnya)
+            useFallbackData('Data produk dari Apps Script kosong atau tidak terformat dengan benar.');
             return;
         }
         displayMessage('✔️ Data produk berhasil dimuat dari Google Sheet. Pilih kategori untuk memulai.', 'success');
@@ -503,6 +504,7 @@ function setupEventListeners() {
             currentCategory = selectedCategory;
             kategoriInput.value = selectedCategory;
             
+            // Ambil data dari cache, jika kosong gunakan objek kosong
             currentCategoryData = inventoryDataCache[selectedCategory] || {}; 
             
             updateJenisProdukDropdown(currentCategoryData);
@@ -588,7 +590,8 @@ function updateJenisProdukDropdown(data) {
     } else {
         jenisProdukSelect.innerHTML = '<option value="">-- Tidak ada Jenis Produk ditemukan --</option>';
         jenisProdukSelect.disabled = true;
-        displayMessage(`⚠️ Tidak ada Jenis Produk ditemukan untuk kategori ${currentCategory}.`, 'error');
+        // Memberikan pesan error spesifik jika data kosong/tidak ada
+        displayMessage(`⚠️ Tidak ada Jenis Produk ditemukan untuk kategori **${currentCategory}**. Cek Google Sheet/Data Fallback.`, 'error');
     }
 }
 
@@ -621,7 +624,7 @@ async function handleFormSubmit(e, action) {
         jenisProduk: jenisProduk,
         namaBarang: namaBarang,
         checker: checker,
-        // Kirim hanya salah satu field sesuai aksi
+        // Kirim hanya salah satu field sesuai aksi (POST)
         masukIn: (action === 'Masuk' ? jumlah : ''), 
         keluarOut: (action === 'Keluar' ? jumlah : '')
     };
@@ -654,7 +657,6 @@ async function handleFormSubmit(e, action) {
             
             // Reset fields
             document.getElementById('jumlah').value = '';
-            // Pertahankan Kategori & Checker untuk input berikutnya
             jenisProdukSelect.value = '';
             namaBarangInput.value = '';
             namaBarangInput.disabled = true;
