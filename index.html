@@ -386,8 +386,8 @@
 // Kode JS (FRONTEND)
 // =================================================================
 
-// 🚨 PENTING: Ganti dengan URL Deployment Apps Script Anda yang sudah di-publish!
-const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbz-siwPKU2MeK3GkNrp7NXIrJjl4iQgQWaMPJIMc99Z7bTQwcv1z8bu4fdMMjwdfLLO0Q/exec'; 
+// 🚨 URL Apps Script yang baru
+const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbz-siwPKU2Me3GkNrp7NXIrJjl4iQgQWaMPJIMc99Z7bTQwcv1z8bu4fdMMjwdfLLO0Q/exec'; 
 
 // Elemen DOM
 const categoryButtons = document.querySelectorAll('.category-btn');
@@ -420,7 +420,7 @@ let productNamesCache = []; 
 document.addEventListener('DOMContentLoaded', () => {
     fetchInitialData();
     setupEventListeners();
-    setupUppercaseListeners(); // Panggil fungsi kapitalisasi
+    setupUppercaseListeners();
     document.getElementById('app-footer-copyright').textContent = `© ${new Date().getFullYear()} Smart Swalayan. All Rights Reserved.`;
 });
 
@@ -430,7 +430,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
 /**
  * Fungsi global yang dipanggil oleh Apps Script (JSONP) untuk menerima data.
- * @param {object} result Objek data dari Apps Script.
  */
 function handleSheetsData(result) {
     const scriptElement = document.getElementById('jsonp-script');
@@ -454,7 +453,7 @@ function handleSheetsData(result) {
             return;
         }
         
-        // Aktifkan tombol kategori. Dropdown Jenis Produk diaktifkan di updateJenisProdukDropdown.
+        // Aktifkan tombol kategori.
         categoryButtons.forEach(btn => btn.disabled = false);
         
     } else {
@@ -472,8 +471,8 @@ function useFallbackData(reason) {
             "BESI BETON": ["BESI BETON 12MM POLOS", "BESI BETON 8MM ULIR"]
         },
         "KERAMIK": {
-            "LANTAI 40x40": ["KERAMIK 40x40 KASAR PUTIH"],
-            "DINDING": ["KERAMIK DINDING 25x40 GARIS"]
+            "LANTAI 40x40": ["KERAMIK 40x40 KASAR PUTIH", "KERAMIK 40X40 GLOSSY ABU"],
+            "DINDING": ["KERAMIK DINDING 25x40 GARIS", "KERAMIK DINDING 30X60 BATU"]
         }
     };
     const FALLBACK_CONFIG = {
@@ -584,8 +583,7 @@ function setupEventListeners() {
         
         // 3. Update Nama Barang Cache
         if (selectedJenis) {
-            productNamesCache = currentCategoryData[selectedJenis] || []; 
-            // 🚨 PENGAKTIFAN LIVE SEARCH: Pastikan input Nama Barang diaktifkan saat Jenis Produk dipilih
+            productNamesCache = currentCategoryData[selectedJenis] || [];  
             namaBarangInput.disabled = false; 
             namaBarangInput.focus();
         } else {
@@ -595,18 +593,34 @@ function setupEventListeners() {
     });
 
     // C. LIVE SEARCH (NAMA BARANG INPUT)
+    // 🚨 KODE LIVE SEARCH DENGAN DEBUGGING TAMBAHAN 🚨
     namaBarangInput.addEventListener('input', () => {
-        // Cek jika input dinonaktifkan, jangan jalankan live search (Ini adalah perlindungan yang baik)
-        if (namaBarangInput.disabled) return; 
+        if (namaBarangInput.disabled || productNamesCache.length === 0) {
+            autocompleteList.innerHTML = '';
+             // 💡 DEBUG: Peringatan jika cache kosong
+            if (productNamesCache.length === 0 && !namaBarangInput.disabled) {
+                console.warn('⚠️ Product Name Cache kosong. Pastikan Jenis Produk sudah dipilih dan data Sheets sudah terload.');
+            }
+            return; 
+        }
         
-        const input = namaBarangInput.value.toLowerCase();
+        const input = namaBarangInput.value; 
         autocompleteList.innerHTML = '';
 
         if (input.length === 0) return;
+        
+        // 💡 DEBUG: Tampilkan input dan jumlah item yang dicari
+        console.log(`Live Search Input: ${input}, Mencari di ${productNamesCache.length} item.`);
+
 
         const matches = productNamesCache.filter(name => 
-            name.toLowerCase().includes(input)
+            // Membandingkan data UPPERCASE di cache dengan input UPPERCASE
+            name.includes(input)
         ).slice(0, 10); 
+        
+        // 💡 DEBUG: Tampilkan hasil kecocokan
+        console.log(`Ditemukan ${matches.length} kecocokan:`, matches);
+
 
         matches.forEach(name => {
             const item = document.createElement('div');
@@ -764,7 +778,6 @@ async function handleFormSubmit(e, action) {
 
 /**
  * Menampilkan pesan status kepada pengguna.
- * NOTE: Pesan type 'success' (berhasil) akan dihapus secara visual.
  */
 function displayMessage(message, type = 'info') {
     messageArea.classList.remove('show', 'success', 'error', 'loading');
