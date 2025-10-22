@@ -3,14 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SMART SWALAYAN</title>
-    <!-- Google Font: Poppins -->
+    <title>SMART SWALAYAN INVENTORY</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
-    <!-- Font Awesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <!-- ZXing Library for Barcode Scanning (Digunakan oleh kode.js) -->
-    <script src="https://unpkg.com/@zxing/library@latest"></script>
-    
     <style>
         /* ========================================= */
         /* CSS: GAYA SMART SWALAYAN (Konsolidasi) */
@@ -20,19 +15,15 @@
         :root {
             --primary-color: #00796b; /* Teal Dark - Warna Utama */
             --secondary-color: #ff9800; /* Orange - Warna Aksi/Submit */
-            --danger-color: #f44336; /* Merah - Warna Minus/Bahaya */
+            --danger-color: #f44336; /* Merah - Warna Keluar */
+            --success-color: #4CAF50; /* Hijau - Warna Masuk */
             --text-color: #333;
             --bg-color: #eceff1; /* Background Abu-abu Muda */
             --card-bg: #ffffff;
             --border-radius: 12px;
             --shadow-heavy: 0 10px 30px rgba(0, 0, 0, 0.15);
             --shadow-light: 0 4px 10px rgba(0, 0, 0, 0.08);
-            --sparkle-color: #ffe082; /* Warna kuning muda untuk sparkle */
-            --scan-glow-color: #00ff00; /* Warna hijau neon untuk garis scan */
-
-            /* Variabel Sparkle dinamis, diatur oleh JavaScript */
-            --mouse-x: 50%;
-            --mouse-y: 50%;
+            --button-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
         }
         
         * {
@@ -68,26 +59,22 @@
             transition: all 0.3s ease;
         }
         
-        /* --- END: 2. BODY & CONTAINER LAYOUT --- */
-        
-        /* ------------------------------------------- */
-        
-        /* --- START: 3. HEADER & LOGO --- */
-        .header-logo {
-            display: block;
-            width: auto;
-            max-width: 100%;
-            height: auto;
-            max-height: 90px;
-            object-fit: contain;
-            margin: 0 auto 25px auto;
-            border-radius: 10px;
-            border: 3px solid var(--primary-color);
-            box-shadow: 0 0 15px rgba(0, 121, 107, 0.4);
-            filter: drop-shadow(0 5px 10px rgba(0,0,0,0.1));
+        .app-title {
+            text-align: center;
+            color: var(--primary-color);
+            font-size: 1.5em;
+            font-weight: 700;
+            margin-bottom: 25px;
         }
+
+        .app-title i {
+            margin-right: 10px;
+            color: var(--secondary-color);
+        }
+
+        /* Logo Header dihapus */
         
-        /* --- END: 3. HEADER & LOGO --- */
+        /* --- END: 2. BODY & CONTAINER LAYOUT --- */
         
         /* ------------------------------------------- */
         
@@ -111,7 +98,8 @@
         
         input[type="text"],
         input[type="number"],
-        input[type="date"] {
+        input[type="date"],
+        select {
             width: 100%;
             padding: 12px 15px;
             border: 1px solid #ddd;
@@ -119,201 +107,141 @@
             font-size: 1em;
             color: var(--text-color);
             transition: all 0.3s;
+            appearance: none; /* Untuk konsistensi style dropdown */
+            background-color: var(--card-bg);
         }
         
-        input:focus {
+        input:focus, select:focus {
             border-color: var(--primary-color);
             box-shadow: 0 0 0 4px rgba(0, 121, 107, 0.2);
             background-color: #f7fcfc;
             outline: none;
         }
-        
         /* --- END: 4. INPUT GROUP & FIELD UMUM --- */
         
         /* ------------------------------------------- */
         
-        /* --- START: 5. INPUT DENGAN TOMBOL (Barcode & QTY) --- */
-        .input-with-icon {
+        /* --- START: 5. BUTTON KATEGORI --- */
+        .category-buttons {
             display: flex;
-            align-items: stretch;
-        }
-        
-        .input-with-icon input {
-            flex-grow: 1;
-            /* Hapus border radius di kanan untuk input yang diapit tombol */
-            border-radius: 8px 0 0 8px; 
-            border-right: none;
-        }
-        
-        /* --- END: 5. INPUT DENGAN TOMBOL (Barcode & QTY) --- */
-        
-        /* ------------------------------------------- */
-        
-        /* --- START: 6. TOMBOL (Buttons) --- */
-        button {
-            cursor: pointer;
-            border: none;
-            font-weight: 600;
-            transition: background-color 0.3s, transform 0.1s, box-shadow 0.3s;
-            white-space: nowrap;
-            padding: 12px 15px;
-            font-size: 1.0em;
-            min-width: 40px;
+            gap: 10px;
+            margin-bottom: 30px;
+            padding: 10px;
+            background-color: #e0f2f1;
+            border-radius: var(--border-radius);
         }
 
-        .scan-btn, .minus-btn {
-            color: white;
-            border-radius: 0 8px 8px 0;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-            min-width: 80px; /* Lebar minimum untuk tombol SCAN */
+        .category-btn {
+            flex-grow: 1;
+            padding: 15px;
+            background-color: #b2dfdb; /* Warna netral */
+            color: var(--primary-color);
+            border-radius: 8px;
+            font-weight: 600;
+            transition: background-color 0.2s, transform 0.1s;
         }
-        
-        .scan-btn {
+
+        .category-btn.active {
             background-color: var(--primary-color);
+            color: var(--card-bg);
+            box-shadow: 0 4px 10px rgba(0, 121, 107, 0.3);
+        }
+
+        .category-btn:hover {
+            background-color: #80cbc4;
         }
         
-        .scan-btn:hover {
+        .category-btn.active:hover {
             background-color: #004d40;
         }
-        
-        .minus-btn {
-            background-color: var(--danger-color);
-            padding: 12px 18px;
-            min-width: 50px; /* Lebar minimum untuk tombol Minus */
-        }
-        
-        .minus-btn:hover {
-            background-color: #d32f2f;
-        }
-        
-        .scan-btn:active, .minus-btn:active, .save-btn:active {
-            transform: scale(0.98);
-        }
-        
-        /* Tombol Submit */
-        .save-btn {
-            width: 100%;
-            padding: 15px 20px;
-            background-color: var(--secondary-color);
-            color: white;
-            border-radius: 10px;
-            font-size: 1.15em;
-            font-weight: 700;
-            margin-top: 30px;
-            box-shadow: 0 5px 15px rgba(255, 152, 0, 0.4);
-        }
-        
-        .save-btn:hover {
-            background-color: #fb8c00;
-        }
-        
-        /* --- END: 6. TOMBOL (Buttons) --- */
+        /* --- END: 5. BUTTON KATEGORI --- */
         
         /* ------------------------------------------- */
         
-        /* --- START: 7. AREA SCANNER (Kamera & Radar Line) --- */
-        .scanner-placeholder {
-            margin-top: 15px;
-            width: 100%;
-            padding-bottom: 60%; /* Rasio aspek 16:10 */
-            position: relative;
-            background-color: #1a1a1a;
-            border: 3px solid #ccc;
-            border-radius: 10px;
-            display: none; /* Default tersembunyi */
-            overflow: hidden;
-            transition: border-color 0.3s, background-color 0.3s;
+        /* --- START: 6. TOMBOL SUBMIT (Masuk/Keluar) --- */
+        .submit-buttons {
+            display: flex;
+            gap: 15px;
+            margin-top: 30px;
         }
 
-        /* --- AKTIFKAN SCANNER (Saat class 'active' ditambahkan) --- */
-        .scanner-placeholder.active {
-            display: block;
-            border-color: var(--primary-color);
-            background-color: #000;
-            /* Efek SPARKLE/GLOW yang mengikuti mouse/touch */
-            background-image: radial-gradient(
-                circle at var(--mouse-x, 50%) var(--mouse-y, 50%),
-                var(--sparkle-color) 0%,
-                rgba(0, 0, 0, 0) 25%
-            );
+        .submit-btn {
+            flex-grow: 1;
+            padding: 15px 10px;
+            border: none;
+            border-radius: 10px;
+            font-weight: 700;
+            font-size: 1.1em;
+            color: white;
+            transition: background-color 0.3s, transform 0.1s, box-shadow 0.3s;
+            box-shadow: var(--button-shadow);
         }
-        
-        .scanner-placeholder p {
-            color: #aaa;
+
+        #masukButton {
+            background-color: var(--success-color); /* Hijau */
+            box-shadow: 0 5px 15px rgba(76, 175, 80, 0.4);
+        }
+
+        #keluarButton {
+            background-color: var(--danger-color); /* Merah */
+            box-shadow: 0 5px 15px rgba(244, 67, 54, 0.4);
+        }
+
+        #masukButton:hover {
+            background-color: #388e3c;
+        }
+
+        #keluarButton:hover {
+            background-color: #d32f2f;
+        }
+
+        .submit-btn:active {
+            transform: scale(0.98);
+        }
+        /* --- END: 6. TOMBOL SUBMIT (Masuk/Keluar) --- */
+
+        /* ------------------------------------------- */
+
+        /* --- START: 7. LIVE SEARCH SUGGESTION --- */
+        /* Kontainer untuk suggestion dropdown */
+        .autocomplete-container {
+            position: relative;
+        }
+
+        .autocomplete-items {
             position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            text-align: center;
+            border: 1px solid #d4d4d4;
+            border-bottom: none;
+            border-top: none;
+            z-index: 99;
+            top: 100%;
+            left: 0;
+            right: 0;
+            max-height: 200px;
+            overflow-y: auto;
+            border-radius: 0 0 8px 8px;
+            background-color: white;
+            box-shadow: var(--shadow-light);
+        }
+
+        .autocomplete-items div {
             padding: 10px;
-            z-index: 10;
+            cursor: pointer;
+            background-color: #fff; 
+            border-bottom: 1px solid #d4d4d4;
+            font-size: 0.9em;
         }
-        
-        #video-feed {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            z-index: 5;
+
+        .autocomplete-items div:last-child {
+            border-bottom: none;
         }
-        
-        /* ELEMEN RADAR HIJAU BERANIMASI (Neon Line) */
-        .scanner-line {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 5px; 
-            background: linear-gradient(to right,
-                transparent 0%,
-                var(--scan-glow-color) 30%,
-                var(--scan-glow-color) 70%,
-                transparent 100%);
-            box-shadow: 0 0 10px 5px rgba(0, 255, 0, 0.5), 
-                0 0 20px 8px rgba(0, 255, 0, 0.2);
-            z-index: 50;
-            display: none; /* Hanya tampil saat .active */
+
+        .autocomplete-items div:hover,
+        .autocomplete-active {
+            background-color: #e8f5e9 !important;
+            color: var(--primary-color);
         }
-        
-        /* Kotak Fokus (Viewfinder) */
-        .scanner-placeholder.active::after {
-            content: '';
-            position: absolute;
-            width: 90%;
-            height: 80%;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            border: 2px solid rgba(76, 175, 80, 0.5);
-            z-index: 10;
-            pointer-events: none;
-        }
-        
-        /* Aktivasi Radar & Animasi */
-        .scanner-placeholder.active .scanner-line {
-            display: block;
-            animation: scan-radar 2s infinite linear;
-        }
-        
-        /* Keyframes untuk Animasi Radar (Garis Bergerak Naik-Turun) */
-        @keyframes scan-radar {
-            0% {
-                transform: translateY(0);
-                opacity: 0.1;
-            }
-            55% {
-                transform: translateY(calc(100% - 5px)); 
-                opacity: 1;
-            }
-            100% {
-                transform: translateY(0);
-                opacity: 0.1;
-            }
-        }
-        
-        /* --- END: 7. AREA SCANNER (Kamera & Radar Line) --- */
+        /* --- END: 7. LIVE SEARCH SUGGESTION --- */
         
         /* ------------------------------------------- */
         
@@ -324,7 +252,6 @@
             padding: 12px;
             border-radius: 8px;
             font-weight: 600;
-            /* Default: Success look */
             background-color: #e8f5e9;
             color: #2e7d32;
             border: 1px solid #c8e6c9; 
@@ -333,16 +260,15 @@
             transform: translateY(10px);
         }
         
-        /* Tambahkan kelas untuk Error, jika dibutuhkan oleh JS */
         .message.error {
-            background-color: #fce4e4; /* Light red */
-            color: #c62828;      /* Dark red */
+            background-color: #fce4e4; 
+            color: #c62828;
             border-color: #ef9a9a;
         }
 
         .message.loading {
-             background-color: #fffde7; /* Light yellow */
-            color: #fbc02d;      /* Dark yellow */
+            background-color: #fffde7;
+            color: #fbc02d;
             border-color: #fff9c4;
         }
         
@@ -365,159 +291,111 @@
             color: #777;
         }
         /* --- END: 9. COPYRIGHT FOOTER --- */
-        
-        /* ------------------------------------------- */
-        
+
         /* --- START: 10. RESPONSIVE ADJUSTMENTS (@media) --- */
         @media (max-width: 600px) {
-            body {
-                padding: 10px;
-            }
-            .container {
-                padding: 20px;
-                margin-top: 0;
-                border-radius: 0;
-                box-shadow: none;
-            }
-        
-            .header-logo {
-                max-width: 250px; 
-                max-height: 80px;
-                margin-bottom: 20px;
-            }
-        
-            .input-group {
-                margin-bottom: 15px;
-            }
-        
-            input[type="text"],
-            input[type="date"],
-            .scan-btn,
-            .minus-btn {
-                padding: 10px;
-                font-size: 0.95em;
-            }
-        
-            .save-btn {
-                padding: 15px;
-                margin-top: 25px;
-            }
+            body { padding: 10px; }
+            .container { padding: 20px; margin-top: 0; border-radius: 0; box-shadow: none; }
+            .app-title { font-size: 1.3em; margin-bottom: 20px; }
+            input, select, .category-btn, .submit-btn { padding: 10px; font-size: 0.95em; }
+            .submit-buttons { gap: 10px; }
         }
         /* --- END: 10. RESPONSIVE ADJUSTMENTS (@media) --- */
     </style>
 </head>
 <body>
     <div class="container">
-        <!-- Logo Header -->
-        <img src="smart.jpg" alt="Logo Smart Swalayan" class="header-logo">
+        <div class="app-title">
+            <i class="fas fa-warehouse"></i> Smart Swalayan Inventory
+        </div>
         
         <form id="inventoryForm">
-
             <div class="input-group">
-                <label for="lokasi"><i class="fas fa-warehouse"></i> Lokasi </label>
-                <input type="text" id="lokasi" name="lokasi" placeholder="Input Lokasi" required>
-            </div>
-
-            <!-- Barcode Group -->
-            <div class="input-group barcode-group">
-                <label for="barcode"><i class="fas fa-barcode"></i> Barcode Barang</label>
-                <div class="input-with-icon">
-                    <input type="text" id="barcode" name="barcode" placeholder="Scan atau input Barcode" required>
-                    <button type="button" id="scanButton" class="scan-btn" title="Klik untuk Scan Barcode">
-                        <i class="fas fa-camera-retro"></i> SCAN
+                <label><i class="fas fa-cubes"></i> Kategori Barang</label>
+                <div class="category-buttons">
+                    <button type="button" class="category-btn" data-category="BESI" id="btnBesi">
+                        <i class="fas fa-hammer"></i> BESI
+                    </button>
+                    <button type="button" class="category-btn" data-category="KERAMIK" id="btnKeramik">
+                        <i class="fas fa-couch"></i> KERAMIK
                     </button>
                 </div>
-                
-                <!-- Area Scanner Barcode (TERMASUK VIDEO FEED & RADAR LINE) -->
-                <div id="scanner-container" class="scanner-placeholder">
-                    <video id="video-feed" playsinline></video>
-                    <!-- ELEMEN RADAR/SCANNER LINE BARU -->
-                    <div class="scanner-line"></div> 
-                    <p id="scanner-message">Area Scanner Barcode (Akan menampilkan kamera saat scan aktif)</p>
-                </div>
+                <input type="hidden" id="kategori" name="kategori" required>
             </div>
 
-            <!-- QTY Group -->
             <div class="input-group">
-                <label for="qty"><i class="fas fa-boxes"></i> Jumlah </label>
-                <div class="input-with-icon"> 
-                    <input type="text" 
-                        id="qty" 
-                        name="qty" 
-                        placeholder="Masukkan jumlah" 
-                        required
-                        inputmode="decimal"
-                        pattern="^-?\d*$">
-                        
-                    <button type="button" id="minusButton" class="minus-btn" title="Klik untuk Tambah Tanda Minus">
-                        <i class="fas fa-minus"></i>
-                    </button>
+                <label for="jenisProduk"><i class="fas fa-stream"></i> Jenis Produk</label>
+                <select id="jenisProduk" name="jenisProduk" disabled required>
+                    <option value="">-- Pilih Kategori Dulu --</option>
+                </select>
+            </div>
+
+            <div class="input-group">
+                <label for="namaBarang"><i class="fas fa-box-open"></i> Nama Barang</label>
+                <div class="autocomplete-container">
+                    <input type="text" id="namaBarang" name="namaBarang" placeholder="Ketik nama barang..." disabled required>
+                    <div id="autocomplete-list" class="autocomplete-items">
+                        </div>
                 </div>
             </div>
 
             <div class="input-group">
-                <label for="tanggal"><i class="fas fa-calendar-alt"></i> Tanggal</label>
-                <input type="date" id="tanggal" name="tanggal" value="" required>
+                <label for="jumlah"><i class="fas fa-sort-numeric-up-alt"></i> Jumlah</label>
+                <input type="number" id="jumlah" name="jumlah" placeholder="Masukkan jumlah" required min="1">
             </div>
 
-            <button type="submit" id="saveButton" class="save-btn"><i class="fas fa-save"></i> SIMPAN </button>
+            <div class="input-group">
+                <label for="checker"><i class="fas fa-user-check"></i> Checker</label>
+                <input type="text" id="checker" name="checker" placeholder="Nama Checker" required>
+            </div>
+
+            <div class="submit-buttons">
+                <button type="submit" id="masukButton" class="submit-btn" data-action="Masuk">
+                    <i class="fas fa-arrow-alt-circle-up"></i> Barang MASUK
+                </button>
+                <button type="submit" id="keluarButton" class="submit-btn" data-action="Keluar">
+                    <i class="fas fa-arrow-alt-circle-down"></i> Barang KELUAR
+                </button>
+            </div>
+
             <p id="message" class="message"></p>
         </form>
         
-        <!-- Wadah untuk Teks Copyright (Diisi oleh JavaScript) -->
         <div id="app-footer-copyright" class="footer-copyright"></div>
     </div>
 
     <script>
         // =========================================
-        // JAVASCRIPT LOGIC - SMART SWALAYAN (Kode ZXing)
+        // JAVASCRIPT LOGIC - SMART SWALAYAN INVENTORY
         // =========================================
         
         // --- PENTING: GANTI DENGAN URL APPS SCRIPT ANDA ---
-        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxYWri_i9Fnsq49enmFqqjR7IL6FLN083DHdSqx2mlT1GhQ_Job-dfYfUhLJfLa21Qt/exec'; 
+        // Asumsi Apps Script ini sudah diubah untuk:
+        // 1. Menerima parameter 'category' dan mengembalikan List Headers (kolom A, B, C...)
+        // 2. Menerima parameter 'category' dan 'jenisProduk' serta mengembalikan data Nama Barang untuk Live Search
+        // 3. Menerima data POST untuk penyimpanan (Timestamp, Nama Barang, Masuk/In, Keluar/Out, Checker)
+        // Note: URL ini HANYA CONTOH dan HARUS DIUBAH!
+        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxBF_zlA3B-nmddPvQUyiS5BfGW1FBKnwKfpKBRvqWUoFeQchrLvUrnA6ztCuQkcsy1mA/exec'; 
         // --- AKHIR PENTING ---
 
         document.addEventListener('DOMContentLoaded', () => {
             // 1. Inisialisasi Variabel DOM
             const form = document.getElementById('inventoryForm');
-            const tanggalInput = document.getElementById('tanggal');
-            const barcodeInput = document.getElementById('barcode');
-            const lokasiInput = document.getElementById('lokasi');
-            const qtyInput = document.getElementById('qty');
-            const scanButton = document.getElementById('scanButton');
-            const minusButton = document.getElementById('minusButton');
-            const scannerContainer = document.getElementById('scanner-container');
-            const videoFeed = document.getElementById('video-feed');
-            const scannerMessage = document.getElementById('scanner-message');
+            const kategoriInput = document.getElementById('kategori');
+            const jenisProdukSelect = document.getElementById('jenisProduk');
+            const namaBarangInput = document.getElementById('namaBarang');
+            const jumlahInput = document.getElementById('jumlah');
+            const checkerInput = document.getElementById('checker');
+            const masukButton = document.getElementById('masukButton');
+            const keluarButton = document.getElementById('keluarButton');
             const messageElement = document.getElementById('message');
-            const scannerLine = document.querySelector('.scanner-line'); 
-            const copyrightContainer = document.getElementById('app-footer-copyright'); // NEW: Kontainer Copyright
+            const copyrightContainer = document.getElementById('app-footer-copyright');
+            const categoryButtons = document.querySelectorAll('.category-btn');
+            const autocompleteList = document.getElementById('autocomplete-list');
             
-            let isScanning = false;
-            
-            // Inisialisasi ZXing Reader
-            const hints = new Map();
-            hints.set(ZXing.DecodeHintType.POSSIBLE_FORMATS, [
-                ZXing.BarcodeFormat.CODE_128,
-                ZXing.BarcodeFormat.QR_CODE,
-                ZXing.BarcodeFormat.EAN_13,
-                ZXing.BarcodeFormat.EAN_8,
-                ZXing.BarcodeFormat.CODE_39,
-                ZXing.BarcodeFormat.ITF,
-                ZXing.BarcodeFormat.AZTEC,
-                ZXing.BarcodeFormat.DATA_MATRIX
-            ]);
-            
-            // Konfigurasi Video ZXing
-            const controls = {
-                video: {
-                    width: { ideal: 1280 },
-                    height: { ideal: 720 },
-                    facingMode: 'environment'
-                }
-            };
-
-            const codeReader = new ZXing.BrowserMultiFormatReader(hints);
+            // State data
+            let currentCategory = '';
+            let productNamesCache = []; // Cache untuk Live Search
 
             /**
              * Menampilkan pesan status di UI dengan styling dinamis.
@@ -526,7 +404,7 @@
              */
             function displayMessage(text, type = 'success') {
                 messageElement.textContent = text;
-                messageElement.classList.remove('show', 'error', 'loading');
+                messageElement.className = 'message'; // Reset classes
                 
                 if (type === 'error') {
                     messageElement.classList.add('error');
@@ -546,201 +424,227 @@
                 }
             }
 
-
-            // 2. Set Tanggal Otomatis
-            const setTodayDate = () => {
-                const today = new Date();
-                const yyyy = today.getFullYear();
-                const mm = String(today.getMonth() + 1).padStart(2, '0');
-                const dd = String(today.getDate()).padStart(2, '0');
-                tanggalInput.value = `${yyyy}-${mm}-${dd}`;
-            };
-
-            setTodayDate();
-            lokasiInput.focus();
-            
             // =========================================
-            // 3. LOGIKA TOMBOL MINUS (Telah diperbaiki sesuai permintaan)
+            // 2. LOGIKA PILIHAN KATEGORI (BESI/KERAMIK)
             // =========================================
-            minusButton.addEventListener('click', () => {
-                const value = qtyInput.value.trim();
-                
-                if (value.startsWith('-')) {
-                    // Jika sudah minus, hilangkan minusnya
-                    qtyInput.value = value.substring(1); 
-                } else {
-                    // Jika positif atau kosong, tambahkan minus
-                    qtyInput.value = '-' + value;
-                }
-                qtyInput.focus();
-            });
+            categoryButtons.forEach(button => {
+                button.addEventListener('click', (e) => {
+                    const selectedCategory = e.currentTarget.getAttribute('data-category');
+                    if (currentCategory === selectedCategory) return; // Prevent unnecessary reloads
+                    
+                    // Update UI
+                    categoryButtons.forEach(btn => btn.classList.remove('active'));
+                    e.currentTarget.classList.add('active');
 
-            // =========================================
-            // 4A. FUNGSI SPARKLE DINAMIS
-            // =========================================
-            const updateSparklePosition = (e) => {
-                if (!isScanning) return;
-                
-                let clientX, clientY;
-
-                // Ambil posisi dari mouse atau sentuhan (touch)
-                if (e.touches && e.touches.length > 0) {
-                    clientX = e.touches[0].clientX;
-                    clientY = e.touches[0].clientY;
-                } else {
-                    clientX = e.clientX;
-                    clientY = e.clientY;
-                }
-
-                // Hitung posisi relatif terhadap container scanner
-                const rect = scannerContainer.getBoundingClientRect();
-                const x = (clientX - rect.left) / rect.width * 100;
-                const y = (clientY - rect.top) / rect.height * 100;
-
-                // Atur custom property CSS
-                scannerContainer.style.setProperty('--mouse-x', `${x}%`);
-                scannerContainer.style.setProperty('--mouse-y', `${y}%`);
-            };
-
-            // Tambahkan event listener untuk mouse dan touch saat scanner aktif
-            scannerContainer.addEventListener('mousemove', updateSparklePosition);
-            scannerContainer.addEventListener('touchmove', updateSparklePosition);
-            
-            // =========================================
-            // 4B. LOGIKA SCANNER BARCODE (ZXing)
-            // =========================================
-            
-            const stopScanner = () => {
-                if (!isScanning) return;
-                
-                isScanning = false;
-                codeReader.reset();
-                scannerContainer.classList.remove('active');
-                videoFeed.style.display = 'none';
-                scannerMessage.style.display = 'block';
-                scanButton.innerHTML = '<i class="fas fa-camera-retro"></i> SCAN';
-                displayMessage('Scanning dihentikan.', 'error');
-            };
-
-            const startScanner = () => {
-                isScanning = true;
-                scannerContainer.classList.add('active');
-                videoFeed.style.display = 'block';
-                scannerMessage.style.display = 'none';
-                scanButton.innerHTML = '<i class="fas fa-stop-circle"></i> STOP';
-                displayMessage('Mengaktifkan kamera... Arahkan ke barcode.', 'loading');
-                
-                codeReader.decodeFromVideoDevice(
-                    undefined, 
-                    'video-feed', 
-                    (result, error) => {
-                        if (result) {
-                            const scannedCode = result.text;
-                            barcodeInput.value = scannedCode;
-                            
-                            stopScanner(); 
-                            
-                            displayMessage(`✅ Barcode ${scannedCode} berhasil di-scan!`);
-                            
-                            qtyInput.focus();
-
-                        } else if (error && !(error instanceof ZXing.NotFoundException)) {
-                            console.error('Scan Error:', error);
-                        }
-                    },
-                    controls
-                ).catch(err => {
-                    console.error('Kamera gagal diakses:', err);
-                    stopScanner();
-                    displayMessage('❌ Gagal mengakses kamera. Pastikan browser memiliki izin HTTPS.', 'error');
-                });
-            };
-
-            scanButton.addEventListener('click', () => {
-                if (isScanning) {
-                    stopScanner();
-                } else {
-                    startScanner();
-                }
-            });
-
-
-            // =========================================
-            // 5. LOGIKA PENGIRIMAN FORM (Optimis UI Reset)
-            // =========================================
-            form.addEventListener('submit', (e) => {
-                e.preventDefault();
-
-                if (isScanning) {
-                    stopScanner();
-                }
-
-                const data = {
-                    lokasi: lokasiInput.value,
-                    barcode: barcodeInput.value,
-                    qty: qtyInput.value,
-                    tanggal: tanggalInput.value
-                };
-
-                if (!data.lokasi || !data.barcode || !data.qty) {
-                    displayMessage('❌ Harap isi semua kolom wajib.', 'error');
-                    return;
-                }
-
-                // --- OPTIMIS UI: RESET FORM INSTAN SEBELUM FETCH ---
-                displayMessage('⏳ Data sedang dikirim...', 'loading');
-                
-                // 1. Reset Form dan Fokus Instan
-                form.reset(); 
-                setTodayDate();
-                lokasiInput.focus();
-                
-                // 2. Siapkan data untuk pengiriman
-                const formData = new URLSearchParams(data).toString();
-                
-                // 3. Lakukan pengiriman data di latar belakang
-                fetch(SCRIPT_URL, {
-                    method: 'POST',
-                    mode: 'no-cors', 
-                    headers: {
-                        'Content-Type': 'application/x-www-form-urlencoded',
-                    },
-                    body: formData, 
-                })
-                .then(() => {
-                    // Karena menggunakan no-cors, ini akan selalu resolve. Kita asumsikan sukses.
-                    displayMessage('✅ Data berhasil disimpan (di latar belakang)!');
-                })
-                .catch(error => {
-                    console.error('Error saat fetch:', error);
-                    displayMessage('❌ Gagal mengirim data. Cek URL Apps Script atau koneksi.', 'error');
+                    // Update State dan Input Hidden
+                    currentCategory = selectedCategory;
+                    kategoriInput.value = selectedCategory;
+                    
+                    // Reset dan Load Jenis Produk
+                    resetJenisProduk();
+                    fetchJenisProduk(selectedCategory);
                 });
             });
 
-            // =========================================
-            // 6. LOGIKA COPYRIGHT (Diatur dari JS agar tidak mudah diubah)
-            // =========================================
+            function resetJenisProduk() {
+                jenisProdukSelect.innerHTML = '<option value="">-- Memuat Jenis Produk... --</option>';
+                jenisProdukSelect.disabled = true;
+                namaBarangInput.disabled = true;
+                namaBarangInput.value = '';
+                autocompleteList.innerHTML = '';
+            }
+
+            // Fungsi Asumsi: Mengambil daftar kolom/header dari Google Sheet
+            async function fetchJenisProduk(category) {
+                displayMessage(`⏳ Memuat jenis produk untuk ${category}...`, 'loading');
+                
+                // ASUMSI: Apps Script merespon dengan JSON array ['Kolom A', 'Kolom B', 'Kolom C']
+                const mockHeaders = category === 'BESI' 
+                    ? ['Pipa', 'Baja Ringan', 'Kawat']
+                    : ['Lantai', 'Dinding', 'Perekat'];
+
+                try {
+                    // Dalam implementasi nyata, ganti dengan fetch ke Apps Script Anda
+                    // const response = await fetch(`${SCRIPT_URL}?action=getHeaders&category=${category}`);
+                    // const headers = await response.json();
+                    
+                    jenisProdukSelect.innerHTML = '<option value="">-- Pilih Jenis Produk --</option>';
+                    mockHeaders.forEach(header => {
+                        jenisProdukSelect.innerHTML += `<option value="${header}">${header}</option>`;
+                    });
+                    
+                    jenisProdukSelect.disabled = false;
+                    displayMessage(`✔️ Jenis produk untuk ${category} berhasil dimuat.`);
+
+                } catch (error) {
+                    console.error('Error fetching headers:', error);
+                    jenisProdukSelect.innerHTML = '<option value="">-- Gagal memuat data --</option>';
+                    displayMessage('❌ Gagal memuat Jenis Produk. Cek koneksi Apps Script.', 'error');
+                }
+            }
             
-            /**
-             * DEVELOPE COMMENT:
-             * Perubahan teks copyright HANYA dilakukan pada konstanta di bawah ini.
-             * Teks ditaruh di sini untuk memastikan konsistensi dan mempersulit perubahan
-             * oleh pengguna yang tidak berkepentingan (meskipun tidak sepenuhnya mengamankan).
-             */
+            // =========================================
+            // 3. LOGIKA JENIS PRODUK & LIVE SEARCH (Nama Barang)
+            // =========================================
+            jenisProdukSelect.addEventListener('change', (e) => {
+                const selectedJenis = e.target.value;
+                namaBarangInput.value = '';
+                autocompleteList.innerHTML = '';
+
+                if (selectedJenis) {
+                    namaBarangInput.disabled = false;
+                    namaBarangInput.focus();
+                    fetchNamaBarang(currentCategory, selectedJenis);
+                } else {
+                    namaBarangInput.disabled = true;
+                    productNamesCache = [];
+                }
+            });
+
+            // Fungsi Asumsi: Mengambil daftar Nama Barang (row 2-end dari kolom yang dipilih)
+            async function fetchNamaBarang(category, jenisProduk) {
+                displayMessage(`⏳ Memuat data barang untuk ${jenisProduk}...`, 'loading');
+
+                // ASUMSI: Apps Script merespon dengan JSON array ['Nama Barang 1', 'Nama Barang 2', ...]
+                let mockNames = [];
+                if (category === 'BESI' && jenisProduk === 'Pipa') mockNames = ['Pipa PVC Rucika 4"', 'Pipa Galvanis 1/2"', 'Pipa HDPE 3"'];
+                else if (category === 'KERAMIK' && jenisProduk === 'Lantai') mockNames = ['Keramik Lantai 40x40 Putih', 'Keramik Motif Kayu 60x60', 'Keramik Lantai Dapur 30x30'];
+                else mockNames = ['Produk A', 'Produk B', 'Produk C']; // Fallback
+                
+                try {
+                    // Dalam implementasi nyata, ganti dengan fetch ke Apps Script Anda
+                    // const response = await fetch(`${SCRIPT_URL}?action=getProducts&category=${category}&jenisProduk=${jenisProduk}`);
+                    // productNamesCache = await response.json();
+                    
+                    productNamesCache = mockNames;
+                    displayMessage(`✔️ Data barang untuk ${jenisProduk} siap. Total ${productNamesCache.length} item.`);
+
+                } catch (error) {
+                    console.error('Error fetching product names:', error);
+                    displayMessage('❌ Gagal memuat Nama Barang. Cek koneksi Apps Script.', 'error');
+                }
+            }
+
+            // Event Listener untuk Live Search
+            namaBarangInput.addEventListener('input', function() {
+                const val = this.value.toLowerCase();
+                closeAllLists();
+                if (!val) { return false; }
+
+                // Buat div untuk menampung suggestions
+                let i, a, item;
+                for (i = 0; i < productNamesCache.length; i++) {
+                    // Cek jika item dimulai dengan input value (case-insensitive)
+                    if (productNamesCache[i].toLowerCase().includes(val)) {
+                        a = document.createElement("div");
+                        // Bold the matching part
+                        const matchIndex = productNamesCache[i].toLowerCase().indexOf(val);
+                        const beforeMatch = productNamesCache[i].substring(0, matchIndex);
+                        const matchText = productNamesCache[i].substring(matchIndex, matchIndex + val.length);
+                        const afterMatch = productNamesCache[i].substring(matchIndex + val.length);
+
+                        a.innerHTML = beforeMatch + "<strong>" + matchText + "</strong>" + afterMatch;
+                        
+                        a.addEventListener("click", function() {
+                            // Set value input dan tutup list
+                            namaBarangInput.value = this.textContent;
+                            closeAllLists();
+                            jumlahInput.focus();
+                        });
+                        autocompleteList.appendChild(a);
+                    }
+                }
+            });
+
+            function closeAllLists(elmnt) {
+                // Tutup semua list suggestion kecuali yang di klik (jika ada)
+                const x = document.querySelectorAll(".autocomplete-items div");
+                x.forEach(item => {
+                    if (elmnt !== item && elmnt !== namaBarangInput) {
+                        item.parentNode.removeChild(item);
+                    }
+                });
+            }
+
+            // Tutup suggestions jika klik di luar input
+            document.addEventListener("click", function (e) {
+                closeAllLists(e.target);
+            });
+            
+            // =========================================
+            // 4. LOGIKA PENGIRIMAN FORM (Masuk/Keluar)
+            // =========================================
+            [masukButton, keluarButton].forEach(button => {
+                button.addEventListener('click', (e) => {
+                    e.preventDefault(); // Mencegah submit form biasa
+                    
+                    // Pastikan semua field wajib terisi
+                    if (!form.checkValidity()) {
+                        displayMessage('❌ Harap isi semua kolom wajib (Kategori, Jenis, Nama, Jumlah, Checker).', 'error');
+                        form.reportValidity(); // Menampilkan pesan error browser
+                        return;
+                    }
+
+                    const action = e.currentTarget.getAttribute('data-action');
+                    const timestamp = new Date().toISOString(); // Timestamp saat ini
+
+                    const data = {
+                        action: 'saveInventory', // Aksi di Apps Script
+                        timestamp: timestamp,
+                        namaBarang: namaBarangInput.value,
+                        masukIn: action === 'Masuk' ? jumlahInput.value : '',
+                        keluarOut: action === 'Keluar' ? jumlahInput.value : '',
+                        checker: checkerInput.value
+                    };
+
+                    // --- OPTIMIS UI: RESET FORM INSTAN SEBELUM FETCH ---
+                    displayMessage(`⏳ Data Barang ${action} sedang dikirim...`, 'loading');
+                    
+                    // 1. Reset Form dan Fokus Instan (kecuali Checker & Kategori)
+                    namaBarangInput.value = '';
+                    jumlahInput.value = '';
+                    jenisProdukSelect.value = '';
+                    namaBarangInput.disabled = true;
+                    autocompleteList.innerHTML = '';
+                    
+                    // Arahkan fokus kembali
+                    checkerInput.focus(); // Fokus ke checker, karena checker cenderung sama
+
+                    // 2. Siapkan data untuk pengiriman
+                    const formData = new URLSearchParams(data).toString();
+                    
+                    // 3. Lakukan pengiriman data di latar belakang
+                    fetch(SCRIPT_URL, {
+                        method: 'POST',
+                        mode: 'no-cors', // Digunakan untuk Apps Script, asumsikan berhasil
+                        headers: {
+                            'Content-Type': 'application/x-www-form-urlencoded',
+                        },
+                        body: formData, 
+                    })
+                    .then(() => {
+                        // Karena menggunakan no-cors, ini akan selalu resolve. Kita asumsikan sukses.
+                        displayMessage(`✅ Data ${data.namaBarang} (${data.masukIn || data.keluarOut} unit) berhasil disimpan!`);
+                    })
+                    .catch(error => {
+                        console.error('Error saat fetch:', error);
+                        displayMessage('❌ Gagal mengirim data. Cek URL Apps Script atau koneksi.', 'error');
+                    });
+                });
+            });
+
+            // =========================================
+            // 5. LOGIKA COPYRIGHT & INISIALISASI
+            // =========================================
             const currentYear = new Date().getFullYear();
             const copyrightText = `© ${currentYear} Smart Swalayan.`;
 
             if (copyrightContainer) {
                 copyrightContainer.textContent = copyrightText;
             }
-            // =========================================
 
-            // Pastikan ZXing dihentikan jika jendela ditutup 
-            window.addEventListener('beforeunload', () => {
-                 if (isScanning) {
-                    codeReader.reset();
-                }
-            });
+            // Inisialisasi fokus ke checker (atau kategori)
+            checkerInput.focus();
         });
     </script>
 </body>
