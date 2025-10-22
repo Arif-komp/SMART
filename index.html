@@ -223,7 +223,7 @@
             border: 1px solid #d4d4d4;
             border-bottom: none;
             border-top: none;
-            z-index: 99;
+            z-index: 999; /* 🚨 PERBAIKAN: Meningkatkan Z-INDEX agar tidak tertutup elemen lain */
             top: 100%;
             left: 0;
             right: 0;
@@ -245,6 +245,13 @@
         .autocomplete-items div:last-child {
             border-bottom: none;
         }
+        
+        /* Gaya untuk teks yang cocok (highlight) */
+        .autocomplete-item-highlight {
+            font-weight: 700;
+            color: var(--secondary-color); /* Warna oranye terang untuk highlight */
+        }
+
 
         .autocomplete-items div:hover,
         .autocomplete-active {
@@ -593,11 +600,12 @@ function setupEventListeners() {
     });
 
     // C. LIVE SEARCH (NAMA BARANG INPUT)
-    // 🚨 KODE LIVE SEARCH DENGAN DEBUGGING TAMBAHAN 🚨
+    // 🚨 PERBAIKAN FUNGSI LIVE SEARCH UNTUK MEMASTIKAN TAMPILAN (HIGHLIGHT)
     namaBarangInput.addEventListener('input', () => {
+        // 1. Reset daftar saat ini
+        autocompleteList.innerHTML = '';
+        
         if (namaBarangInput.disabled || productNamesCache.length === 0) {
-            autocompleteList.innerHTML = '';
-             // 💡 DEBUG: Peringatan jika cache kosong
             if (productNamesCache.length === 0 && !namaBarangInput.disabled) {
                 console.warn('⚠️ Product Name Cache kosong. Pastikan Jenis Produk sudah dipilih dan data Sheets sudah terload.');
             }
@@ -605,39 +613,62 @@ function setupEventListeners() {
         }
         
         const input = namaBarangInput.value; 
-        autocompleteList.innerHTML = '';
-
         if (input.length === 0) return;
         
         // 💡 DEBUG: Tampilkan input dan jumlah item yang dicari
         console.log(`Live Search Input: ${input}, Mencari di ${productNamesCache.length} item.`);
 
-
         const matches = productNamesCache.filter(name => 
-            // Membandingkan data UPPERCASE di cache dengan input UPPERCASE
             name.includes(input)
         ).slice(0, 10); 
         
         // 💡 DEBUG: Tampilkan hasil kecocokan
         console.log(`Ditemukan ${matches.length} kecocokan:`, matches);
 
-
         matches.forEach(name => {
             const item = document.createElement('div');
-            item.classList.add('autocomplete-item');
-            item.textContent = name;
+            // Menemukan indeks awal kecocokan
+            const matchIndex = name.indexOf(input); 
+            
+            if (matchIndex >= 0) {
+                // Buat string dengan highlight (bold)
+                const before = name.substring(0, matchIndex);
+                const match = name.substring(matchIndex, matchIndex + input.length);
+                const after = name.substring(matchIndex + input.length);
+                
+                // Gunakan innerHTML untuk menyertakan tag span untuk highlight
+                item.innerHTML = before + 
+                                 `<span class="autocomplete-item-highlight">${match}</span>` + 
+                                 after;
+            } else {
+                item.textContent = name; // Fallback, seharusnya tidak terjadi
+            }
+
+            // Tambahkan event click
             item.addEventListener('click', () => {
                 namaBarangInput.value = name;
                 autocompleteList.innerHTML = '';
             });
+            
+            // 🚨 Pastikan item ditambahkan ke daftar
             autocompleteList.appendChild(item);
         });
+        
+        // 🚨 Tampilkan kontainer jika ada kecocokan
+        if (matches.length > 0) {
+            autocompleteList.style.display = 'block';
+        } else {
+            autocompleteList.style.display = 'none';
+        }
     });
+    // AKHIR PERBAIKAN FUNGSI LIVE SEARCH
 
     // Tutup dropdown saat klik di luar
     document.addEventListener('click', (e) => {
         if (!e.target.matches('#namaBarang')) {
             autocompleteList.innerHTML = '';
+            // Pastikan kontainer disembunyikan
+            autocompleteList.style.display = 'none'; 
         }
     });
 
@@ -668,6 +699,7 @@ function updateJenisProdukDropdown(data) {
     namaBarangInput.disabled = true; 
     namaBarangInput.value = '';
     autocompleteList.innerHTML = '';
+    autocompleteList.style.display = 'none'; // Sembunyikan daftar
     productNamesCache = [];
 
     if (jenisProdukList.length > 0) {
@@ -765,6 +797,7 @@ async function handleFormSubmit(e, action) {
             
             productNamesCache = [];
             autocompleteList.innerHTML = '';
+            autocompleteList.style.display = 'none';
         } else {
             // ❌ Pesan GAGAL TETAP ditampikan
             displayMessage('❌ Gagal menyimpan data: ' + (result.error || 'Terjadi kesalahan tidak diketahui.'), 'error');
