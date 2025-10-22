@@ -8,7 +8,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
         /* ========================================= */
-        /* CSS: GAYA SMART SWALAYAN (Tidak Berubah) */
+        /* CSS: GAYA SMART SWALAYAN */
         /* ========================================= */
 
         /* --- START: 1. DEKLARASI VARIABEL & FONT --- */
@@ -399,20 +399,18 @@ const messageArea = document.getElementById('message'); 
 const kategoriInput = document.getElementById('kategori');
 const masukButton = document.getElementById('masukButton');
 const keluarButton = document.getElementById('keluarButton');
-const lokasiInputGroup = document.getElementById('lokasiInputGroup'); // DOM Lokasi Group
-const lokasiInput = document.getElementById('lokasi'); // DOM Lokasi Input
-const formatSimpanInput = document.getElementById('formatSimpan'); // DOM Format Simpan Hidden Field
-const textInputs = document.querySelectorAll('input[type="text"]'); // Semua input type text
+const lokasiInputGroup = document.getElementById('lokasiInputGroup'); 
+const lokasiInput = document.getElementById('lokasi'); 
+const formatSimpanInput = document.getElementById('formatSimpan'); 
+const textInputs = document.querySelectorAll('input[type="text"]'); 
 
 
 // Variabel Cache dan State
 let inventoryDataCache = {}; 
-let configDataCache = {}; // Cache untuk menyimpan data konfigurasi baru
+let configDataCache = {}; 
 let currentCategory = '';
 let currentCategoryData = {}; 
 let productNamesCache = []; 
-
-// Data Dummy tidak perlu diubah, karena hanya fallback produk
 
 
 // =================================================================
@@ -435,20 +433,18 @@ document.addEventListener('DOMContentLoaded', () => {
  * @param {object} result Objek data dari Apps Script.
  */
 function handleSheetsData(result) {
-    // Hapus elemen script setelah data diterima
     const scriptElement = document.getElementById('jsonp-script');
     if (scriptElement) {
         scriptElement.remove();
     }
     
-    // Hentikan timeout (jika masih berjalan)
     if (window.jsonpTimeout) {
         clearTimeout(window.jsonpTimeout);
     }
 
     if (result && result.status === 'ok') {
         inventoryDataCache = result.data || {};
-        configDataCache = result.config || {}; // <<< SIMPAN DATA KONFIGURASI BARU
+        configDataCache = result.config || {}; 
         
         if (Object.keys(inventoryDataCache).length === 0) {
             useFallbackData('Data produk dari Apps Script kosong.');
@@ -456,13 +452,14 @@ function handleSheetsData(result) {
         }
         displayMessage('✔️ Data produk dan konfigurasi berhasil dimuat.', 'success');
     } else {
-        // Fallback
         useFallbackData(result.error || 'Respon Apps Script tidak valid.');
     }
 }
 
+/**
+ * Helper function untuk menggunakan data dummy.
+ */
 function useFallbackData(reason) {
-     // Gunakan data dummy lokal
      const FALLBACK_DATA = {
         "BESI": {
             "BAJA RINGAN": ["BAJA RINGAN C75.75", "BAJA RINGAN R30.40"],
@@ -473,12 +470,11 @@ function useFallbackData(reason) {
             "DINDING": ["KERAMIK DINDING 25x40 GARIS"]
         }
     };
-    // Tambahkan konfigurasi default untuk fallback
     const FALLBACK_CONFIG = {
         "BAJA RINGAN": { format: 5 },
-        "BESI BETON": { format: 6 }, // Contoh: BESI BETON butuh lokasi
+        "BESI BETON": { format: 6 }, 
         "LANTAI 40x40": { format: 5 },
-        "DINDING": { format: 6 } // Contoh
+        "DINDING": { format: 6 } 
     };
 
 
@@ -516,7 +512,8 @@ function fetchInitialData() {
 // =================================================================
 
 function setupUppercaseListeners() {
-    textInputs.forEach(input => {
+    // Memastikan listener hanya ditambahkan ke input type="text"
+    document.querySelectorAll('input[type="text"]').forEach(input => {
         input.addEventListener('input', function() {
             // Konversi nilai input menjadi huruf kapital
             this.value = this.value.toUpperCase();
@@ -528,7 +525,7 @@ function setupUppercaseListeners() {
 // 4. EVENT LISTENERS
 // =================================================================
 function setupEventListeners() {
-    // A. KATEGORI (BESI/KERAMIK) SELECTION - (Tidak Berubah)
+    // A. KATEGORI (BESI/KERAMIK) SELECTION
     categoryButtons.forEach(button => {
         button.addEventListener('click', (e) => {
             const selectedCategory = e.currentTarget.getAttribute('data-category');
@@ -546,7 +543,7 @@ function setupEventListeners() {
         });
     });
 
-    // B. JENIS PRODUK SELECTION - (LOGIKA FORMAT SIMPAN DITAMBAHKAN)
+    // B. JENIS PRODUK SELECTION 
     jenisProdukSelect.addEventListener('change', (e) => {
         const selectedJenis = e.target.value;
         namaBarangInput.value = '';
@@ -554,19 +551,17 @@ function setupEventListeners() {
         lokasiInput.value = '';
         
         // 1. Cek dan Set Format Simpan
-        const config = configDataCache[selectedJenis] || { format: 5 }; // Default ke 5 jika tidak ada config
+        const config = configDataCache[selectedJenis] || { format: 5 }; // Default ke 5
         const format = config.format;
-        formatSimpanInput.value = format; // Simpan di hidden field
+        formatSimpanInput.value = format; 
         
         // 2. Tampilkan Lokasi jika format = 6
         if (format === 6) {
             lokasiInputGroup.classList.remove('hidden');
             lokasiInput.required = true;
-            displayMessage(`Jenis Produk: **${selectedJenis}** dipilih. Format Simpan: ${format} Kolom (Lokasi Wajib).`);
         } else {
             lokasiInputGroup.classList.add('hidden');
             lokasiInput.required = false;
-            displayMessage(`Jenis Produk: **${selectedJenis}** dipilih. Format Simpan: ${format} Kolom (Tanpa Lokasi).`);
         }
         
         // 3. Update Nama Barang Cache
@@ -577,11 +572,11 @@ function setupEventListeners() {
         } else {
             namaBarangInput.disabled = true;
             productNamesCache = [];
-            displayMessage(`Pilih Jenis Produk.`);
+            displayMessage(`Pilih Jenis Produk.`); 
         }
     });
 
-    // C. LIVE SEARCH (NAMA BARANG INPUT) - (Tidak Berubah)
+    // C. LIVE SEARCH (NAMA BARANG INPUT)
     namaBarangInput.addEventListener('input', () => {
         const input = namaBarangInput.value.toLowerCase();
         autocompleteList.innerHTML = '';
@@ -644,10 +639,13 @@ function updateJenisProdukDropdown(data) {
             jenisProdukSelect.innerHTML += `<option value="${jenisProduk}">${jenisProduk}</option>`;
         });
         jenisProdukSelect.disabled = false;
+        
+        // PESAN INFORMATIF DIBUAT NETRAL
         displayMessage(`Kategori ${currentCategory} dipilih. Pilih Jenis Produk.`);
     } else {
         jenisProdukSelect.innerHTML = '<option value="">-- Tidak ada Jenis Produk ditemukan --</option>';
         jenisProdukSelect.disabled = true;
+        // PESAN ERROR/WARNING TETAP DITAMPILKAN
         displayMessage(`⚠️ Tidak ada Jenis Produk ditemukan untuk kategori **${currentCategory}**. Cek Google Sheet/Data Fallback.`, 'error');
     }
 }
@@ -680,15 +678,14 @@ async function handleFormSubmit(e, action) {
         return displayMessage('❌ Jumlah harus berupa angka dan lebih dari 0.', 'error');
     }
     
-    // Data yang akan dikirim ke doPost (semua parameter)
+    // Data yang akan dikirim ke doPost
     const dataToSend = {
         kategori: kategori,
         jenisProduk: jenisProduk,
         namaBarang: namaBarang,
         checker: checker,
-        lokasi: lokasi, // Kirim Lokasi (kosong jika format 5)
-        formatSimpan: formatSimpan, // Kirim Format Simpan
-        // Kirim hanya salah satu field sesuai aksi (POST)
+        lokasi: lokasi, 
+        formatSimpan: formatSimpan, 
         masukIn: (action === 'Masuk' ? jumlah : ''), 
         keluarOut: (action === 'Keluar' ? jumlah : '')
     };
