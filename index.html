@@ -442,7 +442,7 @@ function handleSheetsData(result) {
         clearTimeout(window.jsonpTimeout);
     }
     
-    // HILANGKAN PESAN LOADING SEGERA SETELAH RESPON DITERIMA (Perbaikan Poin 3)
+    // HILANGKAN PESAN LOADING SEGERA SETELAH RESPON DITERIMA 
     displayMessage('', 'info');
 
     if (result && result.status === 'ok') {
@@ -454,7 +454,7 @@ function handleSheetsData(result) {
             return;
         }
         
-        // 🚨 PERBAIKAN LIVE SEARCH: Aktifkan input setelah data dimuat
+        // Aktifkan tombol kategori. Dropdown Jenis Produk diaktifkan di updateJenisProdukDropdown.
         categoryButtons.forEach(btn => btn.disabled = false);
         
     } else {
@@ -488,7 +488,7 @@ function useFallbackData(reason) {
      configDataCache = FALLBACK_CONFIG;
      displayMessage(`❌ Gagal memuat data: ${reason}. Menggunakan **DATA DUMMY LOKAL** untuk fungsi dropdown.`, 'error');
      
-     // 🚨 PERBAIKAN LIVE SEARCH: Aktifkan input bahkan saat menggunakan fallback
+     // Aktifkan tombol kategori
      categoryButtons.forEach(btn => btn.disabled = false);
 }
 
@@ -585,7 +585,8 @@ function setupEventListeners() {
         // 3. Update Nama Barang Cache
         if (selectedJenis) {
             productNamesCache = currentCategoryData[selectedJenis] || []; 
-            namaBarangInput.disabled = false;
+            // 🚨 PENGAKTIFAN LIVE SEARCH: Pastikan input Nama Barang diaktifkan saat Jenis Produk dipilih
+            namaBarangInput.disabled = false; 
             namaBarangInput.focus();
         } else {
             namaBarangInput.disabled = true;
@@ -595,6 +596,9 @@ function setupEventListeners() {
 
     // C. LIVE SEARCH (NAMA BARANG INPUT)
     namaBarangInput.addEventListener('input', () => {
+        // Cek jika input dinonaktifkan, jangan jalankan live search (Ini adalah perlindungan yang baik)
+        if (namaBarangInput.disabled) return; 
+        
         const input = namaBarangInput.value.toLowerCase();
         autocompleteList.innerHTML = '';
 
@@ -646,7 +650,8 @@ function updateJenisProdukDropdown(data) {
     lokasiInput.value = '';
     formatSimpanInput.value = '5';
     
-    namaBarangInput.disabled = true;
+    // Reset dan Disable Nama Barang (akan diaktifkan di listener Jenis Produk)
+    namaBarangInput.disabled = true; 
     namaBarangInput.value = '';
     autocompleteList.innerHTML = '';
     productNamesCache = [];
@@ -655,7 +660,8 @@ function updateJenisProdukDropdown(data) {
         jenisProdukList.forEach(jenisProduk => {
             jenisProdukSelect.innerHTML += `<option value="${jenisProduk}">${jenisProduk}</option>`;
         });
-        jenisProdukSelect.disabled = false;
+        // Pastikan dropdown Jenis Produk diaktifkan
+        jenisProdukSelect.disabled = false; 
         
     } else {
         jenisProdukSelect.innerHTML = '<option value="">-- Tidak ada Jenis Produk ditemukan --</option>';
@@ -735,8 +741,9 @@ async function handleFormSubmit(e, action) {
             // Reset fields
             document.getElementById('jumlah').value = '';
             jenisProdukSelect.value = '';
+            // Pastikan input Nama Barang di-disable setelah reset
             namaBarangInput.value = '';
-            namaBarangInput.disabled = true;
+            namaBarangInput.disabled = true; 
             lokasiInput.value = '';
             lokasiInputGroup.classList.add('hidden');
             lokasiInput.required = false;
@@ -775,7 +782,7 @@ function displayMessage(message, type = 'info') {
         messageArea.classList.add('show');
     }, 10);
 
-    // Otomatis hilangkan pesan error/loading setelah 5 detik, kecuali sedang loading (agar loading tetap tampil).
+    // Otomatis hilangkan pesan error setelah 5 detik. Pesan loading akan hilang ketika ada respon/error baru.
     if (type !== 'loading') {
         setTimeout(() => {
             messageArea.classList.remove('show');
