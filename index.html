@@ -1,508 +1,509 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SMART SWALAYAN INVENTORY</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <style>
-        /* ========================================= */
-        /* CSS: GAYA SMART SWALAYAN (Konsolidasi) */
-        /* ========================================= */
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SMART SWALAYAN INVENTORY</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        /* (CSS yang Anda sediakan tidak diubah) */
+        /* ========================================= */
+        /* CSS: GAYA SMART SWALAYAN (Konsolidasi) */
+        /* ========================================= */
 
-        /* --- START: 1. DEKLARASI VARIABEL & FONT --- */
-        :root {
-            --primary-color: #00796b; /* Teal Dark - Warna Utama */
-            --secondary-color: #ff9800; /* Orange - Warna Aksi/Submit */
-            --danger-color: #f44336; /* Merah - Warna Keluar */
-            --success-color: #4CAF50; /* Hijau - Warna Masuk */
-            --text-color: #333;
-            --bg-color: #eceff1; /* Background Abu-abu Muda */
-            --card-bg: #ffffff;
-            --border-radius: 12px;
-            --shadow-heavy: 0 10px 30px rgba(0, 0, 0, 0.15);
-            --shadow-light: 0 4px 10px rgba(0, 0, 0, 0.08);
-            --button-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-        }
-        
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: 'Poppins', sans-serif;
-        }
-        
-        /* --- END: 1. DEKLARASI VARIABEL & FONT --- */
-        
-        /* ------------------------------------------- */
-        
-        /* --- START: 2. BODY & CONTAINER LAYOUT --- */
-        body {
-            background-color: var(--bg-color);
-            display: flex;
-            justify-content: center;
-            align-items: flex-start;
-            min-height: 100vh;
-            padding: 20px;
-            color: var(--text-color);
-        }
-        
-        .container {
-            background-color: var(--card-bg);
-            padding: 30px;
-            border-radius: var(--border-radius);
-            box-shadow: var(--shadow-heavy);
-            width: 100%;
-            max-width: 450px;
-            margin-top: 20px;
-            transition: all 0.3s ease;
-        }
-        
-        .app-title {
-            text-align: center;
-            color: var(--primary-color);
-            font-size: 1.5em;
-            font-weight: 700;
-            margin-bottom: 25px;
-        }
+        /* --- START: 1. DEKLARASI VARIABEL & FONT --- */
+        :root {
+            --primary-color: #00796b; /* Teal Dark - Warna Utama */
+            --secondary-color: #ff9800; /* Orange - Warna Aksi/Submit */
+            --danger-color: #f44336; /* Merah - Warna Keluar */
+            --success-color: #4CAF50; /* Hijau - Warna Masuk */
+            --text-color: #333;
+            --bg-color: #eceff1; /* Background Abu-abu Muda */
+            --card-bg: #ffffff;
+            --border-radius: 12px;
+            --shadow-heavy: 0 10px 30px rgba(0, 0, 0, 0.15);
+            --shadow-light: 0 4px 10px rgba(0, 0, 0, 0.08);
+            --button-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+        
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Poppins', sans-serif;
+        }
+        
+        /* --- END: 1. DEKLARASI VARIABEL & FONT --- */
+        
+        /* ------------------------------------------- */
+        
+        /* --- START: 2. BODY & CONTAINER LAYOUT --- */
+        body {
+            background-color: var(--bg-color);
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            min-height: 100vh;
+            padding: 20px;
+            color: var(--text-color);
+        }
+        
+        .container {
+            background-color: var(--card-bg);
+            padding: 30px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-heavy);
+            width: 100%;
+            max-width: 450px;
+            margin-top: 20px;
+            transition: all 0.3s ease;
+        }
+        
+        .app-title {
+            text-align: center;
+            color: var(--primary-color);
+            font-size: 1.5em;
+            font-weight: 700;
+            margin-bottom: 25px;
+        }
 
-        .app-title i {
-            margin-right: 10px;
-            color: var(--secondary-color);
-        }
+        .app-title i {
+            margin-right: 10px;
+            color: var(--secondary-color);
+        }
 
-        /* Logo Header dihapus */
-        
-        /* --- END: 2. BODY & CONTAINER LAYOUT --- */
-        
-        /* ------------------------------------------- */
-        
-        /* --- START: 4. INPUT GROUP & FIELD UMUM --- */
-        .input-group {
-            margin-bottom: 20px;
-        }
-        
-        .input-group label {
-            display: block;
-            margin-bottom: 8px;
-            color: var(--primary-color);
-            font-weight: 700;
-            font-size: 0.95em;
-        }
-        
-        .input-group label i {
-            margin-right: 5px;
-            color: var(--secondary-color);
-        }
-        
-        input[type="text"],
-        input[type="number"],
-        input[type="date"],
-        select {
-            width: 100%;
-            padding: 12px 15px;
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            font-size: 1em;
-            color: var(--text-color);
-            transition: all 0.3s;
-            appearance: none; /* Untuk konsistensi style dropdown */
-            background-color: var(--card-bg);
-        }
-        
-        input:focus, select:focus {
-            border-color: var(--primary-color);
-            box-shadow: 0 0 0 4px rgba(0, 121, 107, 0.2);
-            background-color: #f7fcfc;
-            outline: none;
-        }
-        /* --- END: 4. INPUT GROUP & FIELD UMUM --- */
-        
-        /* ------------------------------------------- */
-        
-        /* --- START: 5. BUTTON KATEGORI --- */
-        .category-buttons {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 30px;
-            padding: 10px;
-            background-color: #e0f2f1;
-            border-radius: var(--border-radius);
-        }
+        /* Logo Header dihapus */
+        
+        /* --- END: 2. BODY & CONTAINER LAYOUT --- */
+        
+        /* ------------------------------------------- */
+        
+        /* --- START: 4. INPUT GROUP & FIELD UMUM --- */
+        .input-group {
+            margin-bottom: 20px;
+        }
+        
+        .input-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: var(--primary-color);
+            font-weight: 700;
+            font-size: 0.95em;
+        }
+        
+        .input-group label i {
+            margin-right: 5px;
+            color: var(--secondary-color);
+        }
+        
+        input[type="text"],
+        input[type="number"],
+        input[type="date"],
+        select {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 1em;
+            color: var(--text-color);
+            transition: all 0.3s;
+            appearance: none; /* Untuk konsistensi style dropdown */
+            background-color: var(--card-bg);
+        }
+        
+        input:focus, select:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 4px rgba(0, 121, 107, 0.2);
+            background-color: #f7fcfc;
+            outline: none;
+        }
+        /* --- END: 4. INPUT GROUP & FIELD UMUM --- */
+        
+        /* ------------------------------------------- */
+        
+        /* --- START: 5. BUTTON KATEGORI --- */
+        .category-buttons {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+            padding: 10px;
+            background-color: #e0f2f1;
+            border-radius: var(--border-radius);
+        }
 
-        .category-btn {
-            flex-grow: 1;
-            padding: 15px;
-            background-color: #b2dfdb; /* Warna netral */
-            color: var(--primary-color);
-            border-radius: 8px;
-            font-weight: 600;
-            transition: background-color 0.2s, transform 0.1s;
-        }
+        .category-btn {
+            flex-grow: 1;
+            padding: 15px;
+            background-color: #b2dfdb; /* Warna netral */
+            color: var(--primary-color);
+            border-radius: 8px;
+            font-weight: 600;
+            transition: background-color 0.2s, transform 0.1s;
+        }
 
-        .category-btn.active {
-            background-color: var(--primary-color);
-            color: var(--card-bg);
-            box-shadow: 0 4px 10px rgba(0, 121, 107, 0.3);
-        }
+        .category-btn.active {
+            background-color: var(--primary-color);
+            color: var(--card-bg);
+            box-shadow: 0 4px 10px rgba(0, 121, 107, 0.3);
+        }
 
-        .category-btn:hover {
-            background-color: #80cbc4;
-        }
-        
-        .category-btn.active:hover {
-            background-color: #004d40;
-        }
-        /* --- END: 5. BUTTON KATEGORI --- */
-        
-        /* ------------------------------------------- */
-        
-        /* --- START: 6. TOMBOL SUBMIT (Masuk/Keluar) --- */
-        .submit-buttons {
-            display: flex;
-            gap: 15px;
-            margin-top: 30px;
-        }
+        .category-btn:hover {
+            background-color: #80cbc4;
+        }
+        
+        .category-btn.active:hover {
+            background-color: #004d40;
+        }
+        /* --- END: 5. BUTTON KATEGORI --- */
+        
+        /* ------------------------------------------- */
+        
+        /* --- START: 6. TOMBOL SUBMIT (Masuk/Keluar) --- */
+        .submit-buttons {
+            display: flex;
+            gap: 15px;
+            margin-top: 30px;
+        }
 
-        .submit-btn {
-            flex-grow: 1;
-            padding: 15px 10px;
-            border: none;
-            border-radius: 10px;
-            font-weight: 700;
-            font-size: 1.1em;
-            color: white;
-            transition: background-color 0.3s, transform 0.1s, box-shadow 0.3s;
-            box-shadow: var(--button-shadow);
-        }
+        .submit-btn {
+            flex-grow: 1;
+            padding: 15px 10px;
+            border: none;
+            border-radius: 10px;
+            font-weight: 700;
+            font-size: 1.1em;
+            color: white;
+            transition: background-color 0.3s, transform 0.1s, box-shadow 0.3s;
+            box-shadow: var(--button-shadow);
+        }
 
-        #masukButton {
-            background-color: var(--success-color); /* Hijau */
-            box-shadow: 0 5px 15px rgba(76, 175, 80, 0.4);
-        }
+        #masukButton {
+            background-color: var(--success-color); /* Hijau */
+            box-shadow: 0 5px 15px rgba(76, 175, 80, 0.4);
+        }
 
-        #keluarButton {
-            background-color: var(--danger-color); /* Merah */
-            box-shadow: 0 5px 15px rgba(244, 67, 54, 0.4);
-        }
+        #keluarButton {
+            background-color: var(--danger-color); /* Merah */
+            box-shadow: 0 5px 15px rgba(244, 67, 54, 0.4);
+        }
 
-        #masukButton:hover {
-            background-color: #388e3c;
-        }
+        #masukButton:hover {
+            background-color: #388e3c;
+        }
 
-        #keluarButton:hover {
-            background-color: #d32f2f;
-        }
+        #keluarButton:hover {
+            background-color: #d32f2f;
+        }
 
-        .submit-btn:active {
-            transform: scale(0.98);
-        }
-        /* --- END: 6. TOMBOL SUBMIT (Masuk/Keluar) --- */
+        .submit-btn:active {
+            transform: scale(0.98);
+        }
+        /* --- END: 6. TOMBOL SUBMIT (Masuk/Keluar) --- */
 
-        /* ------------------------------------------- */
+        /* ------------------------------------------- */
 
-        /* --- START: 7. LIVE SEARCH SUGGESTION --- */
-        /* Kontainer untuk suggestion dropdown */
-        .autocomplete-container {
-            position: relative;
-        }
+        /* --- START: 7. LIVE SEARCH SUGGESTION --- */
+        /* Kontainer untuk suggestion dropdown */
+        .autocomplete-container {
+            position: relative;
+        }
 
-        .autocomplete-items {
-            position: absolute;
-            border: 1px solid #d4d4d4;
-            border-bottom: none;
-            border-top: none;
-            z-index: 99;
-            top: 100%;
-            left: 0;
-            right: 0;
-            max-height: 200px;
-            overflow-y: auto;
-            border-radius: 0 0 8px 8px;
-            background-color: white;
-            box-shadow: var(--shadow-light);
-        }
+        .autocomplete-items {
+            position: absolute;
+            border: 1px solid #d4d4d4;
+            border-bottom: none;
+            border-top: none;
+            z-index: 99;
+            top: 100%;
+            left: 0;
+            right: 0;
+            max-height: 200px;
+            overflow-y: auto;
+            border-radius: 0 0 8px 8px;
+            background-color: white;
+            box-shadow: var(--shadow-light);
+        }
 
-        .autocomplete-items div {
-            padding: 10px;
-            cursor: pointer;
-            background-color: #fff; 
-            border-bottom: 1px solid #d4d4d4;
-            font-size: 0.9em;
-        }
+        .autocomplete-items div {
+            padding: 10px;
+            cursor: pointer;
+            background-color: #fff; 
+            border-bottom: 1px solid #d4d4d4;
+            font-size: 0.9em;
+        }
 
-        .autocomplete-items div:last-child {
-            border-bottom: none;
-        }
+        .autocomplete-items div:last-child {
+            border-bottom: none;
+        }
 
-        .autocomplete-items div:hover,
-        .autocomplete-active {
-            background-color: #e8f5e9 !important;
-            color: var(--primary-color);
-        }
-        /* --- END: 7. LIVE SEARCH SUGGESTION --- */
-        
-        /* ------------------------------------------- */
-        
-        /* --- START: 8. MESSAGE DISPLAY --- */
-        .message {
-            text-align: center;
-            margin-top: 20px;
-            padding: 12px;
-            border-radius: 8px;
-            font-weight: 600;
-            background-color: #e8f5e9;
-            color: #2e7d32;
-            border: 1px solid #c8e6c9; 
-            opacity: 0;
-            transition: opacity 0.5s, transform 0.5s;
-            transform: translateY(10px);
-        }
-        
-        .message.error {
-            background-color: #fce4e4; 
-            color: #c62828;
-            border-color: #ef9a9a;
-        }
+        .autocomplete-items div:hover,
+        .autocomplete-active {
+            background-color: #e8f5e9 !important;
+            color: var(--primary-color);
+        }
+        /* --- END: 7. LIVE SEARCH SUGGESTION --- */
+        
+        /* ------------------------------------------- */
+        
+        /* --- START: 8. MESSAGE DISPLAY --- */
+        .message {
+            text-align: center;
+            margin-top: 20px;
+            padding: 12px;
+            border-radius: 8px;
+            font-weight: 600;
+            background-color: #e8f5e9;
+            color: #2e7d32;
+            border: 1px solid #c8e6c9; 
+            opacity: 0;
+            transition: opacity 0.5s, transform 0.5s;
+            transform: translateY(10px);
+        }
+        
+        .message.error {
+            background-color: #fce4e4; 
+            color: #c62828;
+            border-color: #ef9a9a;
+        }
 
-        .message.loading {
-            background-color: #fffde7;
-            color: #fbc02d;
-            border-color: #fff9c4;
-        }
-        
-        .message.show {
-            opacity: 1;
-            transform: translateY(0);
-        }
-        
-        /* --- END: 8. MESSAGE DISPLAY --- */
-        
-        /* ------------------------------------------- */
+        .message.loading {
+            background-color: #fffde7;
+            color: #fbc02d;
+            border-color: #fff9c4;
+        }
+        
+        .message.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        /* --- END: 8. MESSAGE DISPLAY --- */
+        
+        /* ------------------------------------------- */
 
-        /* --- START: 9. COPYRIGHT FOOTER --- */
-        .footer-copyright {
-            margin-top: 20px;
-            padding-top: 10px;
-            border-top: 1px solid #ddd;
-            text-align: center;
-            font-size: 0.75em;
-            color: #777;
-        }
-        /* --- END: 9. COPYRIGHT FOOTER --- */
+        /* --- START: 9. COPYRIGHT FOOTER --- */
+        .footer-copyright {
+            margin-top: 20px;
+            padding-top: 10px;
+            border-top: 1px solid #ddd;
+            text-align: center;
+            font-size: 0.75em;
+            color: #777;
+        }
+        /* --- END: 9. COPYRIGHT FOOTER --- */
 
-        /* --- START: 10. RESPONSIVE ADJUSTMENTS (@media) --- */
-        @media (max-width: 600px) {
-            body { padding: 10px; }
-            .container { padding: 20px; margin-top: 0; border-radius: 0; box-shadow: none; }
-            .app-title { font-size: 1.3em; margin-bottom: 20px; }
-            input, select, .category-btn, .submit-btn { padding: 10px; font-size: 0.95em; }
-            .submit-buttons { gap: 10px; }
-        }
-        /* --- END: 10. RESPONSIVE ADJUSTMENTS (@media) --- */
-    </style>
+        /* --- START: 10. RESPONSIVE ADJUSTMENTS (@media) --- */
+        @media (max-width: 600px) {
+            body { padding: 10px; }
+            .container { padding: 20px; margin-top: 0; border-radius: 0; box-shadow: none; }
+            .app-title { font-size: 1.3em; margin-bottom: 20px; }
+            input, select, .category-btn, .submit-btn { padding: 10px; font-size: 0.95em; }
+            .submit-buttons { gap: 10px; }
+        }
+        /* --- END: 10. RESPONSIVE ADJUSTMENTS (@media) --- */
+    </style>
 </head>
 <body>
-    <div class="container">
-        <div class="app-title">
-            <i class="fas fa-warehouse"></i> Smart Swalayan Inventory
-        </div>
-        
-        <form id="inventoryForm">
-            <div class="input-group">
-                <label><i class="fas fa-cubes"></i> Kategori Barang</label>
-                <div class="category-buttons">
-                    <button type="button" class="category-btn" data-category="BESI" id="btnBesi">
-                        <i class="fas fa-hammer"></i> BESI
-                    </button>
-                    <button type="button" class="category-btn" data-category="KERAMIK" id="btnKeramik">
-                        <i class="fas fa-couch"></i> KERAMIK
-                    </button>
-                </div>
-                <input type="hidden" id="kategori" name="kategori" required>
-            </div>
+    <div class="container">
+        <div class="app-title">
+            <i class="fas fa-warehouse"></i> Smart Swalayan Inventory
+        </div>
+        
+        <form id="inventoryForm">
+            <div class="input-group">
+                <label><i class="fas fa-cubes"></i> Kategori Barang</label>
+                <div class="category-buttons">
+                    <button type="button" class="category-btn" data-category="BESI" id="btnBesi">
+                        <i class="fas fa-hammer"></i> BESI
+                    </button>
+                    <button type="button" class="category-btn" data-category="KERAMIK" id="btnKeramik">
+                        <i class="fas fa-couch"></i> KERAMIK
+                    </button>
+                </div>
+                <input type="hidden" id="kategori" name="kategori" required>
+            </div>
 
-            <div class="input-group">
-                <label for="jenisProduk"><i class="fas fa-stream"></i> Jenis Produk</label>
-                <select id="jenisProduk" name="jenisProduk" disabled required>
-                    <option value="">-- Pilih Kategori Dulu --</option>
-                </select>
-            </div>
+            <div class="input-group">
+                <label for="jenisProduk"><i class="fas fa-stream"></i> Jenis Produk</label>
+                <select id="jenisProduk" name="jenisProduk" disabled required>
+                    <option value="">-- Pilih Kategori Dulu --</option>
+                </select>
+            </div>
 
-            <div class="input-group">
-                <label for="namaBarang"><i class="fas fa-box-open"></i> Nama Barang</label>
-                <div class="autocomplete-container">
-                    <input type="text" id="namaBarang" name="namaBarang" placeholder="Ketik nama barang..." disabled required>
-                    <div id="autocomplete-list" class="autocomplete-items">
-                        </div>
-                </div>
-            </div>
+            <div class="input-group">
+                <label for="namaBarang"><i class="fas fa-box-open"></i> Nama Barang</label>
+                <div class="autocomplete-container">
+                    <input type="text" id="namaBarang" name="namaBarang" placeholder="Ketik nama barang..." disabled required>
+                    <div id="autocompleteList" class="autocomplete-items">
+                        </div>
+                </div>
+            </div>
 
-            <div class="input-group">
-                <label for="jumlah"><i class="fas fa-sort-numeric-up-alt"></i> Jumlah</label>
-                <input type="number" id="jumlah" name="jumlah" placeholder="Masukkan jumlah" required min="1">
-            </div>
+                        <div class="input-group">
+                <label for="jumlah"><i class="fas fa-sort-numeric-up-alt"></i> Jumlah</label>
+                <input type="number" id="jumlah" name="jumlah" placeholder="Masukkan jumlah" required min="1">
+            </div>
 
-            <div class="input-group">
-                <label for="checker"><i class="fas fa-user-check"></i> Checker</label>
-                <input type="text" id="checker" name="checker" placeholder="Nama Checker" required>
-            </div>
+            <div class="input-group">
+                <label for="checker"><i class="fas fa-user-check"></i> Checker</label>
+                <input type="text" id="checker" name="checker" placeholder="Nama Checker" required>
+            </div>
 
-            <div class="submit-buttons">
-                <button type="submit" id="masukButton" class="submit-btn" data-action="Masuk">
-                    <i class="fas fa-arrow-alt-circle-up"></i> Barang MASUK
-                </button>
-                <button type="submit" id="keluarButton" class="submit-btn" data-action="Keluar">
-                    <i class="fas fa-arrow-alt-circle-down"></i> Barang KELUAR
-                </button>
-            </div>
+            <div class="submit-buttons">
+                <button type="submit" id="masukButton" class="submit-btn" data-action="Masuk">
+                    <i class="fas fa-arrow-alt-circle-up"></i> Barang MASUK
+                </button>
+                <button type="submit" id="keluarButton" class="submit-btn" data-action="Keluar">
+                    <i class="fas fa-arrow-alt-circle-down"></i> Barang KELUAR
+                </button>
+            </div>
 
-            <p id="message" class="message"></p>
-        </form>
-        
-        <div id="app-footer-copyright" class="footer-copyright"></div>
-    </div>
+                        <p id="messageArea" class="message"></p>
+        </form>
+        
+        <div id="app-footer-copyright" class="footer-copyright"></div>
+    </div>
 
 <script>
 // =================================================================
 // 🚨 PENTING: Ganti dengan URL Deployment Apps Script Anda yang sudah di-publish!
 // =================================================================
-const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxBF_zlA3B-nmddPvQUyiS5BfGW1FBKnwKfpKBRvqWUoFeQchrLvUrnA6ztCuQkcsy1mA/exec'; 
+const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxBF_zlA3B-nmddPvQUyiS5BfGW1FBKnwKfpKBRvqWUoFeQchrLvUrnA6ztCuQkcsy1mA/exec'; 
 
 // Elemen DOM
 const categoryButtons = document.querySelectorAll('.category-btn');
 const jenisProdukSelect = document.getElementById('jenisProduk');
 const namaBarangInput = document.getElementById('namaBarang');
-const autocompleteList = document.getElementById('autocompleteList');
+// PERHATIAN: ID autocompleteList pada HTML Anda adalah "autocomplete-list", harus disesuaikan.
+const autocompleteList = document.getElementById('autocomplete-list'); 
 const form = document.getElementById('inventoryForm');
-const messageArea = document.getElementById('messageArea');
+// PERBAIKAN: ID pada HTML sekarang adalah "messageArea" (sesuai dengan JS)
+const messageArea = document.getElementById('messageArea'); 
 const kategoriInput = document.getElementById('kategori'); // Input hidden untuk kategori
+const jumlahInput = document.getElementById('jumlah'); // Ambil input jumlah
 
 // Variabel Cache dan State
-let inventoryDataCache = {}; // Menyimpan semua data { "BESI": { 'Jenis': [...] }, "KERAMIK": { 'Jenis': [...] } }
+let inventoryDataCache = {}; 
 let currentCategory = '';
-let currentCategoryData = {}; // Data Jenis Produk/Nama Barang untuk kategori yang sedang aktif
-let productNamesCache = []; // Daftar Nama Barang untuk Jenis Produk yang dipilih saat ini
+let currentCategoryData = {}; 
+let productNamesCache = []; 
 
 // =================================================================
 // 1. FUNGSI UTAMA & INITIALIZATION
 // =================================================================
 
 document.addEventListener('DOMContentLoaded', () => {
-    // Panggil fungsi untuk mengambil data produk dari Apps Script saat halaman dimuat
-    fetchInitialData();
-    
-    // Setup event listeners
-    setupEventListeners();
+    fetchInitialData();
+    setupEventListeners();
 });
 
 /**
- * Mengambil semua data produk (BESI & KERAMIK) dari Apps Script (doGet).
- */
+ * Mengambil semua data produk (BESI & KERAMIK) dari Apps Script (doGet).
+ */
 async function fetchInitialData() {
-    displayMessage('⏳ Memuat semua data produk (BESI & KERAMIK)...', 'loading');
-    
-    try {
-        const response = await fetch(SCRIPT_URL);
-        const result = await response.json();
-        
-        if (result.status === 'ok') {
-            inventoryDataCache = result.data;
-            displayMessage('✔️ Data produk berhasil dimuat. Pilih kategori untuk memulai.', 'success');
-        } else {
-            displayMessage('❌ Gagal memuat data awal: ' + result.error, 'error');
-        }
-    } catch (error) {
-        console.error('Fetch initial data error:', error);
-        displayMessage('❌ Gagal memuat data. Pastikan Apps Script telah di-deploy dengan benar.', 'error');
-    }
+    // Error pertama hilang karena messageArea sudah ditemukan
+    displayMessage('⏳ Memuat semua data produk (BESI & KERAMIK)...', 'loading');
+    
+    try {
+        const response = await fetch(SCRIPT_URL);
+        const result = await response.json();
+        
+        if (result.status === 'ok') {
+            inventoryDataCache = result.data;
+            displayMessage('✔️ Data produk berhasil dimuat. Pilih kategori untuk memulai.', 'success');
+        } else {
+            displayMessage('❌ Gagal memuat data awal: ' + result.error, 'error');
+        }
+    } catch (error) {
+        console.error('Fetch initial data error:', error);
+        displayMessage('❌ Gagal memuat data. Pastikan Apps Script telah di-deploy dengan benar.', 'error');
+    }
 }
 
 /**
- * Menetapkan semua event listeners untuk interaksi pengguna.
- */
+ * Menetapkan semua event listeners untuk interaksi pengguna.
+ */
 function setupEventListeners() {
-    // -----------------------------------------
-    // A. KATEGORI (BESI/KERAMIK) SELECTION
-    // -----------------------------------------
-    categoryButtons.forEach(button => {
-        button.addEventListener('click', (e) => {
-            const selectedCategory = e.currentTarget.getAttribute('data-category');
-            if (currentCategory === selectedCategory) return; 
+    // -----------------------------------------
+    // A. KATEGORI (BESI/KERAMIK) SELECTION
+    // -----------------------------------------
+    categoryButtons.forEach(button => {
+        button.addEventListener('click', (e) => {
+            const selectedCategory = e.currentTarget.getAttribute('data-category');
+            if (currentCategory === selectedCategory) return; 
 
-            // Update UI tombol
-            categoryButtons.forEach(btn => btn.classList.remove('active'));
-            e.currentTarget.classList.add('active');
+            // Update UI tombol
+            categoryButtons.forEach(btn => btn.classList.remove('active'));
+            e.currentTarget.classList.add('active');
 
-            // Update state
-            currentCategory = selectedCategory;
-            kategoriInput.value = selectedCategory;
-            
-            // Ambil data dari cache
-            currentCategoryData = inventoryDataCache[selectedCategory] || {}; 
-            
-            // Reset dan tampilkan Jenis Produk dari data cache
-            updateJenisProdukDropdown(currentCategoryData);
-        });
-    });
+            // Update state
+            currentCategory = selectedCategory;
+            kategoriInput.value = selectedCategory;
+            
+            // Ambil data dari cache
+            currentCategoryData = inventoryDataCache[selectedCategory] || {}; 
+            
+            // Reset dan tampilkan Jenis Produk dari data cache
+            updateJenisProdukDropdown(currentCategoryData);
+        });
+    });
 
-    // -----------------------------------------
-    // B. JENIS PRODUK SELECTION
-    // -----------------------------------------
-    jenisProdukSelect.addEventListener('change', (e) => {
-        const selectedJenis = e.target.value;
-        namaBarangInput.value = '';
-        autocompleteList.innerHTML = '';
+    // -----------------------------------------
+    // B. JENIS PRODUK SELECTION
+    // -----------------------------------------
+    jenisProdukSelect.addEventListener('change', (e) => {
+        const selectedJenis = e.target.value;
+        namaBarangInput.value = '';
+        autocompleteList.innerHTML = '';
 
-        if (selectedJenis) {
-            // Ambil Nama Barang langsung dari cache kategori yang aktif
-            productNamesCache = currentCategoryData[selectedJenis] || []; 
-            namaBarangInput.disabled = false;
-            namaBarangInput.focus();
-            displayMessage(`✔️ ${productNamesCache.length} Nama Barang untuk ${selectedJenis} siap dicari.`);
-        } else {
-            namaBarangInput.disabled = true;
-            productNamesCache = [];
-        }
-    });
+        if (selectedJenis) {
+            productNamesCache = currentCategoryData[selectedJenis] || []; 
+            namaBarangInput.disabled = false;
+            namaBarangInput.focus();
+            displayMessage(`✔️ ${productNamesCache.length} Nama Barang untuk ${selectedJenis} siap dicari.`);
+        } else {
+            namaBarangInput.disabled = true;
+            productNamesCache = [];
+        }
+    });
 
-    // -----------------------------------------
-    // C. LIVE SEARCH (NAMA BARANG INPUT)
-    // -----------------------------------------
-    namaBarangInput.addEventListener('input', () => {
-        const input = namaBarangInput.value.toLowerCase();
-        autocompleteList.innerHTML = '';
+    // -----------------------------------------
+    // C. LIVE SEARCH (NAMA BARANG INPUT)
+    // -----------------------------------------
+    namaBarangInput.addEventListener('input', () => {
+        const input = namaBarangInput.value.toLowerCase();
+        autocompleteList.innerHTML = '';
 
-        if (input.length === 0) return;
+        if (input.length === 0) return;
 
-        const matches = productNamesCache.filter(name => 
-            name.toLowerCase().includes(input)
-        ).slice(0, 10); // Batasi hingga 10 hasil
+        const matches = productNamesCache.filter(name => 
+            name.toLowerCase().includes(input)
+        ).slice(0, 10); 
 
-        matches.forEach(name => {
-            const item = document.createElement('div');
-            item.classList.add('autocomplete-item');
-            item.textContent = name;
-            item.addEventListener('click', () => {
-                namaBarangInput.value = name;
-                autocompleteList.innerHTML = '';
-            });
-            autocompleteList.appendChild(item);
-        });
-    });
+        matches.forEach(name => {
+            const item = document.createElement('div');
+            item.classList.add('autocomplete-item');
+            item.textContent = name;
+            item.addEventListener('click', () => {
+                namaBarangInput.value = name;
+                autocompleteList.innerHTML = '';
+            });
+            autocompleteList.appendChild(item);
+        });
+    });
 
-    // Tutup dropdown saat klik di luar
-    document.addEventListener('click', (e) => {
-        if (!e.target.matches('#namaBarang')) {
-            autocompleteList.innerHTML = '';
-        }
-    });
+    // Tutup dropdown saat klik di luar
+    document.addEventListener('click', (e) => {
+        if (!e.target.matches('#namaBarang')) {
+            autocompleteList.innerHTML = '';
+        }
+    });
 
-    // -----------------------------------------
-    // D. FORM SUBMISSION (doPost)
-    // -----------------------------------------
-    form.addEventListener('submit', handleFormSubmit);
+    // -----------------------------------------
+    // D. FORM SUBMISSION (doPost)
+    // -----------------------------------------
+    form.addEventListener('submit', handleFormSubmit);
 }
 
 // =================================================================
@@ -510,97 +511,108 @@ function setupEventListeners() {
 // =================================================================
 
 /**
- * Mengisi dropdown Jenis Produk berdasarkan data kategori yang dipilih.
- */
+ * Mengisi dropdown Jenis Produk berdasarkan data kategori yang dipilih.
+ */
 function updateJenisProdukDropdown(data) {
-    jenisProdukSelect.innerHTML = '<option value="">-- Pilih Jenis Produk --</option>';
-    
-    const jenisProdukList = Object.keys(data);
-    
-    if (jenisProdukList.length > 0) {
-        jenisProdukList.forEach(jenisProduk => {
-            jenisProdukSelect.innerHTML += `<option value="${jenisProduk}">${jenisProduk}</option>`;
-        });
-        jenisProdukSelect.disabled = false;
-    } else {
-        jenisProdukSelect.innerHTML = '<option value="">-- Tidak ada Jenis Produk ditemukan --</option>';
-        jenisProdukSelect.disabled = true;
-        displayMessage(`⚠️ Tidak ada data ditemukan untuk kategori ${currentCategory}.`);
-    }
+    jenisProdukSelect.innerHTML = '<option value="">-- Pilih Jenis Produk --</option>';
+    
+    const jenisProdukList = Object.keys(data);
+    
+    if (jenisProdukList.length > 0) {
+        jenisProdukList.forEach(jenisProduk => {
+            jenisProdukSelect.innerHTML += `<option value="${jenisProduk}">${jenisProduk}</option>`;
+        });
+        jenisProdukSelect.disabled = false;
+    } else {
+        jenisProdukSelect.innerHTML = '<option value="">-- Tidak ada Jenis Produk ditemukan --</option>';
+        jenisProdukSelect.disabled = true;
+        displayMessage(`⚠️ Tidak ada data ditemukan untuk kategori ${currentCategory}.`);
+    }
 
-    // Reset elemen terkait
-    namaBarangInput.disabled = true;
-    namaBarangInput.value = '';
-    autocompleteList.innerHTML = '';
-    productNamesCache = [];
+    // Reset elemen terkait
+    namaBarangInput.disabled = true;
+    namaBarangInput.value = '';
+    autocompleteList.innerHTML = '';
+    productNamesCache = [];
 }
 
 
 /**
- * Menangani pengiriman form (Barang Masuk/Keluar) ke Apps Script (doPost).
- */
+ * Menangani pengiriman form (Barang Masuk/Keluar) ke Apps Script (doPost).
+ */
 async function handleFormSubmit(e) {
-    e.preventDefault();
-    
-    const formData = new FormData(form);
-    const data = {};
-    formData.forEach((value, key) => {
-        data[key] = value.trim();
-    });
+    e.preventDefault();
+    
+    // Tentukan apakah ini tombol MASUK atau KELUAR yang diklik
+    const submitButton = e.submitter;
+    const action = submitButton.getAttribute('data-action');
+    const jumlah = jumlahInput.value.trim();
 
-    // Validasi Sederhana
-    if (!data.kategori || !data.namaBarang || !data.checker) {
-        return displayMessage('❌ Kategori, Nama Barang, dan Checker wajib diisi.', 'error');
-    }
-    const hasQuantity = data.masukIn || data.keluarOut;
-    if (!hasQuantity) {
-        return displayMessage('❌ Masukkan setidaknya salah satu kuantitas (Masuk atau Keluar).', 'error');
-    }
-    
-    // Pastikan hanya satu quantity yang terisi
-    if (data.masukIn && data.keluarOut) {
-        return displayMessage('❌ Hanya boleh mengisi Masuk/In atau Keluar/Out.', 'error');
-    }
+    const formData = new FormData(form);
+    const data = {};
 
-    displayMessage('⏳ Mengirim data...', 'loading');
-    
-    // Konversi object data ke format URL-encoded
-    const urlEncodedData = Object.keys(data).map(key => 
-        encodeURIComponent(key) + '=' + encodeURIComponent(data[key])
-    ).join('&');
-    
-    try {
-        const response = await fetch(SCRIPT_URL, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/x-www-form-urlencoded',
-            },
-            body: urlEncodedData,
-        });
+    // Tambahkan data form standar
+    data['kategori'] = formData.get('kategori').trim();
+    data['namaBarang'] = formData.get('namaBarang').trim();
+    data['checker'] = formData.get('checker').trim();
+    
+    // Tentukan mana yang Masuk atau Keluar
+    data['masukIn'] = action === 'Masuk' ? jumlah : '';
+    data['keluarOut'] = action === 'Keluar' ? jumlah : '';
+    
 
-        const result = await response.json();
-        
-        if (result.status === 'success') {
-            displayMessage('✅ Data **BERHASIL** disimpan di Spreadsheet!', 'success');
-            form.reset(); // Reset form setelah sukses
-            // Pertahankan kategori yang aktif dan refresh dropdown
-            document.querySelector(`.category-btn[data-category="${currentCategory}"]`).classList.add('active');
-            updateJenisProdukDropdown(currentCategoryData); 
-        } else {
-            displayMessage('❌ Gagal menyimpan data: ' + result.error, 'error');
-        }
-    } catch (error) {
-        console.error('Submit error:', error);
-        displayMessage('❌ Terjadi kesalahan jaringan. Cek koneksi Anda.', 'error');
-    }
+    // Validasi Sederhana
+    if (!data.kategori || !data.namaBarang || !data.checker) {
+        return displayMessage('❌ Kategori, Nama Barang, dan Checker wajib diisi.', 'error');
+    }
+    if (!jumlah || Number(jumlah) <= 0) {
+        return displayMessage('❌ Masukkan jumlah yang valid (minimal 1).', 'error');
+    }
+    
+    displayMessage(`⏳ Mengirim data Barang ${action}...`, 'loading');
+    
+    // Konversi object data ke format URL-encoded
+    const urlEncodedData = Object.keys(data).map(key => 
+        encodeURIComponent(key) + '=' + encodeURIComponent(data[key])
+    ).join('&');
+    
+    try {
+        const response = await fetch(SCRIPT_URL, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            body: urlEncodedData,
+        });
+
+        const result = await response.json();
+        
+        if (result.status === 'success') {
+            displayMessage(`✅ Data Barang ${action} **BERHASIL** disimpan!`, 'success');
+            // Reset form, kecuali kategori yang sudah dipilih
+            form.reset(); 
+            document.querySelector(`.category-btn[data-category="${currentCategory}"]`).classList.add('active');
+            updateJenisProdukDropdown(currentCategoryData); 
+        } else {
+            displayMessage('❌ Gagal menyimpan data: ' + result.error, 'error');
+        }
+    } catch (error) {
+        console.error('Submit error:', error);
+        displayMessage('❌ Terjadi kesalahan jaringan. Cek koneksi Anda.', 'error');
+    }
 }
 
 /**
- * Menampilkan pesan status kepada pengguna.
- */
+ * Menampilkan pesan status kepada pengguna.
+ */
 function displayMessage(message, type = 'info') {
-    messageArea.className = `message ${type}`;
-    messageArea.innerHTML = message;
+    // Baris ini yang sebelumnya menyebabkan error karena messageArea adalah null
+    if (messageArea) {
+        messageArea.className = `message ${type}`;
+        messageArea.innerHTML = message;
+    } else {
+        console.warn('Elemen pesan status (messageArea) tidak ditemukan.');
+    }
 }
 </script>
 </body>
