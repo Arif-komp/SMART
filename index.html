@@ -232,6 +232,7 @@
             border-radius: 0 0 8px 8px;
             background-color: white;
             box-shadow: var(--shadow-light);
+            display: none; /* Tambahkan ini untuk memastikan tersembunyi saat inisialisasi */
         }
 
         .autocomplete-items div {
@@ -396,21 +397,8 @@
 // 🚨 URL Apps Script yang baru
 const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbz-siwPKU2MeK3GkNrp7NXIrJjl4iQgQWaMPJIMc99Z7bTQwcv1z8bu4fdMMjwdfLLO0Q/exec'; 
 
-// Elemen DOM
-const categoryButtons = document.querySelectorAll('.category-btn');
-const jenisProdukSelect = document.getElementById('jenisProduk');
-const namaBarangInput = document.getElementById('namaBarang');
-const autocompleteList = document.getElementById('autocomplete-list'); 
-const form = document.getElementById('inventoryForm');
-const messageArea = document.getElementById('message'); 
-const kategoriInput = document.getElementById('kategori');
-const masukButton = document.getElementById('masukButton');
-const keluarButton = document.getElementById('keluarButton');
-const lokasiInputGroup = document.getElementById('lokasiInputGroup'); 
-const lokasiInput = document.getElementById('lokasi'); 
-const formatSimpanInput = document.getElementById('formatSimpan'); 
-const textInputs = document.querySelectorAll('input[type="text"]'); 
-
+// Variabel Elemen DOM (Dideklarasikan di atas)
+let categoryButtons, jenisProdukSelect, namaBarangInput, autocompleteList, form, messageArea, kategoriInput, masukButton, keluarButton, lokasiInputGroup, lokasiInput, formatSimpanInput;
 
 // Variabel Cache dan State
 let inventoryDataCache = {}; 
@@ -425,6 +413,20 @@ let productNamesCache = []; 
 // =================================================================
 
 document.addEventListener('DOMContentLoaded', () => {
+    // 💡 PERBAIKAN: INISIALISASI VARIABEL DOM DIPINDAHKAN KE SINI!
+    categoryButtons = document.querySelectorAll('.category-btn');
+    jenisProdukSelect = document.getElementById('jenisProduk');
+    namaBarangInput = document.getElementById('namaBarang');
+    autocompleteList = document.getElementById('autocomplete-list'); 
+    form = document.getElementById('inventoryForm');
+    messageArea = document.getElementById('message'); 
+    kategoriInput = document.getElementById('kategori');
+    masukButton = document.getElementById('masukButton');
+    keluarButton = document.getElementById('keluarButton');
+    lokasiInputGroup = document.getElementById('lokasiInputGroup'); 
+    lokasiInput = document.getElementById('lokasi'); 
+    formatSimpanInput = document.getElementById('formatSimpan'); 
+    
     fetchInitialData();
     setupEventListeners();
     setupUppercaseListeners();
@@ -609,11 +611,16 @@ function setupEventListeners() {
             if (productNamesCache.length === 0 && !namaBarangInput.disabled) {
                 console.warn('⚠️ Product Name Cache kosong. Pastikan Jenis Produk sudah dipilih dan data Sheets sudah terload.');
             }
+            // Sembunyikan jika disabled atau cache kosong
+            autocompleteList.style.display = 'none'; 
             return; 
         }
         
         const input = namaBarangInput.value; 
-        if (input.length === 0) return;
+        if (input.length === 0) {
+            autocompleteList.style.display = 'none'; 
+            return;
+        }
         
         // 💡 DEBUG: Tampilkan input dan jumlah item yang dicari
         console.log(`Live Search Input: ${input}, Mencari di ${productNamesCache.length} item.`);
@@ -648,6 +655,7 @@ function setupEventListeners() {
             item.addEventListener('click', () => {
                 namaBarangInput.value = name;
                 autocompleteList.innerHTML = '';
+                autocompleteList.style.display = 'none'; // Sembunyikan setelah dipilih
             });
             
             // 🚨 Pastikan item ditambahkan ke daftar
@@ -813,6 +821,12 @@ async function handleFormSubmit(e, action) {
  * Menampilkan pesan status kepada pengguna.
  */
 function displayMessage(message, type = 'info') {
+    // 💡 PERBAIKAN: Pastikan messageArea ADA sebelum mencoba menggunakannya
+    if (!messageArea) {
+        console.error('Elemen messageArea (ID: message) belum dimuat.');
+        return;
+    }
+    
     messageArea.classList.remove('show', 'success', 'error', 'loading');
     
     // HILANGKAN PESAN JIKA BUKAN ERROR ATAU LOADING
