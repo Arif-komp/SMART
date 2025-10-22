@@ -364,288 +364,244 @@
         <div id="app-footer-copyright" class="footer-copyright"></div>
     </div>
 
-    <script>
-        // =========================================
-        // JAVASCRIPT LOGIC - SMART SWALAYAN INVENTORY
-        // =========================================
+<script>
+// =================================================================
+// 🚨 PENTING: Ganti dengan URL Deployment Apps Script Anda yang sudah di-publish!
+// =================================================================
+const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxBF_zlA3B-nmddPvQUyiS5BfGW1FBKnwKfpKBRvqWUoFeQchrLvUrnA6ztCuQkcsy1mA/exec'; 
+
+// Elemen DOM
+const categoryButtons = document.querySelectorAll('.category-btn');
+const jenisProdukSelect = document.getElementById('jenisProduk');
+const namaBarangInput = document.getElementById('namaBarang');
+const autocompleteList = document.getElementById('autocompleteList');
+const form = document.getElementById('inventoryForm');
+const messageArea = document.getElementById('messageArea');
+const kategoriInput = document.getElementById('kategori'); // Input hidden untuk kategori
+
+// Variabel Cache dan State
+let inventoryDataCache = {}; // Menyimpan semua data { "BESI": { 'Jenis': [...] }, "KERAMIK": { 'Jenis': [...] } }
+let currentCategory = '';
+let currentCategoryData = {}; // Data Jenis Produk/Nama Barang untuk kategori yang sedang aktif
+let productNamesCache = []; // Daftar Nama Barang untuk Jenis Produk yang dipilih saat ini
+
+// =================================================================
+// 1. FUNGSI UTAMA & INITIALIZATION
+// =================================================================
+
+document.addEventListener('DOMContentLoaded', () => {
+    // Panggil fungsi untuk mengambil data produk dari Apps Script saat halaman dimuat
+    fetchInitialData();
+    
+    // Setup event listeners
+    setupEventListeners();
+});
+
+/**
+ * Mengambil semua data produk (BESI & KERAMIK) dari Apps Script (doGet).
+ */
+async function fetchInitialData() {
+    displayMessage('⏳ Memuat semua data produk (BESI & KERAMIK)...', 'loading');
+    
+    try {
+        const response = await fetch(SCRIPT_URL);
+        const result = await response.json();
         
-        // --- PENTING: GANTI DENGAN URL APPS SCRIPT ANDA ---
-        // Asumsi Apps Script ini sudah diubah untuk:
-        // 1. Menerima parameter 'category' dan mengembalikan List Headers (kolom A, B, C...)
-        // 2. Menerima parameter 'category' dan 'jenisProduk' serta mengembalikan data Nama Barang untuk Live Search
-        // 3. Menerima data POST untuk penyimpanan (Timestamp, Nama Barang, Masuk/In, Keluar/Out, Checker)
-        // Note: URL ini HANYA CONTOH dan HARUS DIUBAH!
-        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxBF_zlA3B-nmddPvQUyiS5BfGW1FBKnwKfpKBRvqWUoFeQchrLvUrnA6ztCuQkcsy1mA/exec'; 
-        // --- AKHIR PENTING ---
+        if (result.status === 'ok') {
+            inventoryDataCache = result.data;
+            displayMessage('✔️ Data produk berhasil dimuat. Pilih kategori untuk memulai.', 'success');
+        } else {
+            displayMessage('❌ Gagal memuat data awal: ' + result.error, 'error');
+        }
+    } catch (error) {
+        console.error('Fetch initial data error:', error);
+        displayMessage('❌ Gagal memuat data. Pastikan Apps Script telah di-deploy dengan benar.', 'error');
+    }
+}
 
-        document.addEventListener('DOMContentLoaded', () => {
-            // 1. Inisialisasi Variabel DOM
-            const form = document.getElementById('inventoryForm');
-            const kategoriInput = document.getElementById('kategori');
-            const jenisProdukSelect = document.getElementById('jenisProduk');
-            const namaBarangInput = document.getElementById('namaBarang');
-            const jumlahInput = document.getElementById('jumlah');
-            const checkerInput = document.getElementById('checker');
-            const masukButton = document.getElementById('masukButton');
-            const keluarButton = document.getElementById('keluarButton');
-            const messageElement = document.getElementById('message');
-            const copyrightContainer = document.getElementById('app-footer-copyright');
-            const categoryButtons = document.querySelectorAll('.category-btn');
-            const autocompleteList = document.getElementById('autocomplete-list');
+/**
+ * Menetapkan semua event listeners untuk interaksi pengguna.
+ */
+function setupEventListeners() {
+    // -----------------------------------------
+    // A. KATEGORI (BESI/KERAMIK) SELECTION
+    // -----------------------------------------
+    categoryButtons.forEach(button => {
+        button.addEventListener('click', (e) => {
+            const selectedCategory = e.currentTarget.getAttribute('data-category');
+            if (currentCategory === selectedCategory) return; 
+
+            // Update UI tombol
+            categoryButtons.forEach(btn => btn.classList.remove('active'));
+            e.currentTarget.classList.add('active');
+
+            // Update state
+            currentCategory = selectedCategory;
+            kategoriInput.value = selectedCategory;
             
-            // State data
-            let currentCategory = '';
-            let productNamesCache = []; // Cache untuk Live Search
-
-            /**
-             * Menampilkan pesan status di UI dengan styling dinamis.
-             * @param {string} text - Teks pesan
-             * @param {string} type - 'success', 'error', atau 'loading'
-             */
-            function displayMessage(text, type = 'success') {
-                messageElement.textContent = text;
-                messageElement.className = 'message'; // Reset classes
-                
-                if (type === 'error') {
-                    messageElement.classList.add('error');
-                } else if (type === 'loading') {
-                    messageElement.classList.add('loading');
-                }
-
-                setTimeout(() => {
-                    messageElement.classList.add('show');
-                }, 10); 
-
-                if (type !== 'loading') {
-                    // Hilangkan pesan (kecuali loading) setelah 5 detik
-                    setTimeout(() => {
-                        messageElement.classList.remove('show');
-                    }, 5000);
-                }
-            }
-
-            // =========================================
-            // 2. LOGIKA PILIHAN KATEGORI (BESI/KERAMIK)
-            // =========================================
-            categoryButtons.forEach(button => {
-                button.addEventListener('click', (e) => {
-                    const selectedCategory = e.currentTarget.getAttribute('data-category');
-                    if (currentCategory === selectedCategory) return; // Prevent unnecessary reloads
-                    
-                    // Update UI
-                    categoryButtons.forEach(btn => btn.classList.remove('active'));
-                    e.currentTarget.classList.add('active');
-
-                    // Update State dan Input Hidden
-                    currentCategory = selectedCategory;
-                    kategoriInput.value = selectedCategory;
-                    
-                    // Reset dan Load Jenis Produk
-                    resetJenisProduk();
-                    fetchJenisProduk(selectedCategory);
-                });
-            });
-
-            function resetJenisProduk() {
-                jenisProdukSelect.innerHTML = '<option value="">-- Memuat Jenis Produk... --</option>';
-                jenisProdukSelect.disabled = true;
-                namaBarangInput.disabled = true;
-                namaBarangInput.value = '';
-                autocompleteList.innerHTML = '';
-            }
-
-            // Fungsi Asumsi: Mengambil daftar kolom/header dari Google Sheet
-            async function fetchJenisProduk(category) {
-                displayMessage(`⏳ Memuat jenis produk untuk ${category}...`, 'loading');
-                
-                // ASUMSI: Apps Script merespon dengan JSON array ['Kolom A', 'Kolom B', 'Kolom C']
-                const mockHeaders = category === 'BESI' 
-                    ? ['Pipa', 'Baja Ringan', 'Kawat']
-                    : ['Lantai', 'Dinding', 'Perekat'];
-
-                try {
-                    // Dalam implementasi nyata, ganti dengan fetch ke Apps Script Anda
-                    // const response = await fetch(`${SCRIPT_URL}?action=getHeaders&category=${category}`);
-                    // const headers = await response.json();
-                    
-                    jenisProdukSelect.innerHTML = '<option value="">-- Pilih Jenis Produk --</option>';
-                    mockHeaders.forEach(header => {
-                        jenisProdukSelect.innerHTML += `<option value="${header}">${header}</option>`;
-                    });
-                    
-                    jenisProdukSelect.disabled = false;
-                    displayMessage(`✔️ Jenis produk untuk ${category} berhasil dimuat.`);
-
-                } catch (error) {
-                    console.error('Error fetching headers:', error);
-                    jenisProdukSelect.innerHTML = '<option value="">-- Gagal memuat data --</option>';
-                    displayMessage('❌ Gagal memuat Jenis Produk. Cek koneksi Apps Script.', 'error');
-                }
-            }
+            // Ambil data dari cache
+            currentCategoryData = inventoryDataCache[selectedCategory] || {}; 
             
-            // =========================================
-            // 3. LOGIKA JENIS PRODUK & LIVE SEARCH (Nama Barang)
-            // =========================================
-            jenisProdukSelect.addEventListener('change', (e) => {
-                const selectedJenis = e.target.value;
-                namaBarangInput.value = '';
-                autocompleteList.innerHTML = '';
-
-                if (selectedJenis) {
-                    namaBarangInput.disabled = false;
-                    namaBarangInput.focus();
-                    fetchNamaBarang(currentCategory, selectedJenis);
-                } else {
-                    namaBarangInput.disabled = true;
-                    productNamesCache = [];
-                }
-            });
-
-            // Fungsi Asumsi: Mengambil daftar Nama Barang (row 2-end dari kolom yang dipilih)
-            async function fetchNamaBarang(category, jenisProduk) {
-                displayMessage(`⏳ Memuat data barang untuk ${jenisProduk}...`, 'loading');
-
-                // ASUMSI: Apps Script merespon dengan JSON array ['Nama Barang 1', 'Nama Barang 2', ...]
-                let mockNames = [];
-                if (category === 'BESI' && jenisProduk === 'Pipa') mockNames = ['Pipa PVC Rucika 4"', 'Pipa Galvanis 1/2"', 'Pipa HDPE 3"'];
-                else if (category === 'KERAMIK' && jenisProduk === 'Lantai') mockNames = ['Keramik Lantai 40x40 Putih', 'Keramik Motif Kayu 60x60', 'Keramik Lantai Dapur 30x30'];
-                else mockNames = ['Produk A', 'Produk B', 'Produk C']; // Fallback
-                
-                try {
-                    // Dalam implementasi nyata, ganti dengan fetch ke Apps Script Anda
-                    // const response = await fetch(`${SCRIPT_URL}?action=getProducts&category=${category}&jenisProduk=${jenisProduk}`);
-                    // productNamesCache = await response.json();
-                    
-                    productNamesCache = mockNames;
-                    displayMessage(`✔️ Data barang untuk ${jenisProduk} siap. Total ${productNamesCache.length} item.`);
-
-                } catch (error) {
-                    console.error('Error fetching product names:', error);
-                    displayMessage('❌ Gagal memuat Nama Barang. Cek koneksi Apps Script.', 'error');
-                }
-            }
-
-            // Event Listener untuk Live Search
-            namaBarangInput.addEventListener('input', function() {
-                const val = this.value.toLowerCase();
-                closeAllLists();
-                if (!val) { return false; }
-
-                // Buat div untuk menampung suggestions
-                let i, a, item;
-                for (i = 0; i < productNamesCache.length; i++) {
-                    // Cek jika item dimulai dengan input value (case-insensitive)
-                    if (productNamesCache[i].toLowerCase().includes(val)) {
-                        a = document.createElement("div");
-                        // Bold the matching part
-                        const matchIndex = productNamesCache[i].toLowerCase().indexOf(val);
-                        const beforeMatch = productNamesCache[i].substring(0, matchIndex);
-                        const matchText = productNamesCache[i].substring(matchIndex, matchIndex + val.length);
-                        const afterMatch = productNamesCache[i].substring(matchIndex + val.length);
-
-                        a.innerHTML = beforeMatch + "<strong>" + matchText + "</strong>" + afterMatch;
-                        
-                        a.addEventListener("click", function() {
-                            // Set value input dan tutup list
-                            namaBarangInput.value = this.textContent;
-                            closeAllLists();
-                            jumlahInput.focus();
-                        });
-                        autocompleteList.appendChild(a);
-                    }
-                }
-            });
-
-            function closeAllLists(elmnt) {
-                // Tutup semua list suggestion kecuali yang di klik (jika ada)
-                const x = document.querySelectorAll(".autocomplete-items div");
-                x.forEach(item => {
-                    if (elmnt !== item && elmnt !== namaBarangInput) {
-                        item.parentNode.removeChild(item);
-                    }
-                });
-            }
-
-            // Tutup suggestions jika klik di luar input
-            document.addEventListener("click", function (e) {
-                closeAllLists(e.target);
-            });
-            
-            // =========================================
-            // 4. LOGIKA PENGIRIMAN FORM (Masuk/Keluar)
-            // =========================================
-            [masukButton, keluarButton].forEach(button => {
-                button.addEventListener('click', (e) => {
-                    e.preventDefault(); // Mencegah submit form biasa
-                    
-                    // Pastikan semua field wajib terisi
-                    if (!form.checkValidity()) {
-                        displayMessage('❌ Harap isi semua kolom wajib (Kategori, Jenis, Nama, Jumlah, Checker).', 'error');
-                        form.reportValidity(); // Menampilkan pesan error browser
-                        return;
-                    }
-
-                    const action = e.currentTarget.getAttribute('data-action');
-                    const timestamp = new Date().toISOString(); // Timestamp saat ini
-
-                    const data = {
-                        action: 'saveInventory', // Aksi di Apps Script
-                        timestamp: timestamp,
-                        namaBarang: namaBarangInput.value,
-                        masukIn: action === 'Masuk' ? jumlahInput.value : '',
-                        keluarOut: action === 'Keluar' ? jumlahInput.value : '',
-                        checker: checkerInput.value
-                    };
-
-                    // --- OPTIMIS UI: RESET FORM INSTAN SEBELUM FETCH ---
-                    displayMessage(`⏳ Data Barang ${action} sedang dikirim...`, 'loading');
-                    
-                    // 1. Reset Form dan Fokus Instan (kecuali Checker & Kategori)
-                    namaBarangInput.value = '';
-                    jumlahInput.value = '';
-                    jenisProdukSelect.value = '';
-                    namaBarangInput.disabled = true;
-                    autocompleteList.innerHTML = '';
-                    
-                    // Arahkan fokus kembali
-                    checkerInput.focus(); // Fokus ke checker, karena checker cenderung sama
-
-                    // 2. Siapkan data untuk pengiriman
-                    const formData = new URLSearchParams(data).toString();
-                    
-                    // 3. Lakukan pengiriman data di latar belakang
-                    fetch(SCRIPT_URL, {
-                        method: 'POST',
-                        mode: 'no-cors', // Digunakan untuk Apps Script, asumsikan berhasil
-                        headers: {
-                            'Content-Type': 'application/x-www-form-urlencoded',
-                        },
-                        body: formData, 
-                    })
-                    .then(() => {
-                        // Karena menggunakan no-cors, ini akan selalu resolve. Kita asumsikan sukses.
-                        displayMessage(`✅ Data ${data.namaBarang} (${data.masukIn || data.keluarOut} unit) berhasil disimpan!`);
-                    })
-                    .catch(error => {
-                        console.error('Error saat fetch:', error);
-                        displayMessage('❌ Gagal mengirim data. Cek URL Apps Script atau koneksi.', 'error');
-                    });
-                });
-            });
-
-            // =========================================
-            // 5. LOGIKA COPYRIGHT & INISIALISASI
-            // =========================================
-            const currentYear = new Date().getFullYear();
-            const copyrightText = `© ${currentYear} Smart Swalayan.`;
-
-            if (copyrightContainer) {
-                copyrightContainer.textContent = copyrightText;
-            }
-
-            // Inisialisasi fokus ke checker (atau kategori)
-            checkerInput.focus();
+            // Reset dan tampilkan Jenis Produk dari data cache
+            updateJenisProdukDropdown(currentCategoryData);
         });
-    </script>
+    });
+
+    // -----------------------------------------
+    // B. JENIS PRODUK SELECTION
+    // -----------------------------------------
+    jenisProdukSelect.addEventListener('change', (e) => {
+        const selectedJenis = e.target.value;
+        namaBarangInput.value = '';
+        autocompleteList.innerHTML = '';
+
+        if (selectedJenis) {
+            // Ambil Nama Barang langsung dari cache kategori yang aktif
+            productNamesCache = currentCategoryData[selectedJenis] || []; 
+            namaBarangInput.disabled = false;
+            namaBarangInput.focus();
+            displayMessage(`✔️ ${productNamesCache.length} Nama Barang untuk ${selectedJenis} siap dicari.`);
+        } else {
+            namaBarangInput.disabled = true;
+            productNamesCache = [];
+        }
+    });
+
+    // -----------------------------------------
+    // C. LIVE SEARCH (NAMA BARANG INPUT)
+    // -----------------------------------------
+    namaBarangInput.addEventListener('input', () => {
+        const input = namaBarangInput.value.toLowerCase();
+        autocompleteList.innerHTML = '';
+
+        if (input.length === 0) return;
+
+        const matches = productNamesCache.filter(name => 
+            name.toLowerCase().includes(input)
+        ).slice(0, 10); // Batasi hingga 10 hasil
+
+        matches.forEach(name => {
+            const item = document.createElement('div');
+            item.classList.add('autocomplete-item');
+            item.textContent = name;
+            item.addEventListener('click', () => {
+                namaBarangInput.value = name;
+                autocompleteList.innerHTML = '';
+            });
+            autocompleteList.appendChild(item);
+        });
+    });
+
+    // Tutup dropdown saat klik di luar
+    document.addEventListener('click', (e) => {
+        if (!e.target.matches('#namaBarang')) {
+            autocompleteList.innerHTML = '';
+        }
+    });
+
+    // -----------------------------------------
+    // D. FORM SUBMISSION (doPost)
+    // -----------------------------------------
+    form.addEventListener('submit', handleFormSubmit);
+}
+
+// =================================================================
+// 2. FUNGSI PEMBANTU (HELPER FUNCTIONS)
+// =================================================================
+
+/**
+ * Mengisi dropdown Jenis Produk berdasarkan data kategori yang dipilih.
+ */
+function updateJenisProdukDropdown(data) {
+    jenisProdukSelect.innerHTML = '<option value="">-- Pilih Jenis Produk --</option>';
+    
+    const jenisProdukList = Object.keys(data);
+    
+    if (jenisProdukList.length > 0) {
+        jenisProdukList.forEach(jenisProduk => {
+            jenisProdukSelect.innerHTML += `<option value="${jenisProduk}">${jenisProduk}</option>`;
+        });
+        jenisProdukSelect.disabled = false;
+    } else {
+        jenisProdukSelect.innerHTML = '<option value="">-- Tidak ada Jenis Produk ditemukan --</option>';
+        jenisProdukSelect.disabled = true;
+        displayMessage(`⚠️ Tidak ada data ditemukan untuk kategori ${currentCategory}.`);
+    }
+
+    // Reset elemen terkait
+    namaBarangInput.disabled = true;
+    namaBarangInput.value = '';
+    autocompleteList.innerHTML = '';
+    productNamesCache = [];
+}
+
+
+/**
+ * Menangani pengiriman form (Barang Masuk/Keluar) ke Apps Script (doPost).
+ */
+async function handleFormSubmit(e) {
+    e.preventDefault();
+    
+    const formData = new FormData(form);
+    const data = {};
+    formData.forEach((value, key) => {
+        data[key] = value.trim();
+    });
+
+    // Validasi Sederhana
+    if (!data.kategori || !data.namaBarang || !data.checker) {
+        return displayMessage('❌ Kategori, Nama Barang, dan Checker wajib diisi.', 'error');
+    }
+    const hasQuantity = data.masukIn || data.keluarOut;
+    if (!hasQuantity) {
+        return displayMessage('❌ Masukkan setidaknya salah satu kuantitas (Masuk atau Keluar).', 'error');
+    }
+    
+    // Pastikan hanya satu quantity yang terisi
+    if (data.masukIn && data.keluarOut) {
+        return displayMessage('❌ Hanya boleh mengisi Masuk/In atau Keluar/Out.', 'error');
+    }
+
+    displayMessage('⏳ Mengirim data...', 'loading');
+    
+    // Konversi object data ke format URL-encoded
+    const urlEncodedData = Object.keys(data).map(key => 
+        encodeURIComponent(key) + '=' + encodeURIComponent(data[key])
+    ).join('&');
+    
+    try {
+        const response = await fetch(SCRIPT_URL, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            body: urlEncodedData,
+        });
+
+        const result = await response.json();
+        
+        if (result.status === 'success') {
+            displayMessage('✅ Data **BERHASIL** disimpan di Spreadsheet!', 'success');
+            form.reset(); // Reset form setelah sukses
+            // Pertahankan kategori yang aktif dan refresh dropdown
+            document.querySelector(`.category-btn[data-category="${currentCategory}"]`).classList.add('active');
+            updateJenisProdukDropdown(currentCategoryData); 
+        } else {
+            displayMessage('❌ Gagal menyimpan data: ' + result.error, 'error');
+        }
+    } catch (error) {
+        console.error('Submit error:', error);
+        displayMessage('❌ Terjadi kesalahan jaringan. Cek koneksi Anda.', 'error');
+    }
+}
+
+/**
+ * Menampilkan pesan status kepada pengguna.
+ */
+function displayMessage(message, type = 'info') {
+    messageArea.className = `message ${type}`;
+    messageArea.innerHTML = message;
+}
+</script>
 </body>
 </html>
