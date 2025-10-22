@@ -13,12 +13,12 @@
 
         /* --- START: 1. DEKLARASI VARIABEL & FONT --- */
         :root {
-            --primary-color: #00796b; /* Teal Dark - Warna Utama */
-            --secondary-color: #ff9800; /* Orange - Warna Aksi/Submit */
-            --danger-color: #f44336; /* Merah - Warna Keluar */
-            --success-color: #4CAF50; /* Hijau - Warna Masuk */
+            --primary-color: #00796b;
+            --secondary-color: #ff9800;
+            --danger-color: #f44336;
+            --success-color: #4CAF50;
             --text-color: #333;
-            --bg-color: #eceff1; /* Background Abu-abu Muda */
+            --bg-color: #eceff1;
             --card-bg: #ffffff;
             --border-radius: 12px;
             --shadow-heavy: 0 10px 30px rgba(0, 0, 0, 0.15);
@@ -399,20 +399,18 @@ const messageArea = document.getElementById('message'); 
 const kategoriInput = document.getElementById('kategori');
 const masukButton = document.getElementById('masukButton');
 const keluarButton = document.getElementById('keluarButton');
-const lokasiInputGroup = document.getElementById('lokasiInputGroup'); // DOM Lokasi Group
-const lokasiInput = document.getElementById('lokasi'); // DOM Lokasi Input
-const formatSimpanInput = document.getElementById('formatSimpan'); // DOM Format Simpan Hidden Field
-const textInputs = document.querySelectorAll('input[type="text"]'); // Semua input type text
+const lokasiInputGroup = document.getElementById('lokasiInputGroup');
+const lokasiInput = document.getElementById('lokasi');
+const formatSimpanInput = document.getElementById('formatSimpan');
+const textInputs = document.querySelectorAll('input[type="text"]');
 
 
 // Variabel Cache dan State
 let inventoryDataCache = {}; 
-let configDataCache = {}; // Cache untuk menyimpan data konfigurasi baru
+let configDataCache = {};
 let currentCategory = '';
 let currentCategoryData = {}; 
 let productNamesCache = []; 
-
-// Data Dummy tidak perlu diubah, karena hanya fallback produk
 
 
 // =================================================================
@@ -422,7 +420,7 @@ let productNamesCache = []; 
 document.addEventListener('DOMContentLoaded', () => {
     fetchInitialData();
     setupEventListeners();
-    setupUppercaseListeners(); // Panggil fungsi kapitalisasi
+    setupUppercaseListeners();
     document.getElementById('app-footer-copyright').textContent = `© ${new Date().getFullYear()} Smart Swalayan. All Rights Reserved.`;
 });
 
@@ -432,37 +430,38 @@ document.addEventListener('DOMContentLoaded', () => {
 
 /**
  * Fungsi global yang dipanggil oleh Apps Script (JSONP) untuk menerima data.
- * @param {object} result Objek data dari Apps Script.
  */
 function handleSheetsData(result) {
-    // Hapus elemen script setelah data diterima
     const scriptElement = document.getElementById('jsonp-script');
     if (scriptElement) {
         scriptElement.remove();
     }
     
-    // Hentikan timeout (jika masih berjalan)
     if (window.jsonpTimeout) {
         clearTimeout(window.jsonpTimeout);
     }
+    
+    // 🚨 PERUBAHAN: Hilangkan pesan loading/info saat data berhasil dimuat
+    displayMessage('', 'info'); 
 
     if (result && result.status === 'ok') {
         inventoryDataCache = result.data || {};
-        configDataCache = result.config || {}; // <<< SIMPAN DATA KONFIGURASI BARU
+        configDataCache = result.config || {};
         
         if (Object.keys(inventoryDataCache).length === 0) {
             useFallbackData('Data produk dari Apps Script kosong.');
             return;
         }
-        displayMessage('✔️ Data produk dan konfigurasi berhasil dimuat.', 'success');
+        // Tidak perlu menampilkan pesan sukses, langsung hilang.
     } else {
-        // Fallback
         useFallbackData(result.error || 'Respon Apps Script tidak valid.');
     }
 }
 
+/**
+ * Helper function untuk menggunakan data dummy.
+ */
 function useFallbackData(reason) {
-     // Gunakan data dummy lokal
      const FALLBACK_DATA = {
         "BESI": {
             "BAJA RINGAN": ["BAJA RINGAN C75.75", "BAJA RINGAN R30.40"],
@@ -473,18 +472,17 @@ function useFallbackData(reason) {
             "DINDING": ["KERAMIK DINDING 25x40 GARIS"]
         }
     };
-    // Tambahkan konfigurasi default untuk fallback
     const FALLBACK_CONFIG = {
         "BAJA RINGAN": { format: 5 },
-        "BESI BETON": { format: 6 }, // Contoh: BESI BETON butuh lokasi
+        "BESI BETON": { format: 6 },
         "LANTAI 40x40": { format: 5 },
-        "DINDING": { format: 6 } // Contoh
+        "DINDING": { format: 6 }
     };
 
 
      inventoryDataCache = FALLBACK_DATA;
      configDataCache = FALLBACK_CONFIG;
-     displayMessage(`❌ Gagal memuat data: ${reason}. Menggunakan **DATA DUMMY LOKAL** untuk fungsi dropdown.`, 'error');
+     displayMessage(`❌ Gagal memuat data: ${reason}. Menggunakan **DATA DUMMY LOKAL**.`, 'error');
 }
 
 function fetchInitialData() {
@@ -501,34 +499,39 @@ function fetchInitialData() {
              useFallbackData('Permintaan data Apps Script habis waktu (timeout).');
         }
         script.remove();
+        // 🚨 PERUBAHAN: Hilangkan pesan loading jika timeout dan sudah dihandle oleh useFallbackData (yang akan menampilkan pesan error)
+        if (messageArea.classList.contains('loading')) {
+            displayMessage('', 'info');
+        }
     }, 15000); 
 
     script.onerror = () => {
         clearTimeout(window.jsonpTimeout);
         useFallbackData('Gagal memuat script data. Cek URL SCRIPT Anda.');
+        // 🚨 PERUBAHAN: Hilangkan pesan loading jika error
+        displayMessage('', 'info');
     };
 
     document.head.appendChild(script);
 }
 
 // =================================================================
-// 3. FUNGSI KAPITALISASI OTOMATIS
+// 3. FUNGSI KAPITALISASI OTOMATIS (Tidak Berubah)
 // =================================================================
 
 function setupUppercaseListeners() {
     textInputs.forEach(input => {
         input.addEventListener('input', function() {
-            // Konversi nilai input menjadi huruf kapital
             this.value = this.value.toUpperCase();
         });
     });
 }
 
 // =================================================================
-// 4. EVENT LISTENERS
+// 4. EVENT LISTENERS (Tidak Berubah)
 // =================================================================
 function setupEventListeners() {
-    // A. KATEGORI (BESI/KERAMIK) SELECTION - (Tidak Berubah)
+    // A. KATEGORI (BESI/KERAMIK) SELECTION
     categoryButtons.forEach(button => {
         button.addEventListener('click', (e) => {
             const selectedCategory = e.currentTarget.getAttribute('data-category');
@@ -546,7 +549,7 @@ function setupEventListeners() {
         });
     });
 
-    // B. JENIS PRODUK SELECTION - (LOGIKA FORMAT SIMPAN DITAMBAHKAN)
+    // B. JENIS PRODUK SELECTION 
     jenisProdukSelect.addEventListener('change', (e) => {
         const selectedJenis = e.target.value;
         namaBarangInput.value = '';
@@ -556,7 +559,7 @@ function setupEventListeners() {
         // 1. Cek dan Set Format Simpan
         const config = configDataCache[selectedJenis] || { format: 5 }; // Default ke 5 jika tidak ada config
         const format = config.format;
-        formatSimpanInput.value = format; // Simpan di hidden field
+        formatSimpanInput.value = format; 
         
         // 2. Tampilkan Lokasi jika format = 6
         if (format === 6) {
@@ -571,8 +574,8 @@ function setupEventListeners() {
         
         // 3. Update Nama Barang Cache
         if (selectedJenis) {
-            productNamesCache = currentCategoryData[selectedJenis] || []; 
-            namaBarangInput.disabled = false;
+            productNamesCache = currentCategoryData[selectedJenis] || [];  
+            namaBarangInput.disabled = false; 
             namaBarangInput.focus();
         } else {
             namaBarangInput.disabled = true;
@@ -581,12 +584,15 @@ function setupEventListeners() {
         }
     });
 
-    // C. LIVE SEARCH (NAMA BARANG INPUT) - (Tidak Berubah)
+    // C. LIVE SEARCH (NAMA BARANG INPUT)
     namaBarangInput.addEventListener('input', () => {
         const input = namaBarangInput.value.toLowerCase();
         autocompleteList.innerHTML = '';
 
-        if (input.length === 0) return;
+        if (input.length === 0) {
+            autocompleteList.style.display = 'none';
+            return;
+        }
 
         const matches = productNamesCache.filter(name => 
             name.toLowerCase().includes(input)
@@ -595,19 +601,39 @@ function setupEventListeners() {
         matches.forEach(name => {
             const item = document.createElement('div');
             item.classList.add('autocomplete-item');
-            item.textContent = name;
+            
+            // Highlight logic (Dipertahankan agar live search bekerja)
+            const matchIndex = name.toLowerCase().indexOf(input); 
+            if (matchIndex >= 0) {
+                const before = name.substring(0, matchIndex);
+                const match = name.substring(matchIndex, matchIndex + input.length);
+                const after = name.substring(matchIndex + input.length);
+                item.innerHTML = before + 
+                                 `<span class="autocomplete-item-highlight">${match}</span>` + 
+                                 after;
+            } else {
+                item.textContent = name;
+            }
+
             item.addEventListener('click', () => {
                 namaBarangInput.value = name;
                 autocompleteList.innerHTML = '';
+                autocompleteList.style.display = 'none';
             });
             autocompleteList.appendChild(item);
         });
+
+        if (matches.length > 0) {
+            autocompleteList.style.display = 'block';
+        } else {
+            autocompleteList.style.display = 'none';
+        }
     });
 
     // Tutup dropdown saat klik di luar
     document.addEventListener('click', (e) => {
         if (!e.target.matches('#namaBarang')) {
-            autocompleteList.innerHTML = '';
+            autocompleteList.style.display = 'none';
         }
     });
 
@@ -621,8 +647,8 @@ function setupEventListeners() {
 // =================================================================
 
 /**
- * Mengisi dropdown Jenis Produk berdasarkan data kategori yang dipilih.
- */
+ * Mengisi dropdown Jenis Produk. (Tidak Berubah)
+ */
 function updateJenisProdukDropdown(data) {
     jenisProdukSelect.innerHTML = '<option value="">-- Pilih Jenis Produk --</option>';
     
@@ -637,6 +663,7 @@ function updateJenisProdukDropdown(data) {
     namaBarangInput.disabled = true;
     namaBarangInput.value = '';
     autocompleteList.innerHTML = '';
+    autocompleteList.style.display = 'none';
     productNamesCache = [];
 
     if (jenisProdukList.length > 0) {
@@ -644,7 +671,8 @@ function updateJenisProdukDropdown(data) {
             jenisProdukSelect.innerHTML += `<option value="${jenisProduk}">${jenisProduk}</option>`;
         });
         jenisProdukSelect.disabled = false;
-        displayMessage(`Kategori ${currentCategory} dipilih. Pilih Jenis Produk.`);
+        // 🚨 PERUBAHAN: Hilangkan pesan info biasa, fokus pada error/loading.
+        displayMessage('', 'info');
     } else {
         jenisProdukSelect.innerHTML = '<option value="">-- Tidak ada Jenis Produk ditemukan --</option>';
         jenisProdukSelect.disabled = true;
@@ -654,8 +682,8 @@ function updateJenisProdukDropdown(data) {
 
 
 /**
- * Menangani pengiriman form (Barang Masuk/Keluar) ke Apps Script (doPost).
- */
+ * Menangani pengiriman form (Barang Masuk/Keluar) ke Apps Script (doPost).
+ */
 async function handleFormSubmit(e, action) {
     e.preventDefault();
     
@@ -668,7 +696,7 @@ async function handleFormSubmit(e, action) {
     const lokasi = lokasiInput.value.trim();
     const formatSimpan = formatSimpanInput.value;
 
-    // Validasi
+    // Validasi (Dipertahankan)
     const jumlahInt = parseInt(jumlah);
     if (!kategori || !jenisProduk || !namaBarang || !checker) {
         return displayMessage('❌ Semua kolom wajib diisi.', 'error');
@@ -680,15 +708,27 @@ async function handleFormSubmit(e, action) {
         return displayMessage('❌ Jumlah harus berupa angka dan lebih dari 0.', 'error');
     }
     
+    // 🚨 PERUBAHAN BARU: RESET FORM SEGERA SEBELUM MENGIRIM DATA
+    document.getElementById('jumlah').value = '';
+    jenisProdukSelect.value = '';
+    namaBarangInput.value = '';
+    namaBarangInput.disabled = true;
+    lokasiInput.value = '';
+    lokasiInputGroup.classList.add('hidden');
+    lokasiInput.required = false;
+    formatSimpanInput.value = '5';
+    productNamesCache = [];
+    autocompleteList.innerHTML = '';
+    autocompleteList.style.display = 'none';
+
     // Data yang akan dikirim ke doPost (semua parameter)
     const dataToSend = {
         kategori: kategori,
         jenisProduk: jenisProduk,
         namaBarang: namaBarang,
         checker: checker,
-        lokasi: lokasi, // Kirim Lokasi (kosong jika format 5)
-        formatSimpan: formatSimpan, // Kirim Format Simpan
-        // Kirim hanya salah satu field sesuai aksi (POST)
+        lokasi: lokasi,
+        formatSimpan: formatSimpan,
         masukIn: (action === 'Masuk' ? jumlah : ''), 
         keluarOut: (action === 'Keluar' ? jumlah : '')
     };
@@ -715,21 +755,9 @@ async function handleFormSubmit(e, action) {
 
         const result = await response.json();
         
+        // 🚨 PERUBAHAN: Hilangkan pesan Loading/Info, hanya tampilkan Error
         if (result.status === 'success') {
-            displayMessage(`✅ Data Barang **${action.toUpperCase()}** (${jumlahInt}) BERHASIL disimpan!`, 'success');
-            
-            // Reset fields
-            document.getElementById('jumlah').value = '';
-            jenisProdukSelect.value = '';
-            namaBarangInput.value = '';
-            namaBarangInput.disabled = true;
-            lokasiInput.value = '';
-            lokasiInputGroup.classList.add('hidden');
-            lokasiInput.required = false;
-            formatSimpanInput.value = '5';
-            
-            productNamesCache = [];
-            autocompleteList.innerHTML = '';
+            displayMessage('', 'info'); // Hilangkan pesan loading
         } else {
             displayMessage('❌ Gagal menyimpan data: ' + (result.error || 'Terjadi kesalahan tidak diketahui.'), 'error');
         }
@@ -740,18 +768,27 @@ async function handleFormSubmit(e, action) {
 }
 
 /**
- * Menampilkan pesan status kepada pengguna.
- */
+ * Menampilkan pesan status kepada pengguna.
+ */
 function displayMessage(message, type = 'info') {
     messageArea.classList.remove('show', 'success', 'error', 'loading');
     
+    // 🚨 PERUBAHAN: Jika bukan error, hapus pesan (untuk menghilangkan sukses/loading/info).
+    if (type !== 'error' && type !== 'loading') {
+        messageArea.innerHTML = '';
+        messageArea.classList.remove('show');
+        return; 
+    }
+    
+    // Tampilkan pesan untuk Error dan Loading
     setTimeout(() => {
         messageArea.className = `message ${type}`;
         messageArea.innerHTML = message;
         messageArea.classList.add('show');
     }, 10);
 
-    if (type !== 'loading' && type !== 'error') {
+    // Otomatis hilangkan pesan error setelah 5 detik. Pesan loading hanya hilang saat ada fungsi lain memanggil displayMessage('', 'info').
+    if (type === 'error') {
         setTimeout(() => {
             messageArea.classList.remove('show');
         }, 5000);
