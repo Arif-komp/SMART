@@ -441,18 +441,22 @@ function handleSheetsData(result) {
     if (window.jsonpTimeout) {
         clearTimeout(window.jsonpTimeout);
     }
+    
+    // HILANGKAN PESAN LOADING SEGERA SETELAH RESPON DITERIMA (Perbaikan Poin 3)
+    displayMessage('', 'info');
 
     if (result && result.status === 'ok') {
         inventoryDataCache = result.data || {};
         configDataCache = result.config || {}; 
         
         if (Object.keys(inventoryDataCache).length === 0) {
-            // Data kosong, tampilkan error dan gunakan fallback
             useFallbackData('Data produk dari Apps Script kosong.');
             return;
         }
-        // ✔️ Data berhasil dimuat, TAPI KARENA PERMINTAAN, PESAN SUKSES DIHILANGKAN
-        // displayMessage('✔️ Data produk dan konfigurasi berhasil dimuat.', 'success'); 
+        
+        // 🚨 PERBAIKAN LIVE SEARCH: Aktifkan input setelah data dimuat
+        categoryButtons.forEach(btn => btn.disabled = false);
+        
     } else {
         useFallbackData(result.error || 'Respon Apps Script tidak valid.');
     }
@@ -483,11 +487,17 @@ function useFallbackData(reason) {
      inventoryDataCache = FALLBACK_DATA;
      configDataCache = FALLBACK_CONFIG;
      displayMessage(`❌ Gagal memuat data: ${reason}. Menggunakan **DATA DUMMY LOKAL** untuk fungsi dropdown.`, 'error');
+     
+     // 🚨 PERBAIKAN LIVE SEARCH: Aktifkan input bahkan saat menggunakan fallback
+     categoryButtons.forEach(btn => btn.disabled = false);
 }
 
 function fetchInitialData() {
     // ⏳ Pesan Loading TETAP ditampikan
     displayMessage('⏳ Memuat semua data produk dan konfigurasi (JSONP)...', 'loading');
+    
+    // Disable Category Buttons saat loading
+    categoryButtons.forEach(btn => btn.disabled = true);
     
     const urlWithCallback = `${SCRIPT_URL}?callback=handleSheetsData`;
     
@@ -500,11 +510,18 @@ function fetchInitialData() {
              useFallbackData('Permintaan data Apps Script habis waktu (timeout).');
         }
         script.remove();
+        
+        // HILANGKAN PESAN LOADING (jika timeout)
+        displayMessage('', 'info'); 
+        
     }, 15000); 
 
     script.onerror = () => {
         clearTimeout(window.jsonpTimeout);
         useFallbackData('Gagal memuat script data. Cek URL SCRIPT Anda.');
+        
+        // HILANGKAN PESAN LOADING
+        displayMessage('', 'info'); 
     };
 
     document.head.appendChild(script);
@@ -573,7 +590,6 @@ function setupEventListeners() {
         } else {
             namaBarangInput.disabled = true;
             productNamesCache = [];
-            // PESAN TIDAK DITAMPILKAN JIKA BUKAN ERROR/LOADING
         }
     });
 
@@ -641,8 +657,6 @@ function updateJenisProdukDropdown(data) {
         });
         jenisProdukSelect.disabled = false;
         
-        // PESAN SUKSES/INFO DIHILANGKAN
-        // displayMessage(`Kategori ${currentCategory} dipilih. Pilih Jenis Produk.`);
     } else {
         jenisProdukSelect.innerHTML = '<option value="">-- Tidak ada Jenis Produk ditemukan --</option>';
         jenisProdukSelect.disabled = true;
@@ -715,11 +729,8 @@ async function handleFormSubmit(e, action) {
         const result = await response.json();
         
         if (result.status === 'success') {
-            // ✔️ Data berhasil disimpan, TAPI KARENA PERMINTAAN, PESAN SUKSES DIHILANGKAN
-            // displayMessage(`✅ Data Barang **${action.toUpperCase()}** (${jumlahInt}) BERHASIL disimpan!`, 'success');
-            
-            // HANYA HILANGKAN PESAN (efeknya sama seperti pesan sukses hilang)
-            displayMessage('', 'info'); // Menghapus pesan loading
+            // HANYA HILANGKAN PESAN (Menghapus pesan loading)
+            displayMessage('', 'info'); 
 
             // Reset fields
             document.getElementById('jumlah').value = '';
@@ -751,9 +762,8 @@ async function handleFormSubmit(e, action) {
 function displayMessage(message, type = 'info') {
     messageArea.classList.remove('show', 'success', 'error', 'loading');
     
-    // Jika tipe bukan error atau loading (i.e., sukses/info/netral), jangan tampilkan pesan.
+    // HILANGKAN PESAN JIKA BUKAN ERROR ATAU LOADING
     if (type !== 'error' && type !== 'loading') {
-        // Hapus elemen pesan secara visual (dengan transisi)
         messageArea.innerHTML = '';
         return; 
     }
@@ -765,7 +775,7 @@ function displayMessage(message, type = 'info') {
         messageArea.classList.add('show');
     }, 10);
 
-    // Otomatis hilangkan pesan error/loading setelah 5 detik, kecuali ada loading baru.
+    // Otomatis hilangkan pesan error/loading setelah 5 detik, kecuali sedang loading (agar loading tetap tampil).
     if (type !== 'loading') {
         setTimeout(() => {
             messageArea.classList.remove('show');
