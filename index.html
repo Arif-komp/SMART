@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SUMBER BANGUNAN INVENTORY</title>
+    <title>SMART SWALAYAN INVENTORY</title>
     <link rel="icon" href="depo.png" type="image/png">
     
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800&display=swap" rel="stylesheet">
@@ -400,7 +400,7 @@
 <body class="mode-masuk"> 
     <div class="container">
         <div class="app-title">
-            <img id="appLogo" src="depo.png" alt="Logo Sumber Bangunan">
+            <img id="appLogo" src="depo.png" alt="Logo Swalayan">
             <div class="mode-status" id="modeStatus">INVENTORY - MASUK</div>
         </div>
         
@@ -532,26 +532,30 @@
     /**
      * 🔥 FUNGSI BARU: Mengambil data menggunakan JSONP (Wajib CORS-Friendly)
      * Instan load dicapai dengan memuat data di awal dan menyimpannya di cache lokal.
+     * DITINGKATKAN: Tambahkan mekanisme timeout dan error handling yang lebih baik.
      */
     function fetchInitialData() {
         displayMessage('⏳ Memuat semua data produk instan (CORS-Friendly)...', 'loading');
         
-        if (SCRIPT_URL.includes('https://script.google.com/macros/s/AKfycbyCbNGjMC2c0Cc6x9jP5vupUtK_4U4c_vNJkZ4ago5SzlHwoqLVn6Fs7YU7btZ60cnL/exec')) {
-            // Ganti URL ini dengan URL Deployment Apps Script Anda yang sebenarnya setelah deploy!
+        // Cek Placeholder (Dibiarkan untuk pengingat developer)
+        if (SCRIPT_URL.includes('AKfycbyCbNGjMC2c0Cc6x9jP5vupUtK_4U4c_vNJkZ4ago5SzlHwoqLVn6Fs7YU7btZ60cnL')) {
             displayMessage('⚠️ SCRIPT_URL masih URL *placeholder*. Data mungkin tidak terambil.', 'error');
         }
 
         // 1. Definisikan fungsi callback global (harus ada di window)
         window.handleSheetsData = function(response) {
+            clearTimeout(loadTimeout); // Hapus timeout jika data diterima
+            
             if (response.status === 'ok' && response.data) {
                 inventoryDataCache = response.data;
                 displayMessage('✅ Data produk dimuat instan (JSONP)!', 'success'); 
             } else {
                 console.error('Data error:', response.error || 'Respon Apps Script tidak valid.');
-                useFallbackData(`❌ Gagal memuat data: ${response.error || 'Respon tidak valid'}.`);
+                useFallbackData(`❌ Gagal memproses data Apps Script: ${response.error || 'Respon tidak valid/kosong'}.`);
             }
             // Hapus script tag setelah selesai
-            document.head.removeChild(document.getElementById('jsonpScript'));
+            const scriptElement = document.getElementById('jsonpScript');
+            if (scriptElement) document.head.removeChild(scriptElement);
             delete window.handleSheetsData;
         };
 
@@ -562,9 +566,20 @@
         const script = document.createElement('script');
         script.src = jsonpUrl;
         script.id = 'jsonpScript';
+        
+        // 👇 Penambahan Debugging Timeout:
+        let loadTimeout = setTimeout(() => {
+            const scriptElement = document.getElementById('jsonpScript');
+            if (scriptElement) document.head.removeChild(scriptElement);
+            delete window.handleSheetsData; // Hapus callback agar tidak dijalankan nanti
+            useFallbackData('⏳ Gagal: Permintaan memuat data melebihi batas waktu (Timeout 15 detik). Cek koneksi atau ukuran data Anda.');
+        }, 15000); // Batas waktu 15 detik
+        
         script.onerror = function() {
-            useFallbackData('❌ Kesalahan jaringan atau URL Apps Script salah.');
+            clearTimeout(loadTimeout); // Hapus timeout jika terjadi error
+            useFallbackData('❌ Gagal memuat skrip data. Cek SCRIPT_URL dan koneksi.');
         };
+        
         document.head.appendChild(script);
     }
 
