@@ -136,9 +136,7 @@
             box-shadow: 0 4px 10px rgba(0, 121, 107, 0.3);
         }
         
-        /* ------------------------------------------- */
-        /* 🔥 MODIFIKASI: 6. TOMBOL SUBMIT (Masuk/Keluar) */
-        /* ------------------------------------------- */
+        /* --- 6. TOMBOL SUBMIT (Masuk/Keluar) --- */
         .submit-buttons {
             display: flex;
             gap: 15px;
@@ -153,44 +151,39 @@
             font-weight: 700;
             font-size: 1.1em;
             color: white;
-            cursor: pointer;
-            /* Transisi untuk efek hover/active yang halus */
             transition: background-color 0.3s ease, transform 0.1s ease, box-shadow 0.3s ease;
-            /* Tambahkan Bayangan Umum */
+            cursor: pointer;
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2); 
         }
 
         #masukButton {
-            background-color: var(--success-color); /* Hijau */
-            /* Bayangan khusus Hijau */
+            background-color: var(--success-color);
             box-shadow: 0 5px 15px rgba(76, 175, 80, 0.5);
         }
 
         #keluarButton {
-            background-color: var(--danger-color); /* Merah */
-            /* Bayangan khusus Merah */
+            background-color: var(--danger-color);
             box-shadow: 0 5px 15px rgba(244, 67, 54, 0.5);
         }
 
-        /* Efek Hover */
         #masukButton:hover {
-            background-color: #388e3c; /* Hijau Tua */
-            transform: translateY(-2px); /* Sedikit terangkat */
-        }
-
-        #keluarButton:hover {
-            background-color: #d32f2f; /* Merah Tua */
+            background-color: #388e3c;
             transform: translateY(-2px);
         }
 
-        /* Efek Saat Diklik (Active) */
-        .submit-btn:active {
-            transform: translateY(0); /* Kembali ke posisi */
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3); /* Bayangan kecil */
+        #keluarButton:hover {
+            background-color: #d32f2f;
+            transform: translateY(-2px);
         }
-        /* --- END: 6. TOMBOL SUBMIT (Masuk/Keluar) --- */
 
-        /* --- 7. LIVE SEARCH SUGGESTION --- */
+        .submit-btn:active {
+            transform: translateY(0);
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+        }
+
+        /* ------------------------------------------- */
+        /* 🔥 MODIFIKASI: 7. LIVE SEARCH SUGGESTION */
+        /* ------------------------------------------- */
         .autocomplete-container {
             position: relative;
             z-index: 1000;
@@ -206,7 +199,12 @@
             left: 0;
             right: 0;
             max-height: 200px;
-            overflow-y: auto;
+            /* 1. KUNCI: Membuat scroll hanya terjadi di sini */
+            overflow-y: auto; 
+            /* 2. KUNCI: Mencegah efek scroll halaman utama pada beberapa browser */
+            touch-action: pan-y;
+            -webkit-overflow-scrolling: touch; 
+            
             border-radius: 0 0 8px 8px;
             background-color: white;
             box-shadow: var(--shadow-light);
@@ -233,6 +231,8 @@
             background-color: #e8f5e9 !important;
             color: var(--primary-color);
         }
+        
+        /* ------------------------------------------- */
         
         /* --- 8. MESSAGE DISPLAY (Disederhanakan) --- */
         .message {
@@ -267,7 +267,7 @@
         /* --- 10. RESPONSIVE ADJUSTMENTS (@media) --- */
         @media (max-width: 600px) {
             .container { max-width: 100%; }
-            .submit-btn { padding: 12px 8px; font-size: 1em; } /* Sedikit kecil di layar kecil */
+            .submit-btn { padding: 12px 8px; font-size: 1em; }
         }
     </style>
 </head>
@@ -308,8 +308,8 @@
             </div>
             
             <div class="input-group hidden" id="lokasiInputGroup">
-                <label for="lokasi"><i class="fas fa-map-marker-alt"></i> Lokasi</label>
-                <input type="text" id="lokasi" name="lokasi" placeholder="Input Lokasi">
+                <label for="lokasi"><i class="fas fa-map-marker-alt"></i> Lokasi/Kode Pallet</label>
+                <input type="text" id="lokasi" name="lokasi" placeholder="Lokasi Pallet / Rak">
             </div>
             <div class="input-group">
                 <label for="jumlah"><i class="fas fa-sort-numeric-up-alt"></i> Jumlah</label>
@@ -341,7 +341,7 @@
 <script>
 // =================================================================
 // Kode JS (FRONTEND)
-// Catatan: Semua kode JS dan fungsi pengiriman data TIDAK BERUBAH.
+// Semua kode JavaScript ini tidak diubah dan tetap sama.
 // =================================================================
 
 const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbz-siwPKU2MeK3GkNrp7NXIrJjl4iQgQWaMPJIMc99Z7bTQwcv1z8bu4fdMMjwdfLLO0Q/exec'; 
