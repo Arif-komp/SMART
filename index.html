@@ -78,6 +78,7 @@
             max-height: 100px; 
         }
         
+        /* 🔥 PENTING: .hidden dipertahankan tetapi logika JS akan membuatnya selalu terlihat untuk lokasi */
         .input-group.hidden {
             margin-bottom: 0;
             max-height: 0; 
@@ -110,19 +111,19 @@
             outline: none;
         }
         
-        /* --- 5. BUTTON KATEGORI --- */
+        /* --- 5. BUTTON KATEGORI (MODIFIKASI: Lebih kompak) --- */
         .category-buttons {
-            display: flex;
+            display: grid; /* Mengubah dari flex menjadi grid */
+            grid-template-columns: repeat(2, 1fr); /* 2 kolom di desktop */
             gap: 10px;
             margin-bottom: 30px;
             padding: 10px;
             background-color: #e0f2f1;
             border-radius: var(--border-radius);
         }
-
+        /* 🔥 Penyesuaian Tombol Kategori agar lebih kecil */
         .category-btn {
-            flex-grow: 1;
-            padding: 15px;
+            padding: 10px 5px; /* Padding lebih kecil */
             background-color: #b2dfdb; 
             color: var(--primary-color);
             border-radius: 8px;
@@ -130,6 +131,14 @@
             border: none; 
             cursor: pointer;
             transition: background-color 0.2s;
+            font-size: 0.9em; /* Ukuran font lebih kecil */
+            display: flex; /* Untuk ikon dan teks */
+            align-items: center;
+            justify-content: center;
+            white-space: nowrap; /* Mencegah pecah */
+        }
+        .category-btn i {
+            margin-right: 5px;
         }
 
         .category-btn.active {
@@ -315,6 +324,13 @@
         /* --- 10. RESPONSIVE ADJUSTMENTS (@media) --- */
         @media (max-width: 600px) {
             .container { max-width: 100%; }
+            .category-buttons {
+                grid-template-columns: repeat(2, 1fr); /* 2 kolom di mobile */
+            }
+            .category-btn {
+                font-size: 0.8em; /* Lebih kecil di mobile */
+                padding: 8px 5px;
+            }
             .submit-btn { padding: 12px 8px; font-size: 1em; }
             #fabToggle { 
                 bottom: 20px; 
@@ -327,7 +343,8 @@
         }
     </style>
 </head>
-<body class="mode-masuk"> <div class="container">
+<body class="mode-masuk"> 
+    <div class="container">
         <div class="app-title">
             <i class="fas fa-warehouse"></i> Smart Swalayan Inventory
         </div>
@@ -341,6 +358,12 @@
                     </button>
                     <button type="button" class="category-btn" data-category="KERAMIK" id="btnKeramik">
                         <i class="fas fa-couch"></i> KERAMIK
+                    </button>
+                    <button type="button" class="category-btn" data-category="LT 2" id="btnLt2">
+                        <i class="fas fa-layer-group"></i> LT 2
+                    </button>
+                    <button type="button" class="category-btn" data-category="GM" id="btnGm">
+                        <i class="fas fa-truck-loading"></i> GM
                     </button>
                 </div>
                 <input type="hidden" id="kategori" name="kategori" required>
@@ -362,10 +385,11 @@
                 </div>
             </div>
             
-            <div class="input-group hidden" id="lokasiInputGroup">
-                <label for="lokasi"><i class="fas fa-map-marker-alt"></i> Lokasi/Kode Pallet</label>
+            <div class="input-group" id="lokasiInputGroup">
+                <label for="lokasi"><i class="fas fa-map-marker-alt"></i> Lokasi/Kode Pallet (Opsional)</label>
                 <input type="text" id="lokasi" name="lokasi" placeholder="Lokasi Pallet / Rak">
             </div>
+
             <div class="input-group">
                 <label for="jumlah"><i class="fas fa-sort-numeric-up-alt"></i> Jumlah</label>
                 <input type="number" id="jumlah" name="jumlah" placeholder="Masukkan jumlah" required min="1">
@@ -376,7 +400,7 @@
                 <input type="text" id="checker" name="checker" placeholder="Nama Checker" required>
             </div>
             
-            <input type="hidden" id="formatSimpan" name="formatSimpan" value="5">
+            <input type="hidden" id="formatSimpan" name="formatSimpan" value="6">
 
             <div class="submit-buttons">
                 <button type="button" id="masukButton" class="submit-btn" data-action="Masuk">
@@ -402,7 +426,8 @@
 // Kode JS (FRONTEND)
 // =================================================================
 
-const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbz-siwPKU2MeK3GkNrp7NXIrJjl4iQgQWaMPJIMc99Z7bTQwcv1z8bu4fdMMjwdfLLO0Q/exec'; 
+// 🔥 MODIFIKASI URL Apps Script
+const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyCbNGjMC2c0Cc6x9jP5vupUtK_4U4c_vNJkZ4ago5SzlHwoqLVn6Fs7YU7btZ60cnL/exec'; 
 
 const categoryButtons = document.querySelectorAll('.category-btn');
 const jenisProdukSelect = document.getElementById('jenisProduk');
@@ -420,7 +445,7 @@ const fabToggle = document.getElementById('fabToggle');
 const appBody = document.body;
 
 let inventoryDataCache = {}; 
-let configDataCache = {};
+let configDataCache = {}; // Dipertahankan, meskipun tidak digunakan, untuk menghindari error jika Apps Script mengirimnya
 let currentCategory = '';
 let currentCategoryData = {}; 
 let productNamesCache = []; 
@@ -436,6 +461,11 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // Set status awal tombol FAB
     updateUIMode(currentMode); 
+    
+    // 🔥 PENTING: Tampilkan Lokasi dan atur sebagai tidak wajib
+    lokasiInputGroup.classList.remove('hidden');
+    lokasiInput.required = false; // Lokasi tidak diwajibkan (Opsional)
+    formatSimpanInput.value = '6'; // Format selalu 6
 });
 
 
@@ -448,8 +478,8 @@ function handleSheetsData(result) {
 
     if (result && result.status === 'ok') {
         inventoryDataCache = result.data || {};
-        configDataCache = result.config || {};
-        
+        // configDataCache = result.config || {}; // Config diabaikan
+
         if (Object.keys(inventoryDataCache).length === 0) {
             useFallbackData('Data produk dari Apps Script kosong.');
             return;
@@ -461,32 +491,30 @@ function handleSheetsData(result) {
 
 function useFallbackData(reason) {
      const FALLBACK_DATA = {
-         "BESI": {
-             "BAJA RINGAN": ["BAJA RINGAN C75.75", "BAJA RINGAN R30.40", "BAJA RINGAN C75.60"],
-             "BESI BETON": ["BESI BETON 12MM POLOS", "BESI BETON 10MM POLOS", "BESI BETON 8MM ULIR", "KAWAT 10 (SEPULUH)", "KAWAT 10 (SEPULUH) ULIR"],
-             "BWG - KAWAT DURI": ["KAWAT DURI BESI", "KAWAT DURI BAJA", "KAWAT DURI BAJA SUPER"]
-         },
-         "KERAMIK": {
-             "LANTAI 40x40": ["KERAMIK 40x40 KASAR PUTIH", "KERAMIK 40x40 GLOSSY ABU"],
-             "DINDING": ["KERAMIK DINDING 25x40 GARIS", "KERAMIK DINDING 30x60 MOTIF", "PLT DEXA GREY BASIC RE"]
-         }
+        // 🔥 MODIFIKASI: Menambahkan LT 2 dan GM ke data fallback
+        "BESI": {
+            "BAJA RINGAN": ["BAJA RINGAN C75.75", "BAJA RINGAN R30.40"],
+            "BESI BETON": ["BESI BETON 12MM POLOS", "BESI BETON 10MM POLOS"]
+        },
+        "KERAMIK": {
+            "LANTAI 40x40": ["KERAMIK 40x40 KASAR PUTIH", "KERAMIK 40x40 GLOSSY ABU"],
+            "DINDING": ["KERAMIK DINDING 25x40 GARIS"]
+        },
+        "LT 2": {
+            "PERALATAN": ["SEKRUP GYPSUM", "CAT TEMBOK 5KG", "KUAS ROLL"]
+        },
+        "GM": {
+            "PRODUK GM": ["PRODUK GENERAL MERCHANDISE A", "PRODUK GENERAL MERCHANDISE B"]
+        }
      };
-     const FALLBACK_CONFIG = {
-         "BAJA RINGAN": { format: 6 },
-         "BESI BETON": { format: 6 },
-         "BWG - KAWAT DURI": { format: 6 },
-         "LANTAI 40x40": { format: 6 },
-         "DINDING": { format: 6 }
-     };
-
+     // Config dihilangkan / diabaikan
 
      inventoryDataCache = FALLBACK_DATA;
-     configDataCache = FALLBACK_CONFIG;
      displayMessage(`❌ Gagal memuat data: ${reason}. Menggunakan **DATA DUMMY LOKAL**.`, 'error');
 }
 
 function fetchInitialData() {
-    displayMessage('⏳ Memuat semua data produk dan konfigurasi (JSONP)...', 'loading');
+    displayMessage('⏳ Memuat semua data produk (JSONP)...', 'loading');
     
     const urlWithCallback = `${SCRIPT_URL}?callback=handleSheetsData`;
     
@@ -543,19 +571,12 @@ function setupEventListeners() {
         namaBarangInput.value = '';
         autocompleteList.innerHTML = '';
         autocompleteList.style.display = 'none';
-        lokasiInput.value = '';
-        
-        const config = configDataCache[selectedJenis] || { format: 5 }; 
-        const format = config.format;
-        formatSimpanInput.value = format; 
-        
-        if (format === 6) {
-            lokasiInputGroup.classList.remove('hidden');
-            lokasiInput.required = true;
-        } else {
-            lokasiInputGroup.classList.add('hidden');
-            lokasiInput.required = false;
-        }
+        // lokasiInput.value = ''; // Lokasi tidak di-reset
+
+        // 🔥 LOGIKA CONFIG DIHAPUS. Lokasi selalu terlihat dan format selalu 6.
+        formatSimpanInput.value = '6'; 
+        lokasiInputGroup.classList.remove('hidden'); 
+        lokasiInput.required = false; 
         
         if (selectedJenis) {
             productNamesCache = currentCategoryData[selectedJenis] || []; 
@@ -594,8 +615,8 @@ function setupEventListeners() {
                 const after = name.substring(matchIndex + input.length);
                 
                 item.innerHTML = before + 
-                                    `<span class="autocomplete-item-highlight">${match}</span>` + 
-                                    after;
+                                 `<span class="autocomplete-item-highlight">${match}</span>` + 
+                                 after;
             } else {
                 item.textContent = name;
             }
@@ -655,7 +676,7 @@ function setupEventListeners() {
     masukButton.addEventListener('click', (e) => handleFormSubmit(e, 'Masuk'));
     keluarButton.addEventListener('click', (e) => handleFormSubmit(e, 'Keluar'));
     
-    // 🔥 FAB Listener
+    // FAB Listener
     fabToggle.addEventListener('click', toggleMode);
 }
 
@@ -664,8 +685,11 @@ function updateJenisProdukDropdown(data) {
     
     const jenisProdukList = Object.keys(data).sort(); 
     
-    lokasiInputGroup.classList.add('hidden');
-    lokasiInput.required = false;
+    // 🔥 PENTING: Lokasi selalu terlihat dan format selalu 6
+    lokasiInputGroup.classList.remove('hidden');
+    lokasiInput.required = false; 
+    formatSimpanInput.value = '6';
+
     namaBarangInput.disabled = true;
     namaBarangInput.value = '';
     autocompleteList.style.display = 'none';
@@ -685,7 +709,7 @@ function updateJenisProdukDropdown(data) {
 }
 
 /**
- * 🔥 Fungsi untuk mengubah mode transaksi (Masuk <-> Keluar)
+ * Fungsi untuk mengubah mode transaksi (Masuk <-> Keluar)
  */
 function toggleMode() {
     const newMode = currentMode === 'Masuk' ? 'Keluar' : 'Masuk';
@@ -699,7 +723,7 @@ function toggleMode() {
 }
 
 /**
- * 🔥 Fungsi untuk memperbarui tampilan berdasarkan mode
+ * Fungsi untuk memperbarui tampilan berdasarkan mode
  */
 function updateUIMode(mode) {
     // 1. Perbarui Class Body dan Tombol FAB
@@ -739,14 +763,15 @@ async function handleFormSubmit(e, action) {
         jenisProduk: jenisProdukSelect.value.trim(),
         namaBarang: namaBarangInput.value.trim(),
         checker: document.getElementById('checker').value.trim(),
-        lokasi: lokasiInput.value.trim(),
-        formatSimpan: formatSimpanInput.value,
+        lokasi: lokasiInput.value.trim(), // Lokasi dikirim, walaupun kosong (Opsional)
+        formatSimpan: formatSimpanInput.value, // Selalu 6
         masukIn: (action === 'Masuk' ? document.getElementById('jumlah').value.trim() : ''), 
         keluarOut: (action === 'Keluar' ? document.getElementById('jumlah').value.trim() : '')
     };
 
-    if (!dataToSend.kategori || !dataToSend.jenisProduk || !dataToSend.namaBarang || !dataToSend.checker || (dataToSend.formatSimpan === '6' && dataToSend.lokasi === '')) {
-         return displayMessage('❌ Semua kolom wajib diisi.', 'error');
+    // Validasi form (kecuali Lokasi)
+    if (!dataToSend.kategori || !dataToSend.jenisProduk || !dataToSend.namaBarang || !dataToSend.checker || (!dataToSend.masukIn && !dataToSend.keluarOut)) {
+         return displayMessage('❌ Semua kolom wajib (kecuali Lokasi) harus diisi.', 'error');
     }
     
     // Reset form field setelah validasi awal
@@ -755,9 +780,8 @@ async function handleFormSubmit(e, action) {
     namaBarangInput.value = '';
     namaBarangInput.disabled = true;
     lokasiInput.value = '';
-    lokasiInputGroup.classList.add('hidden');
-    lokasiInput.required = false;
-    formatSimpanInput.value = '5';
+    // lokasiInputGroup.classList.remove('hidden') & lokasiInput.required = false tetap dipertahankan
+    formatSimpanInput.value = '6';
     productNamesCache = [];
     autocompleteList.innerHTML = '';
     autocompleteList.style.display = 'none';
