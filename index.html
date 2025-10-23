@@ -5,14 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SMART SWALAYAN INVENTORY</title>
     <link rel="icon" href="https://i.ibb.co/6y4t6y0/smart-swalayan-logo.png" type="image/png">
+    
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
-        /* ========================================= */
         /* CSS: GAYA SMART SWALAYAN (MODERN REFRESH) */
-        /* ========================================= */
-
-        /* --- 1. DEKLARASI VARIABEL & FONT --- */
         :root {
             --primary-color: #00897b; 
             --secondary-color: #ffb300; 
@@ -34,7 +31,6 @@
             font-family: 'Poppins', sans-serif;
         }
         
-        /* --- 2. BODY & CONTAINER LAYOUT --- */
         body {
             background-color: var(--bg-color);
             display: flex;
@@ -58,7 +54,6 @@
             transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
         }
         
-        /* 🔥 LOGO DI JUDUL */
         .app-title {
             text-align: center;
             color: var(--primary-color);
@@ -82,12 +77,9 @@
             color: var(--secondary-color);
             margin-top: -5px;
         }
-        /* END LOGO JUDUL */
 
-
-        /* --- 4. INPUT GROUP & FIELD UMUM --- */
         .input-group {
-            margin-bottom: 15px; /* 🔥 JARAK ANTAR INPUT DIPERSEMPIT */
+            margin-bottom: 15px; 
             transition: all 0.3s ease-out;
             max-height: 120px; 
         }
@@ -101,7 +93,7 @@
 
         .input-group label {
             display: block;
-            margin-bottom: 5px; /* 🔥 JARAK LABEL KE INPUT DIPERSEMPIT */
+            margin-bottom: 5px; 
             color: var(--primary-color);
             font-weight: 700;
             font-size: 0.9em;
@@ -114,7 +106,6 @@
             font-size: 1.1em;
         }
         
-        /* Styling Kontrol Input */
         .input-control {
             position: relative;
         }
@@ -131,22 +122,20 @@
         
         input[type="text"], input[type="number"], select {
             width: 100%;
-            padding: 8px 15px 8px 45px; /* 🔥 KOTAK INPUT DIPERKECIL (padding dikurangi) */
+            padding: 8px 15px 8px 45px; 
             border: 1px solid #e0e0e0;
             border-radius: var(--border-radius-small);
             font-size: 1em;
             transition: all 0.3s;
             appearance: none; 
             background-color: var(--card-bg);
-            height: 40px; /* Tinggi Kotak Input Diperkecil */
+            height: 40px; 
         }
-        /* Penyesuaian untuk Select */
         select {
              padding-left: 15px; 
              background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="%2300897b" d="M7 10l5 5 5-5z"/></svg>') no-repeat right 10px center;
              background-size: 18px;
         }
-        /* Penyesuaian untuk input yang memang tidak ada ikon (Jumlah, Checker) */
         #jumlah, #checker {
             padding-left: 15px;
         }
@@ -160,12 +149,11 @@
         }
 
         
-        /* --- 5. BUTTON KATEGORI (MODIFIKASI: Single Row Flex) --- */
         .category-buttons {
-            display: flex; /* 🔥 MENGGUNAKAN FLEX UNTUK 1 BARIS */
-            flex-wrap: wrap; /* Jika tidak muat, akan pindah baris */
-            gap: 8px; /* Jarak antar tombol diperkecil */
-            margin-bottom: 30px; /* 🔥 JARAK KE JENIS PRODUK DIPERLEBAR */
+            display: flex; 
+            flex-wrap: wrap; 
+            gap: 8px; 
+            margin-bottom: 30px; 
             padding: 8px;
             background-color: #e0f2f1; 
             border-radius: var(--border-radius-small);
@@ -173,7 +161,7 @@
         }
         
         .category-btn {
-            padding: 8px 10px; /* 🔥 UKURAN TOMBOL DIPERKECIL */
+            padding: 8px 10px; 
             background-color: #f5f5f5; 
             color: var(--text-color);
             border-radius: 6px;
@@ -181,13 +169,13 @@
             border: 1px solid #cfd8dc; 
             cursor: pointer;
             transition: all 0.2s ease;
-            font-size: 0.8em; /* 🔥 UKURAN FONT DIPERKECIL */
+            font-size: 0.8em; 
             display: flex; 
             align-items: center;
             justify-content: center;
             white-space: nowrap; 
-            flex-grow: 1; /* Agar membagi ruang secara merata */
-            max-width: calc(50% - 4px); /* Maksimal 2 kolom jika di layar kecil */
+            flex-grow: 1; 
+            max-width: calc(50% - 4px); 
         }
         .category-btn i {
             margin-right: 5px;
@@ -210,7 +198,6 @@
             color: var(--card-bg);
         }
         
-        /* --- 6. TOMBOL SUBMIT (Masuk/Keluar) --- */
         .submit-buttons {
             display: flex;
             gap: 15px;
@@ -219,7 +206,7 @@
 
         .submit-btn {
             flex-grow: 1;
-            padding: 12px 10px; /* Padding dikurangi */
+            padding: 12px 10px; 
             border: none;
             border-radius: 10px;
             font-weight: 700;
@@ -253,9 +240,6 @@
             display: none;
         }
 
-        /* ------------------------------------------- */
-        /* LIVE SEARCH SUGGESTION */
-        /* ------------------------------------------- */
         .autocomplete-container {
             position: relative;
             z-index: 1000;
@@ -281,7 +265,7 @@
         }
 
         .autocomplete-items div {
-            padding: 8px 15px; /* Padding dikurangi agar lebih kompak */
+            padding: 8px 15px; 
             cursor: pointer;
             background-color: #fff; 
             border-bottom: 1px solid #f0f0f0; 
@@ -304,9 +288,6 @@
             border-bottom: none;
         }
         
-        /* ------------------------------------------- */
-        
-        /* --- 8. MESSAGE DISPLAY --- */
         .message {
             text-align: center;
             margin-top: 25px;
@@ -339,9 +320,6 @@
             color: #fbc02d;
         }
         
-        /* ------------------------------------------- */
-        /* FLOATING ACTION BUTTON (FAB) */
-        /* ------------------------------------------- */
         #fabToggle {
             position: fixed;
             bottom: 30px;
@@ -373,7 +351,6 @@
             transform: scale(1.05);
         }
 
-        /* Ganti warna FAB berdasarkan mode */
         body.mode-masuk #fabToggle {
             background-color: var(--danger-color); 
         }
@@ -382,7 +359,6 @@
             background-color: var(--success-color); 
         }
         
-        /* --- 10. RESPONSIVE ADJUSTMENTS (@media) --- */
         @media (max-width: 600px) {
             .container { 
                 max-width: 100%; 
@@ -390,12 +366,11 @@
                 margin-top: 10px;
             }
             .category-buttons {
-                /* Pada layar kecil, biarkan flex-wrap membagi rata menjadi 2 kolom */
                 justify-content: space-between;
             }
             .category-btn {
                 flex-grow: 1;
-                flex-basis: calc(50% - 4px); /* Memastikan 2 kolom penuh pada layar kecil */
+                flex-basis: calc(50% - 4px); 
                 max-width: none;
                 font-size: 0.75em; 
                 padding: 8px 5px;
@@ -411,7 +386,6 @@
                 height: 48px; 
                 font-size: 0.9em;
             }
-            /* Kotak input pada layar kecil */
             input[type="text"], input[type="number"], select {
                 height: 36px;
                 padding: 6px 15px 6px 40px; 
@@ -463,9 +437,9 @@
             </div>
             
             <div class="input-group" id="lokasiInputGroup">
-                <label for="lokasi"><i class="fas fa-map-marker-alt"></i> Lokasi/Kode Pallet (Opsional)</label>
+                <label for="lokasi"><i class="fas fa-map-marker-alt"></i> Lokasi/Kode Pallet</label>
                 <div class="input-control">
-                    <input type="text" id="lokasi" name="lokasi" placeholder="Lokasi Pallet / Rak">
+                    <input type="text" id="lokasi" name="lokasi" placeholder="Lokasi Pallet / Rak" required>
                 </div>
             </div>
 
@@ -509,7 +483,7 @@
 // Kode JS (FRONTEND)
 // =================================================================
 
-// 🔥 URL Apps Script Terbaru
+// 🔥 GANTI DENGAN URL APPS SCRIPT ANDA (URL yang sama untuk doGet dan doPost)
 const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyCbNGjMC2c0Cc6x9jP5vupUtK_4U4c_vNJkZ4ago5SzlHwoqLVn6Fs7YU7btZ60cnL/exec'; 
 
 const categoryButtons = document.querySelectorAll('.category-btn');
@@ -529,7 +503,6 @@ const appBody = document.body;
 const modeStatusDiv = document.getElementById('modeStatus');
 
 let inventoryDataCache = {}; 
-let configDataCache = {}; 
 let currentCategory = '';
 let currentCategoryData = {}; 
 let productNamesCache = []; 
@@ -538,39 +511,59 @@ let currentMode = 'Masuk';
 
 
 document.addEventListener('DOMContentLoaded', () => {
-    fetchInitialData();
+    fetchInitialData(); // 🔥 Menggunakan fungsi JSONP baru
     setupEventListeners();
     setupUppercaseListeners();
     document.getElementById('app-footer-copyright').textContent = `© ${new Date().getFullYear()} Smart Swalayan. All Rights Reserved.`;
     
     updateUIMode(currentMode); 
     
-    // PENTING: Tampilkan Lokasi dan atur sebagai tidak wajib, format selalu 6
+    // Lokasi WAJIB diisi sesuai logika doPost
     lokasiInputGroup.classList.remove('hidden');
-    lokasiInput.required = false; 
+    lokasiInput.required = true; 
     formatSimpanInput.value = '6'; 
 });
 
 
-function handleSheetsData(result) {
-    const scriptElement = document.getElementById('jsonp-script');
-    if (scriptElement) scriptElement.remove();
-    if (window.jsonpTimeout) clearTimeout(window.jsonpTimeout);
+/**
+ * 🔥 FUNGSI BARU: Mengambil data menggunakan JSONP (Wajib CORS-Friendly)
+ * Instan load dicapai dengan memuat data di awal dan menyimpannya di cache lokal.
+ */
+function fetchInitialData() {
+    displayMessage('⏳ Memuat semua data produk instan (CORS-Friendly)...', 'loading');
     
-    displayMessage('', 'info'); 
-
-    if (result && result.status === 'ok') {
-        inventoryDataCache = result.data || {};
-        // configDataCache = result.config || {}; 
-
-        if (Object.keys(inventoryDataCache).length === 0) {
-            useFallbackData('Data produk dari Apps Script kosong.');
-            return;
-        }
-    } else {
-        useFallbackData(result.error || 'Respon Apps Script tidak valid.');
+    if (SCRIPT_URL.includes('AKfycbyCbNGjMC2c0Cc6x9jP5vupUtK_4U4c_vNJkZ4ago5SzlHwoqLVn6Fs7YU7btZ60cnL')) {
+        // Ganti URL ini dengan URL Deployment Apps Script Anda yang sebenarnya setelah deploy!
+        displayMessage('⚠️ SCRIPT_URL masih URL *placeholder*. Data mungkin tidak terambil.', 'error');
     }
+
+    // 1. Definisikan fungsi callback global (harus ada di window)
+    window.handleSheetsData = function(response) {
+        if (response.status === 'ok' && response.data) {
+            inventoryDataCache = response.data;
+            displayMessage('✅ Data produk dimuat instan (JSONP)!', 'success'); 
+        } else {
+            console.error('Data error:', response.error || 'Respon Apps Script tidak valid.');
+            useFallbackData(`❌ Gagal memuat data: ${response.error || 'Respon tidak valid'}.`);
+        }
+        // Hapus script tag setelah selesai
+        document.head.removeChild(document.getElementById('jsonpScript'));
+        delete window.handleSheetsData;
+    };
+
+    // 2. Buat URL dengan parameter callback
+    const jsonpUrl = SCRIPT_URL + '?callback=handleSheetsData';
+
+    // 3. Buat script tag dan append ke head untuk memicu permintaan JSONP
+    const script = document.createElement('script');
+    script.src = jsonpUrl;
+    script.id = 'jsonpScript';
+    script.onerror = function() {
+        useFallbackData('❌ Kesalahan jaringan atau URL Apps Script salah.');
+    };
+    document.head.appendChild(script);
 }
+
 
 function useFallbackData(reason) {
      const FALLBACK_DATA = {
@@ -592,34 +585,6 @@ function useFallbackData(reason) {
 
      inventoryDataCache = FALLBACK_DATA;
      displayMessage(`❌ Gagal memuat data: ${reason}. Menggunakan **DATA DUMMY LOKAL**.`, 'error');
-}
-
-function fetchInitialData() {
-    displayMessage('⏳ Memuat semua data produk...', 'loading');
-    
-    const urlWithCallback = `${SCRIPT_URL}?callback=handleSheetsData`;
-    
-    const script = document.createElement('script');
-    script.src = urlWithCallback;
-    script.id = 'jsonp-script'; 
-
-    window.jsonpTimeout = setTimeout(() => {
-        if (Object.keys(inventoryDataCache).length === 0) {
-            useFallbackData('Permintaan data Apps Script habis waktu (timeout).');
-        }
-        script.remove();
-        if (messageArea.classList.contains('loading')) {
-            displayMessage('', 'info');
-        }
-    }, 15000); 
-
-    script.onerror = () => {
-        clearTimeout(window.jsonpTimeout);
-        useFallbackData('Gagal memuat script data. Cek URL SCRIPT Anda.');
-        displayMessage('', 'info');
-    };
-
-    document.head.appendChild(script);
 }
 
 function setupUppercaseListeners() {
@@ -655,7 +620,7 @@ function setupEventListeners() {
 
         formatSimpanInput.value = '6'; 
         lokasiInputGroup.classList.remove('hidden'); 
-        lokasiInput.required = false; 
+        lokasiInput.required = true; // Wajib diisi sesuai logika Apps Script
         
         if (selectedJenis) {
             productNamesCache = currentCategoryData[selectedJenis] || []; 
@@ -763,9 +728,8 @@ function updateJenisProdukDropdown(data) {
     
     const jenisProdukList = Object.keys(data).sort(); 
     
-    // PENTING: Lokasi selalu terlihat dan format selalu 6
     lokasiInputGroup.classList.remove('hidden');
-    lokasiInput.required = false; 
+    lokasiInput.required = true; 
     formatSimpanInput.value = '6';
 
     namaBarangInput.disabled = true;
@@ -786,9 +750,6 @@ function updateJenisProdukDropdown(data) {
     }
 }
 
-/**
- * Fungsi untuk mengubah mode transaksi (Masuk <-> Keluar)
- */
 function toggleMode() {
     const newMode = currentMode === 'Masuk' ? 'Keluar' : 'Masuk';
     currentMode = newMode;
@@ -799,9 +760,6 @@ function toggleMode() {
     displayMessage(`Mode transaksi diubah ke **${newMode.toUpperCase()}**.`);
 }
 
-/**
- * Fungsi untuk memperbarui tampilan berdasarkan mode
- */
 function updateUIMode(mode) {
     modeStatusDiv.textContent = `INVENTORY - ${mode.toUpperCase()}`;
     
@@ -842,8 +800,8 @@ async function handleFormSubmit(e, action) {
         keluarOut: (action === 'Keluar' ? document.getElementById('jumlah').value.trim() : '')
     };
 
-    if (!dataToSend.kategori || !dataToSend.jenisProduk || !dataToSend.namaBarang || !dataToSend.checker || (!dataToSend.masukIn && !dataToSend.keluarOut)) {
-         return displayMessage('❌ Semua kolom wajib (kecuali Lokasi) harus diisi.', 'error');
+    if (!dataToSend.kategori || !dataToSend.jenisProduk || !dataToSend.namaBarang || !dataToSend.checker || !dataToSend.lokasi || (!dataToSend.masukIn && !dataToSend.keluarOut)) {
+         return displayMessage('❌ Semua kolom wajib harus diisi.', 'error');
     }
     
     document.getElementById('jumlah').value = '';
@@ -862,11 +820,14 @@ async function handleFormSubmit(e, action) {
         encodeURIComponent(key) + '=' + encodeURIComponent(dataToSend[key])
     ).join('&');
     
+    // MENGGUNAKAN SCRIPT_URL untuk proses POST data (Apps Script doPost)
     try {
-        const response = await fetch(SCRIPT_URL, {
+        const response = await fetch(SCRIPT_URL, { 
             method: 'POST',
             headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
             body: urlEncodedData,
+            // Mode 'no-cors' tidak disarankan karena akan mengabaikan response
+            // Biarkan browser dan Apps Script menangani CORS/Cross-Domain
         });
 
         const result = await response.json();
