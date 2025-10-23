@@ -3,69 +3,832 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Smart Swalayan Inventory</title>
-    <link rel="stylesheet" href="style.css"> <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <title>SMART SWALAYAN INVENTORY</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        /* ========================================= */
+        /* CSS: GAYA SMART SWALAYAN (Tampilan Modern) */
+        /* ========================================= */
+
+        /* --- START: 1. DEKLARASI VARIABEL & FONT --- */
+        :root {
+            /* Variabel Warna Asli */
+            --primary-color: #00796b; /* Hijau Teal */
+            --secondary-color: #ff9800; /* Orange */
+            --danger-color: #f44336; /* Merah */
+            --success-color: #4CAF50; /* Hijau Cerah */
+            --text-color: #333;
+            --bg-color: #f8f9fa; /* Lebih cerah dari #eceff1 */
+            --card-bg: #ffffff;
+            --border-radius: 12px;
+
+            /* Variabel Shadow & Efek Baru yang Lebih Halus */
+            --shadow-heavy: 0 15px 30px rgba(0, 0, 0, 0.1);
+            --shadow-light: 0 4px 10px rgba(0, 0, 0, 0.05);
+            --button-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Poppins', sans-serif;
+        }
+        
+        /* --- END: 1. DEKLARASI VARIABEL & FONT --- */
+        
+        /* ------------------------------------------- */
+        
+        /* --- START: 2. BODY & CONTAINER LAYOUT --- */
+        body {
+            background-color: var(--bg-color);
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            min-height: 100vh;
+            padding: 30px 20px;
+            color: var(--text-color);
+        }
+        
+        .container {
+            background-color: var(--card-bg);
+            padding: 35px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-heavy);
+            width: 100%;
+            max-width: 480px; /* Lebar sedikit diperluas */
+            margin-top: 20px;
+            transition: all 0.3s ease;
+        }
+        
+        .app-title {
+            text-align: center;
+            color: var(--primary-color);
+            font-size: 1.6em;
+            font-weight: 700;
+            margin-bottom: 30px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--bg-color); /* Garis pemisah halus */
+        }
+
+        .app-title i {
+            margin-right: 10px;
+            color: var(--secondary-color);
+        }
+
+        /* --- END: 2. BODY & CONTAINER LAYOUT --- */
+        
+        /* ------------------------------------------- */
+        
+        /* --- START: 4. INPUT GROUP & FIELD UMUM --- */
+        .input-group {
+            margin-bottom: 20px;
+            transition: all 0.4s ease-out; /* Transisi yang lebih mulus */
+            overflow: hidden;
+            max-height: 100px;
+        }
+        
+        .input-group.hidden {
+            margin-bottom: 0;
+            max-height: 0;
+            opacity: 0;
+            padding: 0;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: var(--primary-color);
+            font-weight: 600; /* Sedikit diturunkan */
+            font-size: 0.9em;
+            display: flex;
+            align-items: center;
+        }
+        
+        .input-group label i {
+            margin-right: 8px;
+            color: var(--secondary-color);
+            font-size: 1.1em;
+        }
+        
+        input[type="text"],
+        input[type="number"],
+        input[type="date"],
+        select {
+            width: 100%;
+            padding: 14px 15px; /* Padding lebih besar */
+            border: 1px solid #e0e0e0; /* Border lebih halus */
+            border-radius: 8px;
+            font-size: 1em;
+            color: var(--text-color);
+            transition: all 0.3s;
+            appearance: none; 
+            background-color: var(--card-bg);
+            box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.05); /* Shadow internal */
+        }
+        
+        input:focus, select:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(0, 121, 107, 0.15); /* Ring fokus yang lebih halus */
+            background-color: #ffffff;
+            outline: none;
+        }
+        /* --- END: 4. INPUT GROUP & FIELD UMUM --- */
+        
+        /* ------------------------------------------- */
+        
+        /* --- START: 5. BUTTON KATEGORI --- */
+        .category-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 5px;
+            margin-bottom: 0; /* Dipindahkan ke .input-group */
+            padding: 8px; /* Padding lebih kecil */
+            background-color: #e0f2f1; /* Warna background dari variabel asli */
+            border-radius: 10px;
+        }
+
+        .category-btn {
+            flex-grow: 1;
+            padding: 12px 10px; /* Padding disesuaikan */
+            background-color: #b2dfdb; 
+            color: var(--primary-color);
+            border-radius: 8px;
+            font-weight: 600;
+            border: none; 
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 0.9em;
+            text-transform: uppercase;
+        }
+
+        .category-btn i {
+            margin-right: 5px;
+        }
+
+        .category-btn.active {
+            background-color: var(--primary-color);
+            color: var(--card-bg);
+            box-shadow: 0 4px 10px rgba(0, 121, 107, 0.35);
+            transform: translateY(-2px);
+        }
+
+        .category-btn:hover {
+            background-color: #80cbc4;
+        }
+        
+        .category-btn.active:hover {
+            background-color: #004d40;
+            transform: translateY(-1px);
+        }
+        /* --- END: 5. BUTTON KATEGORI --- */
+        
+        /* ------------------------------------------- */
+        
+        /* --- START: 6. TOMBOL SUBMIT (Masuk/Keluar) --- */
+        .submit-buttons {
+            display: flex;
+            gap: 15px;
+            margin-top: 35px;
+        }
+
+        .submit-btn {
+            flex-grow: 1;
+            padding: 16px 10px; /* Padding lebih besar */
+            border: none;
+            border-radius: 10px;
+            font-weight: 700;
+            font-size: 1em; /* Ukuran font disesuaikan */
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .submit-btn i {
+            margin-right: 5px;
+        }
+
+        #masukButton {
+            background-color: var(--success-color); 
+            box-shadow: 0 6px 15px rgba(76, 175, 80, 0.3);
+        }
+
+        #keluarButton {
+            background-color: var(--danger-color); 
+            box-shadow: 0 6px 15px rgba(244, 67, 54, 0.3);
+        }
+
+        #masukButton:hover {
+            background-color: #388e3c;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(76, 175, 80, 0.4);
+        }
+
+        #keluarButton:hover {
+            background-color: #d32f2f;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(244, 67, 54, 0.4);
+        }
+
+        .submit-btn:active {
+            transform: scale(0.98);
+            box-shadow: var(--button-shadow); /* Kembali ke shadow normal saat ditekan */
+        }
+        /* --- END: 6. TOMBOL SUBMIT (Masuk/Keluar) --- */
+
+        /* ------------------------------------------- */
+
+        /* --- START: 7. LIVE SEARCH SUGGESTION --- */
+        .autocomplete-container {
+            position: relative;
+        }
+
+        .autocomplete-items {
+            position: absolute;
+            z-index: 100;
+            top: 100%;
+            left: 0;
+            right: 0;
+            max-height: 180px;
+            overflow-y: auto;
+            border: 1px solid #ddd;
+            border-top: none;
+            border-radius: 0 0 8px 8px;
+            background-color: white;
+            box-shadow: var(--shadow-light);
+            display: none; /* Default agar JS yang mengontrol */
+        }
+
+        .autocomplete-items div {
+            padding: 12px;
+            cursor: pointer;
+            background-color: #fff; 
+            border-bottom: 1px solid #f0f0f0;
+            font-size: 0.95em;
+            transition: background-color 0.2s;
+        }
+
+        .autocomplete-items div:last-child {
+            border-bottom: none;
+        }
+
+        .autocomplete-items div:hover,
+        .autocomplete-active {
+            background-color: #e8f5e9 !important; /* Warna hover/aktif yang lembut */
+            color: var(--primary-color);
+        }
+
+        /* Styling Highlight pada teks yang cocok */
+        .autocomplete-item-highlight {
+            font-weight: 700;
+            color: var(--secondary-color);
+        }
+        /* --- END: 7. LIVE SEARCH SUGGESTION --- */
+        
+        /* ------------------------------------------- */
+        
+        /* --- START: 8. MESSAGE DISPLAY --- */
+        .message {
+            text-align: center;
+            margin-top: 25px;
+            padding: 12px;
+            border-radius: 8px;
+            font-weight: 600;
+            opacity: 0;
+            transition: opacity 0.4s, transform 0.4s;
+            transform: translateY(10px);
+            display: block; 
+            font-size: 0.9em;
+        }
+        
+        .message.error {
+            background-color: #fce4e4; 
+            color: var(--danger-color);
+            border: 1px solid #f9c4c4;
+        }
+
+        .message.loading {
+            background-color: #fffde7;
+            color: #fbc02d;
+            border: 1px solid #fff9c4;
+        }
+        
+        .message.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        /* --- END: 8. MESSAGE DISPLAY --- */
+        
+        /* ------------------------------------------- */
+
+        /* --- START: 9. COPYRIGHT FOOTER --- */
+        .footer-copyright {
+            margin-top: 30px;
+            padding-top: 15px;
+            border-top: 1px solid #eee;
+            text-align: center;
+            font-size: 0.75em;
+            color: #777;
+        }
+        /* --- END: 9. COPYRIGHT FOOTER --- */
+
+        /* --- START: 10. RESPONSIVE ADJUSTMENTS (@media) --- */
+        @media (max-width: 600px) {
+            body { padding: 10px; }
+            .container { padding: 20px; margin-top: 0; border-radius: 0; box-shadow: none; }
+            .app-title { font-size: 1.4em; margin-bottom: 20px; }
+            input, select, .category-btn, .submit-btn { padding: 12px; font-size: 0.9em; }
+            .submit-buttons { gap: 10px; }
+            .category-btn { padding: 10px 5px; }
+        }
+        /* --- END: 10. RESPONSIVE ADJUSTMENTS (@media) --- */
+    </style>
 </head>
 <body>
     <div class="container">
-        <header>
-            <h1><i class="fas fa-box-open"></i> Smart Swalayan Inventory</h1>
-        </header>
+        <div class="app-title">
+            <i class="fas fa-warehouse"></i> Smart Swalayan Inventory
+        </div>
+        
+        <form id="inventoryForm">
+            <div class="input-group">
+                <label><i class="fas fa-cubes"></i> Kategori Barang</label>
+                <div class="category-buttons">
+                    <button type="button" class="category-btn" data-category="BESI" id="btnBesi">
+                        <i class="fas fa-hammer"></i> BESI
+                    </button>
+                    <button type="button" class="category-btn" data-category="KERAMIK" id="btnKeramik">
+                        <i class="fas fa-couch"></i> KERAMIK
+                    </button>
+                </div>
+                <input type="hidden" id="kategori" name="kategori" required>
+            </div>
 
-        <main class="form-container">
-            <div class="input-group-row">
-                <label class="input-label"><i class="fas fa-tags"></i> Kategori Barang</label>
-                <div class="kategori-buttons">
-                    <button id="btn-besi" class="btn-kategori active">BESI</button>
-                    <button id="btn-keramik" class="btn-kategori">KERAMIK</button>
+            <div class="input-group">
+                <label for="jenisProduk"><i class="fas fa-stream"></i> Jenis Produk</label>
+                <select id="jenisProduk" name="jenisProduk" disabled required>
+                    <option value="">-- Pilih Kategori Dulu --</option>
+                </select>
+            </div>
+
+            <div class="input-group">
+                <label for="namaBarang"><i class="fas fa-box-open"></i> Nama Barang</label>
+                <div class="autocomplete-container">
+                    <input type="text" id="namaBarang" name="namaBarang" placeholder="Ketik nama barang..." disabled required>
+                    <div id="autocomplete-list" class="autocomplete-items">
+                        </div>
                 </div>
             </div>
-
-            <div class="input-group">
-                <label for="jenis-produk"><i class="fas fa-list-ul"></i> Jenis Produk</label>
-                <select id="jenis-produk" class="input-field-select">
-                    <option value="BESI">BESI</option>
-                    <option value="30x60">30x60</option>
-                    </select>
+            
+            <div class="input-group hidden" id="lokasiInputGroup">
+                <label for="lokasi"><i class="fas fa-map-marker-alt"></i> Lokasi/Kode Pallet</label>
+                <input type="text" id="lokasi" name="lokasi" placeholder="Lokasi Pallet / Rak">
             </div>
-
-            <div class="input-group live-search-container">
-                <label for="nama-produk"><i class="fas fa-box"></i> Nama Produk</label>
-                <input type="text" id="nama-produk" class="input-field" placeholder="Nama Barang" autocomplete="off" value="PLT DEXA GREY BASIC RE">
-                <div id="live-search-suggestion" class="autocomplete-container">
-                    <div class="autocomplete-item">KAWAT 10 (SEPULUH)</div>
-                    <div class="autocomplete-item">KAWAT 10 (SEPULUH) ULIR</div>
-                </div>
-            </div>
-
             <div class="input-group">
-                <label for="lokasi-pallet"><i class="fas fa-map-marker-alt"></i> Lokasi Kode Pallet</label>
-                <input type="text" id="lokasi-pallet" class="input-field" placeholder="Lokasi Pallet / Rak">
-            </div>
-
-            <div class="input-group">
-                <label for="jumlah"><i class="fas fa-arrow-up-down-left-right"></i> Jumlah</label>
-                <input type="number" id="jumlah" class="input-field" placeholder="Masukkan jumlah" min="0">
+                <label for="jumlah"><i class="fas fa-sort-numeric-up-alt"></i> Jumlah</label>
+                <input type="number" id="jumlah" name="jumlah" placeholder="Masukkan jumlah" required min="1">
             </div>
 
             <div class="input-group">
                 <label for="checker"><i class="fas fa-user-check"></i> Checker</label>
-                <input type="text" id="checker" class="input-field" placeholder="Nama Checker">
-            </div>
-
-            <div class="input-group-row submit-group">
-                <button id="barang-masuk" class="submit-button success"><i class="fas fa-sign-in-alt"></i> BARANG MASUK</button>
-                <button id="barang-keluar" class="submit-button danger"><i class="fas fa-sign-out-alt"></i> BARANG KELUAR</button>
+                <input type="text" id="checker" name="checker" placeholder="Nama Checker" required>
             </div>
             
-            <div id="message-display" class="message-show">
-                </div>
-        </main>
+            <input type="hidden" id="formatSimpan" name="formatSimpan" value="5">
 
-        <footer>
-            © 2025 Smart Swalayan. All Rights Reserved.
-        </footer>
+            <div class="submit-buttons">
+                <button type="button" id="masukButton" class="submit-btn" data-action="Masuk">
+                    <i class="fas fa-arrow-alt-circle-up"></i> Barang MASUK
+                </button>
+                <button type="button" id="keluarButton" class="submit-btn" data-action="Keluar">
+                    <i class="fas fa-arrow-alt-circle-down"></i> Barang KELUAR
+                </button>
+            </div>
+
+            <p id="message" class="message"></p>
+        </form>
+        
+        <div id="app-footer-copyright" class="footer-copyright"></div>
     </div>
 
-    <script src="script.js"></script> </body>
+<script>
+// =================================================================
+// Kode JS (FRONTEND)
+// (Kode JavaScript dipertahankan seperti aslinya)
+// =================================================================
+
+// 🚨 PENTING: Ganti dengan URL Deployment Apps Script Anda yang sudah di-publish!
+const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbz-siwPKU2MeK3GkNrp7NXIrJjl4iQgQWaMPJIMc99Z7bTQwcv1z8bu4fdMMjwdfLLO0Q/exec'; 
+
+// Elemen DOM
+const categoryButtons = document.querySelectorAll('.category-btn');
+const jenisProdukSelect = document.getElementById('jenisProduk');
+const namaBarangInput = document.getElementById('namaBarang');
+const autocompleteList = document.getElementById('autocomplete-list'); 
+const form = document.getElementById('inventoryForm');
+const messageArea = document.getElementById('message'); 
+const kategoriInput = document.getElementById('kategori');
+const masukButton = document.getElementById('masukButton');
+const keluarButton = document.getElementById('keluarButton');
+const lokasiInputGroup = document.getElementById('lokasiInputGroup');
+const lokasiInput = document.getElementById('lokasi');
+const formatSimpanInput = document.getElementById('formatSimpan');
+const textInputs = document.querySelectorAll('input[type="text"]');
+
+
+// Variabel Cache dan State
+let inventoryDataCache = {}; 
+let configDataCache = {};
+let currentCategory = '';
+let currentCategoryData = {}; 
+let productNamesCache = []; 
+
+
+// =================================================================
+// 1. FUNGSI UTAMA & INITIALIZATION
+// =================================================================
+
+document.addEventListener('DOMContentLoaded', () => {
+    fetchInitialData();
+    setupEventListeners();
+    setupUppercaseListeners();
+    document.getElementById('app-footer-copyright').textContent = `© ${new Date().getFullYear()} Smart Swalayan. All Rights Reserved.`;
+});
+
+// =================================================================
+// 2. JSONP HANDLER (Solusi Anti-CORS)
+// =================================================================
+
+/**
+ * Fungsi global yang dipanggil oleh Apps Script (JSONP) untuk menerima data.
+ */
+function handleSheetsData(result) {
+    const scriptElement = document.getElementById('jsonp-script');
+    if (scriptElement) {
+        scriptElement.remove();
+    }
+    
+    if (window.jsonpTimeout) {
+        clearTimeout(window.jsonpTimeout);
+    }
+    
+    // 🚨 PERUBAHAN: Hilangkan pesan loading/info saat data berhasil dimuat
+    displayMessage('', 'info'); 
+
+    if (result && result.status === 'ok') {
+        inventoryDataCache = result.data || {};
+        configDataCache = result.config || {};
+        
+        if (Object.keys(inventoryDataCache).length === 0) {
+            useFallbackData('Data produk dari Apps Script kosong.');
+            return;
+        }
+        // Tidak perlu menampilkan pesan sukses, langsung hilang.
+    } else {
+        useFallbackData(result.error || 'Respon Apps Script tidak valid.');
+    }
+}
+
+/**
+ * Helper function untuk menggunakan data dummy.
+ */
+function useFallbackData(reason) {
+     const FALLBACK_DATA = {
+         "BESI": {
+             "BAJA RINGAN": ["BAJA RINGAN C75.75", "BAJA RINGAN R30.40"],
+             "BESI BETON": ["BESI BETON 12MM POLOS", "BESI BETON 8MM ULIR"]
+         },
+         "KERAMIK": {
+             "LANTAI 40x40": ["KERAMIK 40x40 KASAR PUTIH"],
+             "DINDING": ["KERAMIK DINDING 25x40 GARIS"]
+         }
+     };
+     const FALLBACK_CONFIG = {
+         "BAJA RINGAN": { format: 5 },
+         "BESI BETON": { format: 6 },
+         "LANTAI 40x40": { format: 5 },
+         "DINDING": { format: 6 }
+     };
+
+
+     inventoryDataCache = FALLBACK_DATA;
+     configDataCache = FALLBACK_CONFIG;
+     displayMessage(`❌ Gagal memuat data: ${reason}. Menggunakan **DATA DUMMY LOKAL**.`, 'error');
+}
+
+function fetchInitialData() {
+    displayMessage('⏳ Memuat semua data produk dan konfigurasi (JSONP)...', 'loading');
+    
+    const urlWithCallback = `${SCRIPT_URL}?callback=handleSheetsData`;
+    
+    const script = document.createElement('script');
+    script.src = urlWithCallback;
+    script.id = 'jsonp-script'; 
+
+    window.jsonpTimeout = setTimeout(() => {
+        if (Object.keys(inventoryDataCache).length === 0) {
+            useFallbackData('Permintaan data Apps Script habis waktu (timeout).');
+        }
+        script.remove();
+        // 🚨 PERUBAHAN: Hilangkan pesan loading jika timeout dan sudah dihandle oleh useFallbackData (yang akan menampilkan pesan error)
+        if (messageArea.classList.contains('loading')) {
+            displayMessage('', 'info');
+        }
+    }, 15000); 
+
+    script.onerror = () => {
+        clearTimeout(window.jsonpTimeout);
+        useFallbackData('Gagal memuat script data. Cek URL SCRIPT Anda.');
+        // 🚨 PERUBAHAN: Hilangkan pesan loading jika error
+        displayMessage('', 'info');
+    };
+
+    document.head.appendChild(script);
+}
+
+// =================================================================
+// 3. FUNGSI KAPITALISASI OTOMATIS (Tidak Berubah)
+// =================================================================
+
+function setupUppercaseListeners() {
+    textInputs.forEach(input => {
+        input.addEventListener('input', function() {
+            this.value = this.value.toUpperCase();
+        });
+    });
+}
+
+// =================================================================
+// 4. EVENT LISTENERS (Tidak Berubah)
+// =================================================================
+function setupEventListeners() {
+    // A. KATEGORI (BESI/KERAMIK) SELECTION
+    categoryButtons.forEach(button => {
+        button.addEventListener('click', (e) => {
+            const selectedCategory = e.currentTarget.getAttribute('data-category');
+            if (currentCategory === selectedCategory && e.currentTarget.classList.contains('active')) return; 
+
+            categoryButtons.forEach(btn => btn.classList.remove('active'));
+            e.currentTarget.classList.add('active');
+
+            currentCategory = selectedCategory;
+            kategoriInput.value = selectedCategory;
+            
+            currentCategoryData = inventoryDataCache[selectedCategory] || {}; 
+            
+            updateJenisProdukDropdown(currentCategoryData);
+        });
+    });
+
+    // B. JENIS PRODUK SELECTION 
+    jenisProdukSelect.addEventListener('change', (e) => {
+        const selectedJenis = e.target.value;
+        namaBarangInput.value = '';
+        autocompleteList.innerHTML = '';
+        lokasiInput.value = '';
+        
+        // 1. Cek dan Set Format Simpan
+        const config = configDataCache[selectedJenis] || { format: 5 }; // Default ke 5 jika tidak ada config
+        const format = config.format;
+        formatSimpanInput.value = format; 
+        
+        // 2. Tampilkan Lokasi jika format = 6
+        if (format === 6) {
+            lokasiInputGroup.classList.remove('hidden');
+            lokasiInput.required = true;
+            displayMessage(`Jenis Produk: **${selectedJenis}** dipilih. Format Simpan: ${format} Kolom (Lokasi Wajib).`);
+        } else {
+            lokasiInputGroup.classList.add('hidden');
+            lokasiInput.required = false;
+            displayMessage(`Jenis Produk: **${selectedJenis}** dipilih. Format Simpan: ${format} Kolom (Tanpa Lokasi).`);
+        }
+        
+        // 3. Update Nama Barang Cache
+        if (selectedJenis) {
+            productNamesCache = currentCategoryData[selectedJenis] || [];  
+            namaBarangInput.disabled = false; 
+            namaBarangInput.focus();
+        } else {
+            namaBarangInput.disabled = true;
+            productNamesCache = [];
+            displayMessage(`Pilih Jenis Produk.`);
+        }
+    });
+
+    // C. LIVE SEARCH (NAMA BARANG INPUT)
+    namaBarangInput.addEventListener('input', () => {
+        const input = namaBarangInput.value.toLowerCase();
+        autocompleteList.innerHTML = '';
+
+        if (input.length === 0) {
+            autocompleteList.style.display = 'none';
+            return;
+        }
+
+        const matches = productNamesCache.filter(name => 
+            name.toLowerCase().includes(input)
+        ).slice(0, 10); 
+
+        matches.forEach(name => {
+            const item = document.createElement('div');
+            item.classList.add('autocomplete-item');
+            
+            // Highlight logic (Dipertahankan agar live search bekerja)
+            const matchIndex = name.toLowerCase().indexOf(input); 
+            if (matchIndex >= 0) {
+                const before = name.substring(0, matchIndex);
+                const match = name.substring(matchIndex, matchIndex + input.length);
+                const after = name.substring(matchIndex + input.length);
+                item.innerHTML = before + 
+                                 `<span class="autocomplete-item-highlight">${match}</span>` + 
+                                 after;
+            } else {
+                item.textContent = name;
+            }
+
+            item.addEventListener('click', () => {
+                namaBarangInput.value = name;
+                autocompleteList.innerHTML = '';
+                autocompleteList.style.display = 'none';
+            });
+            autocompleteList.appendChild(item);
+        });
+
+        if (matches.length > 0) {
+            autocompleteList.style.display = 'block';
+        } else {
+            autocompleteList.style.display = 'none';
+        }
+    });
+
+    // Tutup dropdown saat klik di luar
+    document.addEventListener('click', (e) => {
+        if (!e.target.matches('#namaBarang')) {
+            autocompleteList.style.display = 'none';
+        }
+    });
+
+    // D. BUTTON SUBMISSION (doPost)
+    masukButton.addEventListener('click', (e) => handleFormSubmit(e, 'Masuk'));
+    keluarButton.addEventListener('click', (e) => handleFormSubmit(e, 'Keluar'));
+}
+
+// =================================================================
+// 5. FUNGSI PEMBANTU
+// =================================================================
+
+/**
+ * Mengisi dropdown Jenis Produk. (Tidak Berubah)
+ */
+function updateJenisProdukDropdown(data) {
+    jenisProdukSelect.innerHTML = '<option value="">-- Pilih Jenis Produk --</option>';
+    
+    const jenisProdukList = Object.keys(data).sort(); 
+    
+    // Reset Lokasi dan Format
+    lokasiInputGroup.classList.add('hidden');
+    lokasiInput.required = false;
+    lokasiInput.value = '';
+    formatSimpanInput.value = '5';
+    
+    namaBarangInput.disabled = true;
+    namaBarangInput.value = '';
+    autocompleteList.innerHTML = '';
+    autocompleteList.style.display = 'none';
+    productNamesCache = [];
+
+    if (jenisProdukList.length > 0) {
+        jenisProdukList.forEach(jenisProduk => {
+            jenisProdukSelect.innerHTML += `<option value="${jenisProduk}">${jenisProduk}</option>`;
+        });
+        jenisProdukSelect.disabled = false;
+        // 🚨 PERUBAHAN: Hilangkan pesan info biasa, fokus pada error/loading.
+        displayMessage('', 'info');
+    } else {
+        jenisProdukSelect.innerHTML = '<option value="">-- Tidak ada Jenis Produk ditemukan --</option>';
+        jenisProdukSelect.disabled = true;
+        displayMessage(`⚠️ Tidak ada Jenis Produk ditemukan untuk kategori **${currentCategory}**. Cek Google Sheet/Data Fallback.`, 'error');
+    }
+}
+
+
+/**
+ * Menangani pengiriman form (Barang Masuk/Keluar) ke Apps Script (doPost).
+ */
+async function handleFormSubmit(e, action) {
+    e.preventDefault();
+    
+    // Kumpulkan data
+    const kategori = kategoriInput.value.trim();
+    const jenisProduk = jenisProdukSelect.value.trim();
+    const namaBarang = namaBarangInput.value.trim();
+    const jumlah = document.getElementById('jumlah').value.trim();
+    const checker = document.getElementById('checker').value.trim();
+    const lokasi = lokasiInput.value.trim();
+    const formatSimpan = formatSimpanInput.value;
+
+    // Validasi (Dipertahankan)
+    const jumlahInt = parseInt(jumlah);
+    if (!kategori || !jenisProduk || !namaBarang || !checker) {
+        return displayMessage('❌ Semua kolom wajib diisi.', 'error');
+    }
+    if (formatSimpan === '6' && lokasi === '') {
+        return displayMessage('❌ Jenis Produk ini memerlukan input Lokasi/Kode Pallet.', 'error');
+    }
+    if (isNaN(jumlahInt) || jumlahInt <= 0) {
+        return displayMessage('❌ Jumlah harus berupa angka dan lebih dari 0.', 'error');
+    }
+    
+    // 🚨 PERUBAHAN BARU: RESET FORM SEGERA SEBELUM MENGIRIM DATA
+    document.getElementById('jumlah').value = '';
+    jenisProdukSelect.value = '';
+    namaBarangInput.value = '';
+    namaBarangInput.disabled = true;
+    lokasiInput.value = '';
+    lokasiInputGroup.classList.add('hidden');
+    lokasiInput.required = false;
+    formatSimpanInput.value = '5';
+    productNamesCache = [];
+    autocompleteList.innerHTML = '';
+    autocompleteList.style.display = 'none';
+
+    // Data yang akan dikirim ke doPost (semua parameter)
+    const dataToSend = {
+        kategori: kategori,
+        jenisProduk: jenisProduk,
+        namaBarang: namaBarang,
+        checker: checker,
+        lokasi: lokasi,
+        formatSimpan: formatSimpan,
+        masukIn: (action === 'Masuk' ? jumlah : ''), 
+        keluarOut: (action === 'Keluar' ? jumlah : '')
+    };
+
+    displayMessage(`⏳ Mengirim data Barang **${action.toUpperCase()}** (${jumlahInt}) dengan Format ${formatSimpan} Kolom...`, 'loading');
+    
+    // Konversi object data ke format URL-encoded
+    const urlEncodedData = Object.keys(dataToSend).map(key => 
+        encodeURIComponent(key) + '=' + encodeURIComponent(dataToSend[key])
+    ).join('&');
+    
+    try {
+        const response = await fetch(SCRIPT_URL, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            body: urlEncodedData,
+        });
+
+        if (!response.ok) {
+            throw new Error(`Gagal POST data. Status HTTP: ${response.status}`);
+        }
+
+        const result = await response.json();
+        
+        // 🚨 PERUBAHAN: Hilangkan pesan Loading/Info, hanya tampilkan Error
+        if (result.status === 'success') {
+            displayMessage('', 'info'); // Hilangkan pesan loading
+        } else {
+            displayMessage('❌ Gagal menyimpan data: ' + (result.error || 'Terjadi kesalahan tidak diketahui.'), 'error');
+        }
+    } catch (error) {
+        console.error('Submit error:', error);
+        displayMessage('❌ Terjadi kesalahan jaringan. Cek koneksi Anda atau Deployment Apps Script.', 'error');
+    }
+}
+
+/**
+ * Menampilkan pesan status kepada pengguna.
+ */
+function displayMessage(message, type = 'info') {
+    messageArea.classList.remove('show', 'success', 'error', 'loading');
+    
+    // 🚨 PERUBAHAN: Jika bukan error, hapus pesan (untuk menghilangkan sukses/loading/info).
+    if (type !== 'error' && type !== 'loading') {
+        messageArea.innerHTML = '';
+        messageArea.classList.remove('show');
+        return; 
+    }
+    
+    // Tampilkan pesan untuk Error dan Loading
+    setTimeout(() => {
+        messageArea.className = `message ${type}`;
+        messageArea.innerHTML = message;
+        messageArea.classList.add('show');
+    }, 10);
+
+    // Otomatis hilangkan pesan error setelah 5 detik. Pesan loading hanya hilang saat ada fungsi lain memanggil displayMessage('', 'info').
+    if (type === 'error') {
+        setTimeout(() => {
+            messageArea.classList.remove('show');
+        }, 5000);
+    }
+}
+</script>
+</body>
 </html>
