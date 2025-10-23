@@ -8,7 +8,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
         /* ========================================= */
-        /* CSS: GAYA SMART SWALAYAN (Tidak Berubah) */
+        /* CSS: GAYA SMART SWALAYAN (Perbaikan Z-INDEX) */
         /* ========================================= */
 
         /* --- START: 1. DEKLARASI VARIABEL & FONT --- */
@@ -79,15 +79,14 @@
         /* --- START: 4. INPUT GROUP & FIELD UMUM --- */
         .input-group {
             margin-bottom: 20px;
-            /* Tambahkan transisi untuk Lokasi Input */
             transition: all 0.3s ease-out;
             overflow: hidden;
-            max-height: 100px; /* Normal height */
+            max-height: 100px; 
         }
         
         .input-group.hidden {
             margin-bottom: 0;
-            max-height: 0; /* Sembunyikan dengan transisi */
+            max-height: 0; 
             opacity: 0;
         }
 
@@ -213,9 +212,10 @@
 
         /* ------------------------------------------- */
 
-        /* --- START: 7. LIVE SEARCH SUGGESTION --- */
+        /* --- START: 7. LIVE SEARCH SUGGESTION (PERBAIKAN Z-INDEX) --- */
         .autocomplete-container {
             position: relative;
+            z-index: 1000; /* 🔥 Z-INDEX TINGGI */
         }
 
         .autocomplete-items {
@@ -223,7 +223,7 @@
             border: 1px solid #d4d4d4;
             border-bottom: none;
             border-top: none;
-            z-index: 99;
+            z-index: 999; /* 🔥 JAMINAN DI ATAS ELEMEN LAIN */
             top: 100%;
             left: 0;
             right: 0;
@@ -232,7 +232,6 @@
             border-radius: 0 0 8px 8px;
             background-color: white;
             box-shadow: var(--shadow-light);
-            /* Penting: Default display harus none, JS yang mengubahnya */
             display: none; 
         }
 
@@ -249,12 +248,11 @@
         }
 
         .autocomplete-items div:hover,
-        .autocomplete-active { /* Style untuk navigasi keyboard */
+        .autocomplete-active { 
             background-color: #e8f5e9 !important;
             color: var(--primary-color);
         }
         
-        /* 🔥 CSS untuk Highlighting */
         .autocomplete-item-highlight {
             font-weight: 700; 
             color: var(--primary-color);
@@ -321,7 +319,7 @@
             input, select, .category-btn, .submit-btn { padding: 10px; font-size: 0.95em; }
             .submit-buttons { gap: 10px; }
         }
-        /* --- END: 10. RESPONSIVE ADJUSTMENTS (@media) --- */
+        /* --- END: 10. RESPONSIVE ADJUSTMENTS (@media) */
     </style>
 </head>
 <body>
@@ -421,7 +419,7 @@ let configDataCache = {};
 let currentCategory = '';
 let currentCategoryData = {}; 
 let productNamesCache = []; 
-let currentFocus = -1; // Variabel untuk navigasi keyboard
+let currentFocus = -1; 
 
 
 // =================================================================
@@ -439,9 +437,6 @@ document.addEventListener('DOMContentLoaded', () => {
 // 2. JSONP HANDLER (Solusi Anti-CORS)
 // =================================================================
 
-/**
- * Fungsi global yang dipanggil oleh Apps Script (JSONP) untuk menerima data.
- */
 function handleSheetsData(result) {
     const scriptElement = document.getElementById('jsonp-script');
     if (scriptElement) {
@@ -452,11 +447,9 @@ function handleSheetsData(result) {
         clearTimeout(window.jsonpTimeout);
     }
     
-    // Hilangkan pesan loading/info saat data berhasil dimuat
     displayMessage('', 'info'); 
 
     if (result && result.status === 'ok') {
-        // Asumsi data produk dikembalikan dalam UPPERCASE
         inventoryDataCache = result.data || {};
         configDataCache = result.config || {};
         
@@ -469,14 +462,12 @@ function handleSheetsData(result) {
     }
 }
 
-/**
- * Helper function untuk menggunakan data dummy.
- */
 function useFallbackData(reason) {
      const FALLBACK_DATA = {
          "BESI": {
              "BAJA RINGAN": ["BAJA RINGAN C75.75", "BAJA RINGAN R30.40", "BAJA RINGAN C75.60"],
-             "BESI BETON": ["BESI BETON 12MM POLOS", "BESI BETON 10MM POLOS", "BESI BETON 8MM ULIR", "KAWAT 10 (SEPULUH)", "KAWAT 10 (SEPULUH) ULIR"]
+             "BESI BETON": ["BESI BETON 12MM POLOS", "BESI BETON 10MM POLOS", "BESI BETON 8MM ULIR", "KAWAT 10 (SEPULUH)", "KAWAT 10 (SEPULUH) ULIR"],
+             "BWG - KAWAT DURI": ["KAWAT DURI BESI", "KAWAT DURI BAJA", "KAWAT DURI BAJA SUPER"]
          },
          "KERAMIK": {
              "LANTAI 40x40": ["KERAMIK 40x40 KASAR PUTIH", "KERAMIK 40x40 GLOSSY ABU"],
@@ -486,6 +477,7 @@ function useFallbackData(reason) {
      const FALLBACK_CONFIG = {
          "BAJA RINGAN": { format: 5 },
          "BESI BETON": { format: 6 },
+         "BWG - KAWAT DURI": { format: 6 },
          "LANTAI 40x40": { format: 5 },
          "DINDING": { format: 6 }
      };
@@ -510,7 +502,6 @@ function fetchInitialData() {
               useFallbackData('Permintaan data Apps Script habis waktu (timeout).');
         }
         script.remove();
-        // Hilangkan pesan loading jika timeout dan sudah dihandle
         if (messageArea.classList.contains('loading')) {
             displayMessage('', 'info');
         }
@@ -519,7 +510,6 @@ function fetchInitialData() {
     script.onerror = () => {
         clearTimeout(window.jsonpTimeout);
         useFallbackData('Gagal memuat script data. Cek URL SCRIPT Anda.');
-        // Hilangkan pesan loading jika error
         displayMessage('', 'info');
     };
 
@@ -533,13 +523,14 @@ function fetchInitialData() {
 function setupUppercaseListeners() {
     textInputs.forEach(input => {
         input.addEventListener('input', function() {
-            this.value = this.value.toUpperCase();
+            // Mencegah masalah case sensitivity saat pencarian
+            this.value = this.value.toUpperCase(); 
         });
     });
 }
 
 // =================================================================
-// 4. EVENT LISTENERS (TERMASUK PERBAIKAN LIVE SEARCH & KEYBOARD)
+// 4. EVENT LISTENERS
 // =================================================================
 function setupEventListeners() {
     // A. KATEGORI (BESI/KERAMIK) SELECTION
@@ -565,14 +556,14 @@ function setupEventListeners() {
         const selectedJenis = e.target.value;
         namaBarangInput.value = '';
         autocompleteList.innerHTML = '';
+        autocompleteList.style.display = 'none'; // JAMINAN HILANG
         lokasiInput.value = '';
         
-        // 1. Cek dan Set Format Simpan
-        const config = configDataCache[selectedJenis] || { format: 5 }; // Default ke 5
+        // ... (Kode Logika Format Simpan / Lokasi) ...
+        const config = configDataCache[selectedJenis] || { format: 5 }; 
         const format = config.format;
         formatSimpanInput.value = format; 
         
-        // 2. Tampilkan Lokasi jika format = 6
         if (format === 6) {
             lokasiInputGroup.classList.remove('hidden');
             lokasiInput.required = true;
@@ -600,15 +591,14 @@ function setupEventListeners() {
         const input = namaBarangInput.value.trim().toUpperCase();
         autocompleteList.innerHTML = '';
         autocompleteList.style.display = 'none';
-        currentFocus = -1; // Reset fokus
+        currentFocus = -1; 
 
-        // Validasi cepat: Jika Jenis Produk belum dipilih atau input kosong, jangan munculkan
         if (jenisProdukSelect.value === '' || input.length === 0) {
             return;
         }
 
         const matches = productNamesCache.filter(name => 
-            name.includes(input)
+            name.includes(input) // Case-insensitive karena input dan cache sudah UPPERCASE
         ).slice(0, 10); 
 
         matches.forEach(name => {
@@ -621,7 +611,7 @@ function setupEventListeners() {
                 const before = name.substring(0, matchIndex);
                 const match = name.substring(matchIndex, matchIndex + input.length);
                 const after = name.substring(matchIndex + input.length);
-                // Tambahkan CSS class yang sudah diperbaiki
+                
                 item.innerHTML = before + 
                                  `<span class="autocomplete-item-highlight">${match}</span>` + 
                                  after;
@@ -643,7 +633,7 @@ function setupEventListeners() {
         }
     });
 
-    // C2. KEYBOARD NAVIGATION (Peningkatan)
+    // C2. KEYBOARD NAVIGATION
     namaBarangInput.addEventListener('keydown', function(e) {
         let x = document.getElementById('autocomplete-list');
         if (x) x = x.getElementsByTagName('div');
@@ -656,7 +646,6 @@ function setupEventListeners() {
         } else if (e.keyCode === 13) { // Enter
             e.preventDefault();
             if (currentFocus > -1) {
-                // Simulasikan klik pada item aktif
                 if (x && x[currentFocus]) x[currentFocus].click();
             }
         }
@@ -668,7 +657,6 @@ function setupEventListeners() {
         if (currentFocus >= x.length) currentFocus = 0;
         if (currentFocus < 0) currentFocus = (x.length - 1);
         x[currentFocus].classList.add('autocomplete-active');
-        // Pastikan item yang aktif terlihat (scroll)
         x[currentFocus].scrollIntoView({ block: 'nearest' });
     }
 
@@ -680,7 +668,6 @@ function setupEventListeners() {
 
     // Tutup dropdown saat klik di luar
     document.addEventListener('click', (e) => {
-        // Cek jika yang diklik bukan input dan bukan elemen di dalam autocomplete-container
         if (!e.target.matches('#namaBarang') && !e.target.closest('.autocomplete-container')) {
              autocompleteList.style.display = 'none';
         }
@@ -695,15 +682,12 @@ function setupEventListeners() {
 // 5. FUNGSI PEMBANTU
 // =================================================================
 
-/**
- * Mengisi dropdown Jenis Produk.
- */
 function updateJenisProdukDropdown(data) {
     jenisProdukSelect.innerHTML = '<option value="">-- Pilih Jenis Produk --</option>';
     
     const jenisProdukList = Object.keys(data).sort(); 
     
-    // Reset Lokasi dan Format
+    // Reset Lokasi, Nama Barang, dan Cache
     lokasiInputGroup.classList.add('hidden');
     lokasiInput.required = false;
     lokasiInput.value = '';
@@ -712,7 +696,7 @@ function updateJenisProdukDropdown(data) {
     namaBarangInput.disabled = true;
     namaBarangInput.value = '';
     autocompleteList.innerHTML = '';
-    autocompleteList.style.display = 'none';
+    autocompleteList.style.display = 'none'; // JAMINAN HILANG
     productNamesCache = [];
 
     if (jenisProdukList.length > 0) {
@@ -729,9 +713,6 @@ function updateJenisProdukDropdown(data) {
 }
 
 
-/**
- * Menangani pengiriman form (Barang Masuk/Keluar) ke Apps Script (doPost).
- */
 async function handleFormSubmit(e, action) {
     e.preventDefault();
     
@@ -783,7 +764,6 @@ async function handleFormSubmit(e, action) {
 
     displayMessage(`⏳ Mengirim data Barang **${action.toUpperCase()}** (${jumlahInt}) dengan Format ${formatSimpan} Kolom...`, 'loading');
     
-    // Konversi object data ke format URL-encoded
     const urlEncodedData = Object.keys(dataToSend).map(key => 
         encodeURIComponent(key) + '=' + encodeURIComponent(dataToSend[key])
     ).join('&');
@@ -803,10 +783,8 @@ async function handleFormSubmit(e, action) {
 
         const result = await response.json();
         
-        // Hanya tampilkan Error
         if (result.status === 'success') {
-            displayMessage('', 'info'); // Hilangkan pesan loading
-            // Karena form sudah direset, biarkan user memilih item baru
+            displayMessage('', 'info'); 
         } else {
             displayMessage('❌ Gagal menyimpan data: ' + (result.error || 'Terjadi kesalahan tidak diketahui.'), 'error');
         }
@@ -816,27 +794,21 @@ async function handleFormSubmit(e, action) {
     }
 }
 
-/**
- * Menampilkan pesan status kepada pengguna.
- */
 function displayMessage(message, type = 'info') {
     messageArea.classList.remove('show', 'success', 'error', 'loading');
     
-    // Jika bukan error atau loading, hapus pesan.
     if (type !== 'error' && type !== 'loading') {
         messageArea.innerHTML = '';
         messageArea.classList.remove('show');
         return; 
     }
     
-    // Tampilkan pesan untuk Error dan Loading
     setTimeout(() => {
         messageArea.className = `message ${type}`;
         messageArea.innerHTML = message;
         messageArea.classList.add('show');
     }, 10);
 
-    // Otomatis hilangkan pesan error setelah 5 detik. 
     if (type === 'error') {
         setTimeout(() => {
             messageArea.classList.remove('show');
