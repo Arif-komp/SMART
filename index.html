@@ -8,25 +8,22 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
         /* ========================================= */
-        /* CSS: GAYA SMART SWALAYAN (Tampilan Modern) */
+        /* CSS: GAYA SMART SWALAYAN (Tidak Berubah) */
         /* ========================================= */
 
         /* --- START: 1. DEKLARASI VARIABEL & FONT --- */
         :root {
-            /* Variabel Warna Asli */
-            --primary-color: #00796b; /* Hijau Teal */
-            --secondary-color: #ff9800; /* Orange */
-            --danger-color: #f44336; /* Merah */
-            --success-color: #4CAF50; /* Hijau Cerah */
+            --primary-color: #00796b;
+            --secondary-color: #ff9800;
+            --danger-color: #f44336;
+            --success-color: #4CAF50;
             --text-color: #333;
-            --bg-color: #f8f9fa; /* Lebih cerah dari #eceff1 */
+            --bg-color: #eceff1;
             --card-bg: #ffffff;
             --border-radius: 12px;
-
-            /* Variabel Shadow & Efek Baru yang Lebih Halus */
-            --shadow-heavy: 0 15px 30px rgba(0, 0, 0, 0.1);
-            --shadow-light: 0 4px 10px rgba(0, 0, 0, 0.05);
-            --button-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            --shadow-heavy: 0 10px 30px rgba(0, 0, 0, 0.15);
+            --shadow-light: 0 4px 10px rgba(0, 0, 0, 0.08);
+            --button-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
         }
         
         * {
@@ -47,17 +44,17 @@
             justify-content: center;
             align-items: flex-start;
             min-height: 100vh;
-            padding: 30px 20px;
+            padding: 20px;
             color: var(--text-color);
         }
         
         .container {
             background-color: var(--card-bg);
-            padding: 35px;
+            padding: 30px;
             border-radius: var(--border-radius);
             box-shadow: var(--shadow-heavy);
             width: 100%;
-            max-width: 480px; /* Lebar sedikit diperluas */
+            max-width: 450px;
             margin-top: 20px;
             transition: all 0.3s ease;
         }
@@ -65,11 +62,9 @@
         .app-title {
             text-align: center;
             color: var(--primary-color);
-            font-size: 1.6em;
+            font-size: 1.5em;
             font-weight: 700;
-            margin-bottom: 30px;
-            padding-bottom: 10px;
-            border-bottom: 2px solid var(--bg-color); /* Garis pemisah halus */
+            margin-bottom: 25px;
         }
 
         .app-title i {
@@ -84,32 +79,29 @@
         /* --- START: 4. INPUT GROUP & FIELD UMUM --- */
         .input-group {
             margin-bottom: 20px;
-            transition: all 0.4s ease-out; /* Transisi yang lebih mulus */
+            /* Tambahkan transisi untuk Lokasi Input */
+            transition: all 0.3s ease-out;
             overflow: hidden;
-            max-height: 100px;
+            max-height: 100px; /* Normal height */
         }
         
         .input-group.hidden {
             margin-bottom: 0;
-            max-height: 0;
+            max-height: 0; /* Sembunyikan dengan transisi */
             opacity: 0;
-            padding: 0;
         }
 
         .input-group label {
             display: block;
             margin-bottom: 8px;
             color: var(--primary-color);
-            font-weight: 600; /* Sedikit diturunkan */
-            font-size: 0.9em;
-            display: flex;
-            align-items: center;
+            font-weight: 700;
+            font-size: 0.95em;
         }
         
         .input-group label i {
-            margin-right: 8px;
+            margin-right: 5px;
             color: var(--secondary-color);
-            font-size: 1.1em;
         }
         
         input[type="text"],
@@ -117,21 +109,20 @@
         input[type="date"],
         select {
             width: 100%;
-            padding: 14px 15px; /* Padding lebih besar */
-            border: 1px solid #e0e0e0; /* Border lebih halus */
+            padding: 12px 15px;
+            border: 1px solid #ddd;
             border-radius: 8px;
             font-size: 1em;
             color: var(--text-color);
             transition: all 0.3s;
             appearance: none; 
             background-color: var(--card-bg);
-            box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.05); /* Shadow internal */
         }
         
         input:focus, select:focus {
             border-color: var(--primary-color);
-            box-shadow: 0 0 0 3px rgba(0, 121, 107, 0.15); /* Ring fokus yang lebih halus */
-            background-color: #ffffff;
+            box-shadow: 0 0 0 4px rgba(0, 121, 107, 0.2);
+            background-color: #f7fcfc;
             outline: none;
         }
         /* --- END: 4. INPUT GROUP & FIELD UMUM --- */
@@ -142,36 +133,28 @@
         .category-buttons {
             display: flex;
             gap: 10px;
-            margin-top: 5px;
-            margin-bottom: 0; /* Dipindahkan ke .input-group */
-            padding: 8px; /* Padding lebih kecil */
-            background-color: #e0f2f1; /* Warna background dari variabel asli */
-            border-radius: 10px;
+            margin-bottom: 30px;
+            padding: 10px;
+            background-color: #e0f2f1;
+            border-radius: var(--border-radius);
         }
 
         .category-btn {
             flex-grow: 1;
-            padding: 12px 10px; /* Padding disesuaikan */
+            padding: 15px;
             background-color: #b2dfdb; 
             color: var(--primary-color);
             border-radius: 8px;
             font-weight: 600;
             border: none; 
             cursor: pointer;
-            transition: all 0.2s;
-            font-size: 0.9em;
-            text-transform: uppercase;
-        }
-
-        .category-btn i {
-            margin-right: 5px;
+            transition: background-color 0.2s, transform 0.1s;
         }
 
         .category-btn.active {
             background-color: var(--primary-color);
             color: var(--card-bg);
-            box-shadow: 0 4px 10px rgba(0, 121, 107, 0.35);
-            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(0, 121, 107, 0.3);
         }
 
         .category-btn:hover {
@@ -180,7 +163,6 @@
         
         .category-btn.active:hover {
             background-color: #004d40;
-            transform: translateY(-1px);
         }
         /* --- END: 5. BUTTON KATEGORI --- */
         
@@ -190,52 +172,42 @@
         .submit-buttons {
             display: flex;
             gap: 15px;
-            margin-top: 35px;
+            margin-top: 30px;
         }
 
         .submit-btn {
             flex-grow: 1;
-            padding: 16px 10px; /* Padding lebih besar */
+            padding: 15px 10px;
             border: none;
             border-radius: 10px;
             font-weight: 700;
-            font-size: 1em; /* Ukuran font disesuaikan */
+            font-size: 1.1em;
             color: white;
             cursor: pointer;
-            transition: all 0.3s ease;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        .submit-btn i {
-            margin-right: 5px;
+            transition: background-color 0.3s, transform 0.1s, box-shadow 0.3s;
+            box-shadow: var(--button-shadow);
         }
 
         #masukButton {
             background-color: var(--success-color); 
-            box-shadow: 0 6px 15px rgba(76, 175, 80, 0.3);
+            box-shadow: 0 5px 15px rgba(76, 175, 80, 0.4);
         }
 
         #keluarButton {
             background-color: var(--danger-color); 
-            box-shadow: 0 6px 15px rgba(244, 67, 54, 0.3);
+            box-shadow: 0 5px 15px rgba(244, 67, 54, 0.4);
         }
 
         #masukButton:hover {
             background-color: #388e3c;
-            transform: translateY(-2px);
-            box-shadow: 0 8px 20px rgba(76, 175, 80, 0.4);
         }
 
         #keluarButton:hover {
             background-color: #d32f2f;
-            transform: translateY(-2px);
-            box-shadow: 0 8px 20px rgba(244, 67, 54, 0.4);
         }
 
         .submit-btn:active {
             transform: scale(0.98);
-            box-shadow: var(--button-shadow); /* Kembali ke shadow normal saat ditekan */
         }
         /* --- END: 6. TOMBOL SUBMIT (Masuk/Keluar) --- */
 
@@ -248,27 +220,28 @@
 
         .autocomplete-items {
             position: absolute;
-            z-index: 100;
+            border: 1px solid #d4d4d4;
+            border-bottom: none;
+            border-top: none;
+            z-index: 99;
             top: 100%;
             left: 0;
             right: 0;
-            max-height: 180px;
+            max-height: 200px;
             overflow-y: auto;
-            border: 1px solid #ddd;
-            border-top: none;
             border-radius: 0 0 8px 8px;
             background-color: white;
             box-shadow: var(--shadow-light);
-            display: none; /* Default agar JS yang mengontrol */
+            /* Pastikan display diset di JS, tapi defaultnya hidden */
+            display: none; 
         }
 
         .autocomplete-items div {
-            padding: 12px;
+            padding: 10px;
             cursor: pointer;
             background-color: #fff; 
-            border-bottom: 1px solid #f0f0f0;
-            font-size: 0.95em;
-            transition: background-color 0.2s;
+            border-bottom: 1px solid #d4d4d4;
+            font-size: 0.9em;
         }
 
         .autocomplete-items div:last-child {
@@ -276,15 +249,17 @@
         }
 
         .autocomplete-items div:hover,
-        .autocomplete-active {
-            background-color: #e8f5e9 !important; /* Warna hover/aktif yang lembut */
+        .autocomplete-active { /* Style untuk navigasi keyboard */
+            background-color: #e8f5e9 !important;
             color: var(--primary-color);
         }
-
-        /* Styling Highlight pada teks yang cocok */
+        
+        /* 🔥 CSS untuk Highlighting */
         .autocomplete-item-highlight {
-            font-weight: 700;
-            color: var(--secondary-color);
+            font-weight: 700; 
+            color: var(--primary-color);
+            background-color: #c8e6c9;
+            padding: 2px 0;
         }
         /* --- END: 7. LIVE SEARCH SUGGESTION --- */
         
@@ -293,27 +268,29 @@
         /* --- START: 8. MESSAGE DISPLAY --- */
         .message {
             text-align: center;
-            margin-top: 25px;
+            margin-top: 20px;
             padding: 12px;
             border-radius: 8px;
             font-weight: 600;
+            background-color: #e8f5e9;
+            color: #2e7d32;
+            border: 1px solid #c8e6c9; 
             opacity: 0;
-            transition: opacity 0.4s, transform 0.4s;
+            transition: opacity 0.5s, transform 0.5s;
             transform: translateY(10px);
             display: block; 
-            font-size: 0.9em;
         }
         
         .message.error {
             background-color: #fce4e4; 
-            color: var(--danger-color);
-            border: 1px solid #f9c4c4;
+            color: #c62828;
+            border-color: #ef9a9a;
         }
 
         .message.loading {
             background-color: #fffde7;
             color: #fbc02d;
-            border: 1px solid #fff9c4;
+            border-color: #fff9c4;
         }
         
         .message.show {
@@ -327,9 +304,9 @@
 
         /* --- START: 9. COPYRIGHT FOOTER --- */
         .footer-copyright {
-            margin-top: 30px;
-            padding-top: 15px;
-            border-top: 1px solid #eee;
+            margin-top: 20px;
+            padding-top: 10px;
+            border-top: 1px solid #ddd;
             text-align: center;
             font-size: 0.75em;
             color: #777;
@@ -340,10 +317,9 @@
         @media (max-width: 600px) {
             body { padding: 10px; }
             .container { padding: 20px; margin-top: 0; border-radius: 0; box-shadow: none; }
-            .app-title { font-size: 1.4em; margin-bottom: 20px; }
-            input, select, .category-btn, .submit-btn { padding: 12px; font-size: 0.9em; }
+            .app-title { font-size: 1.3em; margin-bottom: 20px; }
+            input, select, .category-btn, .submit-btn { padding: 10px; font-size: 0.95em; }
             .submit-buttons { gap: 10px; }
-            .category-btn { padding: 10px 5px; }
         }
         /* --- END: 10. RESPONSIVE ADJUSTMENTS (@media) --- */
     </style>
@@ -380,7 +356,7 @@
                 <div class="autocomplete-container">
                     <input type="text" id="namaBarang" name="namaBarang" placeholder="Ketik nama barang..." disabled required>
                     <div id="autocomplete-list" class="autocomplete-items">
-                        </div>
+                    </div>
                 </div>
             </div>
             
@@ -418,7 +394,6 @@
 <script>
 // =================================================================
 // Kode JS (FRONTEND)
-// (Kode JavaScript dipertahankan seperti aslinya)
 // =================================================================
 
 // 🚨 PENTING: Ganti dengan URL Deployment Apps Script Anda yang sudah di-publish!
@@ -446,6 +421,7 @@ let configDataCache = {};
 let currentCategory = '';
 let currentCategoryData = {}; 
 let productNamesCache = []; 
+let currentFocus = -1; // Variabel untuk navigasi keyboard
 
 
 // =================================================================
@@ -476,7 +452,7 @@ function handleSheetsData(result) {
         clearTimeout(window.jsonpTimeout);
     }
     
-    // 🚨 PERUBAHAN: Hilangkan pesan loading/info saat data berhasil dimuat
+    // Hilangkan pesan loading/info saat data berhasil dimuat
     displayMessage('', 'info'); 
 
     if (result && result.status === 'ok') {
@@ -487,7 +463,6 @@ function handleSheetsData(result) {
             useFallbackData('Data produk dari Apps Script kosong.');
             return;
         }
-        // Tidak perlu menampilkan pesan sukses, langsung hilang.
     } else {
         useFallbackData(result.error || 'Respon Apps Script tidak valid.');
     }
@@ -499,12 +474,12 @@ function handleSheetsData(result) {
 function useFallbackData(reason) {
      const FALLBACK_DATA = {
          "BESI": {
-             "BAJA RINGAN": ["BAJA RINGAN C75.75", "BAJA RINGAN R30.40"],
-             "BESI BETON": ["BESI BETON 12MM POLOS", "BESI BETON 8MM ULIR"]
+             "BAJA RINGAN": ["BAJA RINGAN C75.75", "BAJA RINGAN R30.40", "BAJA RINGAN C75.60"],
+             "BESI BETON": ["BESI BETON 12MM POLOS", "BESI BETON 10MM POLOS", "BESI BETON 8MM ULIR"]
          },
          "KERAMIK": {
-             "LANTAI 40x40": ["KERAMIK 40x40 KASAR PUTIH"],
-             "DINDING": ["KERAMIK DINDING 25x40 GARIS"]
+             "LANTAI 40x40": ["KERAMIK 40x40 KASAR PUTIH", "KERAMIK 40x40 GLOSSY ABU"],
+             "DINDING": ["KERAMIK DINDING 25x40 GARIS", "KERAMIK DINDING 30x60 MOTIF"]
          }
      };
      const FALLBACK_CONFIG = {
@@ -531,10 +506,10 @@ function fetchInitialData() {
 
     window.jsonpTimeout = setTimeout(() => {
         if (Object.keys(inventoryDataCache).length === 0) {
-            useFallbackData('Permintaan data Apps Script habis waktu (timeout).');
+              useFallbackData('Permintaan data Apps Script habis waktu (timeout).');
         }
         script.remove();
-        // 🚨 PERUBAHAN: Hilangkan pesan loading jika timeout dan sudah dihandle oleh useFallbackData (yang akan menampilkan pesan error)
+        // Hilangkan pesan loading jika timeout dan sudah dihandle
         if (messageArea.classList.contains('loading')) {
             displayMessage('', 'info');
         }
@@ -543,7 +518,7 @@ function fetchInitialData() {
     script.onerror = () => {
         clearTimeout(window.jsonpTimeout);
         useFallbackData('Gagal memuat script data. Cek URL SCRIPT Anda.');
-        // 🚨 PERUBAHAN: Hilangkan pesan loading jika error
+        // Hilangkan pesan loading jika error
         displayMessage('', 'info');
     };
 
@@ -551,7 +526,7 @@ function fetchInitialData() {
 }
 
 // =================================================================
-// 3. FUNGSI KAPITALISASI OTOMATIS (Tidak Berubah)
+// 3. FUNGSI KAPITALISASI OTOMATIS
 // =================================================================
 
 function setupUppercaseListeners() {
@@ -563,7 +538,7 @@ function setupUppercaseListeners() {
 }
 
 // =================================================================
-// 4. EVENT LISTENERS (Tidak Berubah)
+// 4. EVENT LISTENERS (TERMASUK PERBAIKAN LIVE SEARCH & KEYBOARD)
 // =================================================================
 function setupEventListeners() {
     // A. KATEGORI (BESI/KERAMIK) SELECTION
@@ -592,7 +567,7 @@ function setupEventListeners() {
         lokasiInput.value = '';
         
         // 1. Cek dan Set Format Simpan
-        const config = configDataCache[selectedJenis] || { format: 5 }; // Default ke 5 jika tidak ada config
+        const config = configDataCache[selectedJenis] || { format: 5 }; // Default ke 5
         const format = config.format;
         formatSimpanInput.value = format; 
         
@@ -609,7 +584,7 @@ function setupEventListeners() {
         
         // 3. Update Nama Barang Cache
         if (selectedJenis) {
-            productNamesCache = currentCategoryData[selectedJenis] || [];  
+            productNamesCache = currentCategoryData[selectedJenis] || []; 
             namaBarangInput.disabled = false; 
             namaBarangInput.focus();
         } else {
@@ -621,28 +596,31 @@ function setupEventListeners() {
 
     // C. LIVE SEARCH (NAMA BARANG INPUT)
     namaBarangInput.addEventListener('input', () => {
-        const input = namaBarangInput.value.toLowerCase();
+        const input = namaBarangInput.value.trim().toUpperCase();
         autocompleteList.innerHTML = '';
+        autocompleteList.style.display = 'none';
+        currentFocus = -1; // Reset fokus
 
-        if (input.length === 0) {
-            autocompleteList.style.display = 'none';
+        // Validasi cepat: Jika Jenis Produk belum dipilih atau input kosong, jangan munculkan
+        if (jenisProdukSelect.value === '' || input.length === 0) {
             return;
         }
 
         const matches = productNamesCache.filter(name => 
-            name.toLowerCase().includes(input)
+            name.includes(input)
         ).slice(0, 10); 
 
         matches.forEach(name => {
             const item = document.createElement('div');
             item.classList.add('autocomplete-item');
             
-            // Highlight logic (Dipertahankan agar live search bekerja)
-            const matchIndex = name.toLowerCase().indexOf(input); 
+            // Highlight logic
+            const matchIndex = name.indexOf(input); 
             if (matchIndex >= 0) {
                 const before = name.substring(0, matchIndex);
                 const match = name.substring(matchIndex, matchIndex + input.length);
                 const after = name.substring(matchIndex + input.length);
+                // Tambahkan CSS class yang sudah diperbaiki
                 item.innerHTML = before + 
                                  `<span class="autocomplete-item-highlight">${match}</span>` + 
                                  after;
@@ -654,21 +632,56 @@ function setupEventListeners() {
                 namaBarangInput.value = name;
                 autocompleteList.innerHTML = '';
                 autocompleteList.style.display = 'none';
+                namaBarangInput.focus();
             });
             autocompleteList.appendChild(item);
         });
 
         if (matches.length > 0) {
             autocompleteList.style.display = 'block';
-        } else {
-            autocompleteList.style.display = 'none';
         }
     });
 
+    // C2. KEYBOARD NAVIGATION (Peningkatan)
+    namaBarangInput.addEventListener('keydown', function(e) {
+        let x = document.getElementById('autocomplete-list');
+        if (x) x = x.getElementsByTagName('div');
+        if (e.keyCode === 40) { // Panah Bawah
+            currentFocus++;
+            addActive(x);
+        } else if (e.keyCode === 38) { // Panah Atas
+            currentFocus--;
+            addActive(x);
+        } else if (e.keyCode === 13) { // Enter
+            e.preventDefault();
+            if (currentFocus > -1) {
+                // Simulasikan klik pada item aktif
+                if (x) x[currentFocus].click();
+            }
+        }
+    });
+
+    function addActive(x) {
+        if (!x) return false;
+        removeActive(x);
+        if (currentFocus >= x.length) currentFocus = 0;
+        if (currentFocus < 0) currentFocus = (x.length - 1);
+        x[currentFocus].classList.add('autocomplete-active');
+        // Pastikan item yang aktif terlihat (scroll)
+        x[currentFocus].scrollIntoView({ block: 'nearest' });
+    }
+
+    function removeActive(x) {
+        for (let i = 0; i < x.length; i++) {
+            x[i].classList.remove('autocomplete-active');
+        }
+    }
+
     // Tutup dropdown saat klik di luar
     document.addEventListener('click', (e) => {
-        if (!e.target.matches('#namaBarang')) {
-            autocompleteList.style.display = 'none';
+        // Cek jika yang diklik bukan input atau bukan bagian dari autocomplete list
+        if (!e.target.matches('#namaBarang') && !e.target.closest('.autocomplete-container')) {
+             autocompleteList.style.display = 'none';
         }
     });
 
@@ -682,7 +695,7 @@ function setupEventListeners() {
 // =================================================================
 
 /**
- * Mengisi dropdown Jenis Produk. (Tidak Berubah)
+ * Mengisi dropdown Jenis Produk.
  */
 function updateJenisProdukDropdown(data) {
     jenisProdukSelect.innerHTML = '<option value="">-- Pilih Jenis Produk --</option>';
@@ -706,7 +719,6 @@ function updateJenisProdukDropdown(data) {
             jenisProdukSelect.innerHTML += `<option value="${jenisProduk}">${jenisProduk}</option>`;
         });
         jenisProdukSelect.disabled = false;
-        // 🚨 PERUBAHAN: Hilangkan pesan info biasa, fokus pada error/loading.
         displayMessage('', 'info');
     } else {
         jenisProdukSelect.innerHTML = '<option value="">-- Tidak ada Jenis Produk ditemukan --</option>';
@@ -731,7 +743,7 @@ async function handleFormSubmit(e, action) {
     const lokasi = lokasiInput.value.trim();
     const formatSimpan = formatSimpanInput.value;
 
-    // Validasi (Dipertahankan)
+    // Validasi
     const jumlahInt = parseInt(jumlah);
     if (!kategori || !jenisProduk || !namaBarang || !checker) {
         return displayMessage('❌ Semua kolom wajib diisi.', 'error');
@@ -743,7 +755,8 @@ async function handleFormSubmit(e, action) {
         return displayMessage('❌ Jumlah harus berupa angka dan lebih dari 0.', 'error');
     }
     
-    // 🚨 PERUBAHAN BARU: RESET FORM SEGERA SEBELUM MENGIRIM DATA
+    // 🚨 RESET FORM SEGERA SEBELUM MENGIRIM DATA
+    // Kecuali Checker dan Kategori (agar bisa input berulang)
     document.getElementById('jumlah').value = '';
     jenisProdukSelect.value = '';
     namaBarangInput.value = '';
@@ -756,7 +769,7 @@ async function handleFormSubmit(e, action) {
     autocompleteList.innerHTML = '';
     autocompleteList.style.display = 'none';
 
-    // Data yang akan dikirim ke doPost (semua parameter)
+    // Data yang akan dikirim ke doPost
     const dataToSend = {
         kategori: kategori,
         jenisProduk: jenisProduk,
@@ -790,7 +803,7 @@ async function handleFormSubmit(e, action) {
 
         const result = await response.json();
         
-        // 🚨 PERUBAHAN: Hilangkan pesan Loading/Info, hanya tampilkan Error
+        // Hanya tampilkan Error, hilangkan pesan Loading/Info jika sukses
         if (result.status === 'success') {
             displayMessage('', 'info'); // Hilangkan pesan loading
         } else {
@@ -808,7 +821,7 @@ async function handleFormSubmit(e, action) {
 function displayMessage(message, type = 'info') {
     messageArea.classList.remove('show', 'success', 'error', 'loading');
     
-    // 🚨 PERUBAHAN: Jika bukan error, hapus pesan (untuk menghilangkan sukses/loading/info).
+    // Jika bukan error atau loading, hapus pesan.
     if (type !== 'error' && type !== 'loading') {
         messageArea.innerHTML = '';
         messageArea.classList.remove('show');
@@ -822,7 +835,7 @@ function displayMessage(message, type = 'info') {
         messageArea.classList.add('show');
     }, 10);
 
-    // Otomatis hilangkan pesan error setelah 5 detik. Pesan loading hanya hilang saat ada fungsi lain memanggil displayMessage('', 'info').
+    // Otomatis hilangkan pesan error setelah 5 detik. 
     if (type === 'error') {
         setTimeout(() => {
             messageArea.classList.remove('show');
