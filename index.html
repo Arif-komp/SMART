@@ -42,6 +42,8 @@
             min-height: 100vh;
             padding: 20px;
             color: var(--text-color);
+            /* Tambahkan relative agar FAB bisa diposisikan absolut terhadap body/viewport */
+            position: relative; 
         }
         
         .container {
@@ -154,6 +156,7 @@
             transition: background-color 0.3s ease, transform 0.1s ease, box-shadow 0.3s ease;
             cursor: pointer;
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2); 
+            width: 100%; /* Agar tombol tunggal tetap penuh */
         }
 
         #masukButton {
@@ -179,6 +182,11 @@
         .submit-btn:active {
             transform: translateY(0);
             box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Modifikasi untuk menyembunyikan tombol yang tidak aktif */
+        .submit-buttons button.hidden {
+            display: none;
         }
 
         /* ------------------------------------------- */
@@ -264,15 +272,59 @@
             border-color: #fff9c4;
         }
         
+        /* ------------------------------------------- */
+        /* 🔥 MODIFIKASI: 9. FLOATING ACTION BUTTON (FAB) */
+        /* ------------------------------------------- */
+        #fabToggle {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: auto;
+            min-width: 150px;
+            height: 56px;
+            padding: 0 20px;
+            border-radius: 30px;
+            font-size: 1em;
+            font-weight: 600;
+            color: white;
+            border: none;
+            cursor: pointer;
+            z-index: 1100;
+            box-shadow: var(--shadow-heavy);
+            transition: background-color 0.3s, transform 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        #fabToggle i {
+            margin-right: 8px;
+            font-size: 1.2em;
+        }
+
+        /* Ganti warna FAB berdasarkan mode */
+        body.mode-masuk #fabToggle {
+            background-color: var(--danger-color);
+        }
+
+        body.mode-keluar #fabToggle {
+            background-color: var(--success-color);
+        }
+        
         /* --- 10. RESPONSIVE ADJUSTMENTS (@media) --- */
         @media (max-width: 600px) {
             .container { max-width: 100%; }
             .submit-btn { padding: 12px 8px; font-size: 1em; }
+            #fabToggle { 
+                bottom: 20px; 
+                right: 20px; 
+                min-width: 120px; 
+                padding: 0 15px;
+            }
         }
     </style>
 </head>
-<body>
-    <div class="container">
+<body class="mode-masuk"> <div class="container">
         <div class="app-title">
             <i class="fas fa-warehouse"></i> Smart Swalayan Inventory
         </div>
@@ -327,7 +379,7 @@
                 <button type="button" id="masukButton" class="submit-btn" data-action="Masuk">
                     <i class="fas fa-arrow-alt-circle-up"></i> Barang MASUK
                 </button>
-                <button type="button" id="keluarButton" class="submit-btn" data-action="Keluar">
+                <button type="button" id="keluarButton" class="submit-btn hidden" data-action="Keluar">
                     <i class="fas fa-arrow-alt-circle-down"></i> Barang KELUAR
                 </button>
             </div>
@@ -337,11 +389,14 @@
         
         <div id="app-footer-copyright" class="footer-copyright"></div>
     </div>
+    
+    <button id="fabToggle">
+        <i class="fas fa-exchange-alt"></i> Ganti ke KELUAR
+    </button>
 
 <script>
 // =================================================================
 // Kode JS (FRONTEND)
-// Semua kode JavaScript ini tidak diubah dan tetap sama.
 // =================================================================
 
 const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbz-siwPKU2MeK3GkNrp7NXIrJjl4iQgQWaMPJIMc99Z7bTQwcv1z8bu4fdMMjwdfLLO0Q/exec'; 
@@ -356,7 +411,10 @@ const lokasiInputGroup = document.getElementById('lokasiInputGroup');
 const lokasiInput = document.getElementById('lokasi');
 const formatSimpanInput = document.getElementById('formatSimpan');
 const textInputs = document.querySelectorAll('input[type="text"]');
-
+const masukButton = document.getElementById('masukButton');
+const keluarButton = document.getElementById('keluarButton');
+const fabToggle = document.getElementById('fabToggle');
+const appBody = document.body;
 
 let inventoryDataCache = {}; 
 let configDataCache = {};
@@ -364,6 +422,7 @@ let currentCategory = '';
 let currentCategoryData = {}; 
 let productNamesCache = []; 
 let currentFocus = -1; 
+let currentMode = 'Masuk'; // 🔥 State mode transaksi
 
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -371,6 +430,9 @@ document.addEventListener('DOMContentLoaded', () => {
     setupEventListeners();
     setupUppercaseListeners();
     document.getElementById('app-footer-copyright').textContent = `© ${new Date().getFullYear()} Smart Swalayan. All Rights Reserved.`;
+    
+    // Set status awal tombol FAB
+    updateUIMode(currentMode); 
 });
 
 
@@ -407,10 +469,10 @@ function useFallbackData(reason) {
          }
      };
      const FALLBACK_CONFIG = {
-         "BAJA RINGAN": { format: 5 },
+         "BAJA RINGAN": { format: 6 },
          "BESI BETON": { format: 6 },
          "BWG - KAWAT DURI": { format: 6 },
-         "LANTAI 40x40": { format: 5 },
+         "LANTAI 40x40": { format: 6 },
          "DINDING": { format: 6 }
      };
 
@@ -431,7 +493,7 @@ function fetchInitialData() {
 
     window.jsonpTimeout = setTimeout(() => {
         if (Object.keys(inventoryDataCache).length === 0) {
-              useFallbackData('Permintaan data Apps Script habis waktu (timeout).');
+            useFallbackData('Permintaan data Apps Script habis waktu (timeout).');
         }
         script.remove();
         if (messageArea.classList.contains('loading')) {
@@ -529,8 +591,8 @@ function setupEventListeners() {
                 const after = name.substring(matchIndex + input.length);
                 
                 item.innerHTML = before + 
-                                 `<span class="autocomplete-item-highlight">${match}</span>` + 
-                                 after;
+                                    `<span class="autocomplete-item-highlight">${match}</span>` + 
+                                    after;
             } else {
                 item.textContent = name;
             }
@@ -587,8 +649,11 @@ function setupEventListeners() {
         }
     });
 
-    document.getElementById('masukButton').addEventListener('click', (e) => handleFormSubmit(e, 'Masuk'));
-    document.getElementById('keluarButton').addEventListener('click', (e) => handleFormSubmit(e, 'Keluar'));
+    masukButton.addEventListener('click', (e) => handleFormSubmit(e, 'Masuk'));
+    keluarButton.addEventListener('click', (e) => handleFormSubmit(e, 'Keluar'));
+    
+    // 🔥 FAB Listener
+    fabToggle.addEventListener('click', toggleMode);
 }
 
 function updateJenisProdukDropdown(data) {
@@ -616,9 +681,55 @@ function updateJenisProdukDropdown(data) {
     }
 }
 
+/**
+ * 🔥 Fungsi untuk mengubah mode transaksi (Masuk <-> Keluar)
+ */
+function toggleMode() {
+    const newMode = currentMode === 'Masuk' ? 'Keluar' : 'Masuk';
+    currentMode = newMode;
+    updateUIMode(newMode);
+    
+    // Opsional: Hapus input saat berganti mode
+    document.getElementById('jumlah').value = '';
+    lokasiInput.value = '';
+    displayMessage(`Mode transaksi diubah ke **${newMode.toUpperCase()}**.`);
+}
+
+/**
+ * 🔥 Fungsi untuk memperbarui tampilan berdasarkan mode
+ */
+function updateUIMode(mode) {
+    // 1. Perbarui Class Body dan Tombol FAB
+    if (mode === 'Masuk') {
+        appBody.classList.remove('mode-keluar');
+        appBody.classList.add('mode-masuk');
+        masukButton.classList.remove('hidden');
+        keluarButton.classList.add('hidden');
+        fabToggle.innerHTML = '<i class="fas fa-exchange-alt"></i> Ganti ke KELUAR';
+        fabToggle.style.backgroundColor = 'var(--danger-color)'; // Warnanya sesuai mode tujuan
+    } else { // Mode Keluar
+        appBody.classList.remove('mode-masuk');
+        appBody.classList.add('mode-keluar');
+        masukButton.classList.add('hidden');
+        keluarButton.classList.remove('hidden');
+        fabToggle.innerHTML = '<i class="fas fa-exchange-alt"></i> Ganti ke MASUK';
+        fabToggle.style.backgroundColor = 'var(--success-color)'; // Warnanya sesuai mode tujuan
+    }
+    
+    // 2. Perbarui Header
+    const appTitle = document.querySelector('.app-title');
+    appTitle.innerHTML = `<i class="fas fa-warehouse"></i> Smart Swalayan Inventory - ${mode.toUpperCase()}`;
+}
+
 
 async function handleFormSubmit(e, action) {
     e.preventDefault();
+    
+    // Pastikan tombol yang diklik sesuai dengan mode aktif saat ini
+    if (action !== currentMode) {
+        displayMessage(`❌ Mode saat ini adalah **${currentMode.toUpperCase()}**. Klik tombol FAB untuk mengganti.`, 'error');
+        return;
+    }
     
     const dataToSend = {
         kategori: kategoriInput.value.trim(),
@@ -635,6 +746,7 @@ async function handleFormSubmit(e, action) {
          return displayMessage('❌ Semua kolom wajib diisi.', 'error');
     }
     
+    // Reset form field setelah validasi awal
     document.getElementById('jumlah').value = '';
     jenisProdukSelect.value = '';
     namaBarangInput.value = '';
