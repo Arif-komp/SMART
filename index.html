@@ -232,7 +232,7 @@
             border-radius: 0 0 8px 8px;
             background-color: white;
             box-shadow: var(--shadow-light);
-            /* Pastikan display diset di JS, tapi defaultnya hidden */
+            /* Penting: Default display harus none, JS yang mengubahnya */
             display: none; 
         }
 
@@ -456,6 +456,7 @@ function handleSheetsData(result) {
     displayMessage('', 'info'); 
 
     if (result && result.status === 'ok') {
+        // Asumsi data produk dikembalikan dalam UPPERCASE
         inventoryDataCache = result.data || {};
         configDataCache = result.config || {};
         
@@ -475,11 +476,11 @@ function useFallbackData(reason) {
      const FALLBACK_DATA = {
          "BESI": {
              "BAJA RINGAN": ["BAJA RINGAN C75.75", "BAJA RINGAN R30.40", "BAJA RINGAN C75.60"],
-             "BESI BETON": ["BESI BETON 12MM POLOS", "BESI BETON 10MM POLOS", "BESI BETON 8MM ULIR"]
+             "BESI BETON": ["BESI BETON 12MM POLOS", "BESI BETON 10MM POLOS", "BESI BETON 8MM ULIR", "KAWAT 10 (SEPULUH)", "KAWAT 10 (SEPULUH) ULIR"]
          },
          "KERAMIK": {
              "LANTAI 40x40": ["KERAMIK 40x40 KASAR PUTIH", "KERAMIK 40x40 GLOSSY ABU"],
-             "DINDING": ["KERAMIK DINDING 25x40 GARIS", "KERAMIK DINDING 30x60 MOTIF"]
+             "DINDING": ["KERAMIK DINDING 25x40 GARIS", "KERAMIK DINDING 30x60 MOTIF", "PLT DEXA GREY BASIC RE"]
          }
      };
      const FALLBACK_CONFIG = {
@@ -638,7 +639,7 @@ function setupEventListeners() {
         });
 
         if (matches.length > 0) {
-            autocompleteList.style.display = 'block';
+             autocompleteList.style.display = 'block';
         }
     });
 
@@ -656,7 +657,7 @@ function setupEventListeners() {
             e.preventDefault();
             if (currentFocus > -1) {
                 // Simulasikan klik pada item aktif
-                if (x) x[currentFocus].click();
+                if (x && x[currentFocus]) x[currentFocus].click();
             }
         }
     });
@@ -679,7 +680,7 @@ function setupEventListeners() {
 
     // Tutup dropdown saat klik di luar
     document.addEventListener('click', (e) => {
-        // Cek jika yang diklik bukan input atau bukan bagian dari autocomplete list
+        // Cek jika yang diklik bukan input dan bukan elemen di dalam autocomplete-container
         if (!e.target.matches('#namaBarang') && !e.target.closest('.autocomplete-container')) {
              autocompleteList.style.display = 'none';
         }
@@ -755,8 +756,7 @@ async function handleFormSubmit(e, action) {
         return displayMessage('❌ Jumlah harus berupa angka dan lebih dari 0.', 'error');
     }
     
-    // 🚨 RESET FORM SEGERA SEBELUM MENGIRIM DATA
-    // Kecuali Checker dan Kategori (agar bisa input berulang)
+    // 🚨 RESET FORM (kecuali Checker dan Kategori)
     document.getElementById('jumlah').value = '';
     jenisProdukSelect.value = '';
     namaBarangInput.value = '';
@@ -803,9 +803,10 @@ async function handleFormSubmit(e, action) {
 
         const result = await response.json();
         
-        // Hanya tampilkan Error, hilangkan pesan Loading/Info jika sukses
+        // Hanya tampilkan Error
         if (result.status === 'success') {
             displayMessage('', 'info'); // Hilangkan pesan loading
+            // Karena form sudah direset, biarkan user memilih item baru
         } else {
             displayMessage('❌ Gagal menyimpan data: ' + (result.error || 'Terjadi kesalahan tidak diketahui.'), 'error');
         }
