@@ -4,26 +4,26 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SMART SWALAYAN INVENTORY</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
         /* ========================================= */
-        /* CSS: GAYA SMART SWALAYAN (Tidak Berubah) */
+        /* CSS: GAYA SMART SWALAYAN (Dimodernisasi) */
         /* ========================================= */
 
-        /* --- START: 1. DEKLARASI VARIABEL & FONT --- */
+        /* --- START: 1. DEKLARASI VARIABEL & FONT (Disesuaikan) --- */
         :root {
-            --primary-color: #00796b;
-            --secondary-color: #ff9800;
-            --danger-color: #f44336;
-            --success-color: #4CAF50;
-            --text-color: #333;
-            --bg-color: #eceff1;
+            --primary-color: #004d40; /* Hijau Tua/Emerald untuk kesan modern */
+            --secondary-color: #ffb300; /* Amber yang lebih cerah */
+            --danger-color: #e53935;
+            --success-color: #43a047;
+            --text-color: #263238; /* Hampir Hitam */
+            --bg-color: #f5f5f5; /* Background sangat terang */
             --card-bg: #ffffff;
-            --border-radius: 12px;
-            --shadow-heavy: 0 10px 30px rgba(0, 0, 0, 0.15);
-            --shadow-light: 0 4px 10px rgba(0, 0, 0, 0.08);
-            --button-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            --border-radius: 16px; /* Lebih membulat */
+            --shadow-heavy: 0 12px 40px rgba(0, 0, 0, 0.1); /* Lebih halus */
+            --shadow-light: 0 4px 15px rgba(0, 0, 0, 0.05);
+            --button-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
         }
         
         * {
@@ -37,57 +37,60 @@
         
         /* ------------------------------------------- */
         
-        /* --- START: 2. BODY & CONTAINER LAYOUT --- */
+        /* --- START: 2. BODY & CONTAINER LAYOUT (Disesuaikan) --- */
         body {
             background-color: var(--bg-color);
             display: flex;
             justify-content: center;
             align-items: flex-start;
             min-height: 100vh;
-            padding: 20px;
+            padding: 40px 20px; /* Padding lebih besar */
             color: var(--text-color);
+            transition: padding 0.3s;
         }
         
         .container {
             background-color: var(--card-bg);
-            padding: 30px;
+            padding: 35px 30px;
             border-radius: var(--border-radius);
             box-shadow: var(--shadow-heavy);
             width: 100%;
-            max-width: 450px;
-            margin-top: 20px;
+            max-width: 480px; /* Lebar sedikit diperluas */
+            margin-top: 0;
             transition: all 0.3s ease;
         }
         
         .app-title {
             text-align: center;
             color: var(--primary-color);
-            font-size: 1.5em;
-            font-weight: 700;
-            margin-bottom: 25px;
+            font-size: 1.8em; /* Lebih besar */
+            font-weight: 800; /* Lebih tebal */
+            margin-bottom: 30px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #eee; /* Sedikit pemisah */
         }
 
         .app-title i {
             margin-right: 10px;
             color: var(--secondary-color);
+            font-size: 1.1em;
         }
 
         /* --- END: 2. BODY & CONTAINER LAYOUT --- */
         
         /* ------------------------------------------- */
         
-        /* --- START: 4. INPUT GROUP & FIELD UMUM --- */
+        /* --- START: 4. INPUT GROUP & FIELD UMUM (Ditingkatkan) --- */
         .input-group {
-            margin-bottom: 20px;
-            /* Tambahkan transisi untuk Lokasi Input */
+            margin-bottom: 25px; /* Spasi lebih lega */
             transition: all 0.3s ease-out;
             overflow: hidden;
-            max-height: 100px; /* Normal height */
+            max-height: 100px;
         }
         
         .input-group.hidden {
             margin-bottom: 0;
-            max-height: 0; /* Sembunyikan dengan transisi */
+            max-height: 0;
             opacity: 0;
         }
 
@@ -96,7 +99,9 @@
             margin-bottom: 8px;
             color: var(--primary-color);
             font-weight: 700;
-            font-size: 0.95em;
+            font-size: 0.9em; /* Sedikit lebih kecil */
+            text-transform: uppercase; /* Modern touch */
+            letter-spacing: 0.5px;
         }
         
         .input-group label i {
@@ -109,39 +114,38 @@
         input[type="date"],
         select {
             width: 100%;
-            padding: 12px 15px;
-            border: 1px solid #ddd;
-            border-radius: 8px;
+            padding: 14px 18px; /* Padding lebih besar */
+            border: 1px solid #e0e0e0;
+            border-radius: 10px; /* Lebih membulat */
             font-size: 1em;
             color: var(--text-color);
-            transition: all 0.3s;
-            appearance: none; 
             background-color: var(--card-bg);
+            transition: border-color 0.3s, box-shadow 0.3s;
         }
         
         input:focus, select:focus {
             border-color: var(--primary-color);
-            box-shadow: 0 0 0 4px rgba(0, 121, 107, 0.2);
-            background-color: #f7fcfc;
+            box-shadow: 0 0 0 4px rgba(0, 77, 64, 0.1); /* Shadow lebih gelap dan tipis */
+            background-color: #fcfdff;
             outline: none;
         }
         /* --- END: 4. INPUT GROUP & FIELD UMUM --- */
         
         /* ------------------------------------------- */
         
-        /* --- START: 5. BUTTON KATEGORI --- */
+        /* --- START: 5. BUTTON KATEGORI (Ditingkatkan) --- */
         .category-buttons {
             display: flex;
             gap: 10px;
             margin-bottom: 30px;
-            padding: 10px;
-            background-color: #e0f2f1;
-            border-radius: var(--border-radius);
+            padding: 8px;
+            background-color: #e0f2f1; /* Hijau muda */
+            border-radius: 12px;
         }
 
         .category-btn {
             flex-grow: 1;
-            padding: 15px;
+            padding: 12px 10px; /* Padding disesuaikan */
             background-color: #b2dfdb; 
             color: var(--primary-color);
             border-radius: 8px;
@@ -154,7 +158,8 @@
         .category-btn.active {
             background-color: var(--primary-color);
             color: var(--card-bg);
-            box-shadow: 0 4px 10px rgba(0, 121, 107, 0.3);
+            box-shadow: 0 4px 10px rgba(0, 77, 64, 0.3);
+            transform: translateY(-2px);
         }
 
         .category-btn:hover {
@@ -168,20 +173,20 @@
         
         /* ------------------------------------------- */
         
-        /* --- START: 6. TOMBOL SUBMIT (Masuk/Keluar) --- */
+        /* --- START: 6. TOMBOL SUBMIT (Masuk/Keluar) (Ditingkatkan) --- */
         .submit-buttons {
             display: flex;
             gap: 15px;
-            margin-top: 30px;
+            margin-top: 40px; /* Spasi lebih banyak */
         }
 
         .submit-btn {
             flex-grow: 1;
-            padding: 15px 10px;
+            padding: 18px 10px; /* Lebih tinggi */
             border: none;
-            border-radius: 10px;
+            border-radius: 12px; /* Lebih membulat */
             font-weight: 700;
-            font-size: 1.1em;
+            font-size: 1.05em;
             color: white;
             cursor: pointer;
             transition: background-color 0.3s, transform 0.1s, box-shadow 0.3s;
@@ -190,30 +195,33 @@
 
         #masukButton {
             background-color: var(--success-color); 
-            box-shadow: 0 5px 15px rgba(76, 175, 80, 0.4);
+            box-shadow: 0 8px 20px rgba(67, 160, 71, 0.3);
         }
 
         #keluarButton {
             background-color: var(--danger-color); 
-            box-shadow: 0 5px 15px rgba(244, 67, 54, 0.4);
+            box-shadow: 0 8px 20px rgba(229, 57, 53, 0.3);
         }
 
         #masukButton:hover {
             background-color: #388e3c;
+            transform: translateY(-2px);
         }
 
         #keluarButton:hover {
-            background-color: #d32f2f;
+            background-color: #c62828;
+            transform: translateY(-2px);
         }
 
         .submit-btn:active {
-            transform: scale(0.98);
+            transform: scale(0.97);
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
         }
         /* --- END: 6. TOMBOL SUBMIT (Masuk/Keluar) --- */
 
         /* ------------------------------------------- */
 
-        /* --- START: 7. LIVE SEARCH SUGGESTION --- */
+        /* --- START: 7. LIVE SEARCH SUGGESTION (Tidak Berubah) --- */
         .autocomplete-container {
             position: relative;
         }
@@ -229,19 +237,18 @@
             right: 0;
             max-height: 200px;
             overflow-y: auto;
-            border-radius: 0 0 8px 8px;
+            border-radius: 0 0 10px 10px; /* Disesuaikan dengan input */
             background-color: white;
             box-shadow: var(--shadow-light);
-            /* Pastikan display diset di JS, tapi defaultnya hidden */
             display: none; 
         }
 
         .autocomplete-items div {
-            padding: 10px;
+            padding: 12px 18px; /* Padding lebih besar */
             cursor: pointer;
             background-color: #fff; 
-            border-bottom: 1px solid #d4d4d4;
-            font-size: 0.9em;
+            border-bottom: 1px solid #eee;
+            font-size: 0.95em;
         }
 
         .autocomplete-items div:last-child {
@@ -250,27 +257,26 @@
 
         .autocomplete-items div:hover,
         .autocomplete-active {
-            background-color: #e8f5e9 !important;
+            background-color: #f1f8e9 !important; /* Warna hijau muda */
             color: var(--primary-color);
         }
         
-        /* 🔥 PERBAIKAN: Tambahkan CSS untuk Highlighting (Penting agar live search terlihat) */
         .autocomplete-item-highlight {
             font-weight: 700; 
             color: var(--primary-color);
             background-color: #c8e6c9;
-            padding: 2px 0; /* Padding kecil untuk estetika */
+            padding: 2px 0;
         }
         /* --- END: 7. LIVE SEARCH SUGGESTION --- */
         
         /* ------------------------------------------- */
         
-        /* --- START: 8. MESSAGE DISPLAY --- */
+        /* --- START: 8. MESSAGE DISPLAY (Ditingkatkan) --- */
         .message {
             text-align: center;
-            margin-top: 20px;
-            padding: 12px;
-            border-radius: 8px;
+            margin-top: 30px;
+            padding: 15px;
+            border-radius: 10px;
             font-weight: 600;
             background-color: #e8f5e9;
             color: #2e7d32;
@@ -282,15 +288,15 @@
         }
         
         .message.error {
-            background-color: #fce4e4; 
+            background-color: #ffebee; 
             color: #c62828;
             border-color: #ef9a9a;
         }
 
         .message.loading {
-            background-color: #fffde7;
-            color: #fbc02d;
-            border-color: #fff9c4;
+            background-color: #fff8e1;
+            color: #ffb300;
+            border-color: #ffecb3;
         }
         
         .message.show {
@@ -302,24 +308,45 @@
         
         /* ------------------------------------------- */
 
-        /* --- START: 9. COPYRIGHT FOOTER --- */
+        /* --- START: 9. COPYRIGHT FOOTER (Ditingkatkan) --- */
         .footer-copyright {
-            margin-top: 20px;
-            padding-top: 10px;
-            border-top: 1px solid #ddd;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #eee;
             text-align: center;
-            font-size: 0.75em;
-            color: #777;
+            font-size: 0.8em;
+            color: #9e9e9e;
+            font-weight: 300;
         }
         /* --- END: 9. COPYRIGHT FOOTER --- */
 
         /* --- START: 10. RESPONSIVE ADJUSTMENTS (@media) --- */
         @media (max-width: 600px) {
-            body { padding: 10px; }
-            .container { padding: 20px; margin-top: 0; border-radius: 0; box-shadow: none; }
-            .app-title { font-size: 1.3em; margin-bottom: 20px; }
-            input, select, .category-btn, .submit-btn { padding: 10px; font-size: 0.95em; }
-            .submit-buttons { gap: 10px; }
+            body { padding: 10px 0; align-items: stretch; } /* Di ponsel, rentangkan konten */
+            .container { 
+                padding: 25px 20px; 
+                margin-top: 0; 
+                border-radius: 0; 
+                box-shadow: none; 
+                min-height: 100vh; /* Agar mengisi seluruh layar */
+            }
+            .app-title { font-size: 1.5em; margin-bottom: 20px; }
+            
+            input, select, .category-btn, .submit-btn { 
+                padding: 12px; 
+                font-size: 0.9em; 
+            }
+            .category-btn { padding: 10px 8px; }
+
+            .submit-buttons { 
+                flex-direction: column; /* Tombol bertumpuk di layar kecil */
+                gap: 10px;
+            }
+
+            .submit-btn { 
+                padding: 15px;
+                font-size: 1em;
+            }
         }
         /* --- END: 10. RESPONSIVE ADJUSTMENTS (@media) --- */
     </style>
@@ -394,6 +421,7 @@
 <script>
 // =================================================================
 // Kode JS (FRONTEND)
+// Catatan: Kode JavaScript ini tidak diubah dan dipertahankan
 // =================================================================
 
 // 🚨 PENTING: Ganti dengan URL Deployment Apps Script Anda yang sudah di-publish!
@@ -595,7 +623,6 @@ function setupEventListeners() {
     });
 
     // C. LIVE SEARCH (NAMA BARANG INPUT)
-    // 🔥 PERBAIKAN DILAKUKAN DI SINI
     namaBarangInput.addEventListener('input', () => {
         const input = namaBarangInput.value.trim().toUpperCase(); // Pastikan case sama dengan cache
         autocompleteList.innerHTML = '';
