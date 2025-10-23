@@ -279,12 +279,13 @@
             position: fixed;
             bottom: 30px;
             right: 30px;
+            /* 🔥 NILAI BARU UNTUK UKURAN LEBIH KECIL */
             width: auto;
-            min-width: 150px;
-            height: 56px;
-            padding: 0 20px;
-            border-radius: 30px;
-            font-size: 1em;
+            min-width: 120px; 
+            height: 50px; /* Lebih kecil */
+            padding: 0 15px; /* Padding lebih kecil */
+            border-radius: 25px; /* Border radius menyesuaikan */
+            font-size: 0.9em; /* Font lebih kecil */
             font-weight: 600;
             color: white;
             border: none;
@@ -298,8 +299,8 @@
         }
 
         #fabToggle i {
-            margin-right: 8px;
-            font-size: 1.2em;
+            margin-right: 6px; /* Margin lebih kecil */
+            font-size: 1.1em;
         }
 
         /* Ganti warna FAB berdasarkan mode */
@@ -318,8 +319,10 @@
             #fabToggle { 
                 bottom: 20px; 
                 right: 20px; 
-                min-width: 120px; 
-                padding: 0 15px;
+                min-width: 110px; /* Lebih kecil di mobile */
+                padding: 0 10px; /* Padding lebih kecil di mobile */
+                height: 45px; /* Lebih kecil di mobile */
+                font-size: 0.85em;
             }
         }
     </style>
