@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SMART SWALAYAN INVENTORY</title>
+    <link rel="icon" href="https://i.ibb.co/6y4t6y0/smart-swalayan-logo.png" type="image/png">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
@@ -13,12 +14,12 @@
 
         /* --- 1. DEKLARASI VARIABEL & FONT --- */
         :root {
-            --primary-color: #00897b; /* Teal 600 - Lebih hidup */
-            --secondary-color: #ffb300; /* Amber - Aksen cerah */
-            --danger-color: #e53935; /* Merah */
-            --success-color: #43a047; /* Hijau */
+            --primary-color: #00897b; 
+            --secondary-color: #ffb300; 
+            --danger-color: #e53935; 
+            --success-color: #43a047; 
             --text-color: #212121;
-            --bg-color: #f0f4f8; /* Background sangat lembut */
+            --bg-color: #f0f4f8; 
             --card-bg: #ffffff;
             --border-radius-large: 16px;
             --border-radius-small: 8px;
@@ -48,33 +49,45 @@
         
         .container {
             background-color: var(--card-bg);
-            padding: 35px; /* Padding lebih besar */
+            padding: 35px; 
             border-radius: var(--border-radius-large);
             box-shadow: var(--shadow-heavy);
             width: 100%;
-            max-width: 480px; /* Lebar sedikit diperbesar */
+            max-width: 480px; 
             margin-top: 20px;
             transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
         }
         
+        /* 🔥 LOGO DI JUDUL */
         .app-title {
             text-align: center;
             color: var(--primary-color);
             font-size: 1.6em;
-            font-weight: 800; /* Lebih tebal */
+            font-weight: 800; 
             margin-bottom: 30px;
             padding-bottom: 15px;
             border-bottom: 2px solid #e0e0e0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
         }
-
-        .app-title i {
-            margin-right: 8px;
+        #appLogo {
+            width: 80px; 
+            height: auto;
+            margin-bottom: 8px;
+        }
+        .mode-status {
+            font-size: 0.7em;
+            font-weight: 600;
             color: var(--secondary-color);
+            margin-top: -5px;
         }
+        /* END LOGO JUDUL */
+
 
         /* --- 4. INPUT GROUP & FIELD UMUM --- */
         .input-group {
-            margin-bottom: 25px; /* Margin lebih besar */
+            margin-bottom: 15px; /* 🔥 JARAK ANTAR INPUT DIPERSEMPIT */
             transition: all 0.3s ease-out;
             max-height: 120px; 
         }
@@ -88,7 +101,7 @@
 
         .input-group label {
             display: block;
-            margin-bottom: 8px;
+            margin-bottom: 5px; /* 🔥 JARAK LABEL KE INPUT DIPERSEMPIT */
             color: var(--primary-color);
             font-weight: 700;
             font-size: 0.9em;
@@ -101,7 +114,7 @@
             font-size: 1.1em;
         }
         
-        /* 🔥 Styling Kontrol Input Baru (Agar ikon bisa di dalam) */
+        /* Styling Kontrol Input */
         .input-control {
             position: relative;
         }
@@ -118,15 +131,16 @@
         
         input[type="text"], input[type="number"], select {
             width: 100%;
-            padding: 12px 15px 12px 45px; /* Padding kiri disesuaikan untuk ikon */
+            padding: 8px 15px 8px 45px; /* 🔥 KOTAK INPUT DIPERKECIL (padding dikurangi) */
             border: 1px solid #e0e0e0;
             border-radius: var(--border-radius-small);
             font-size: 1em;
             transition: all 0.3s;
             appearance: none; 
             background-color: var(--card-bg);
+            height: 40px; /* Tinggi Kotak Input Diperkecil */
         }
-        /* Penyesuaian untuk Select yang tidak perlu padding ikon */
+        /* Penyesuaian untuk Select */
         select {
              padding-left: 15px; 
              background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="%2300897b" d="M7 10l5 5 5-5z"/></svg>') no-repeat right 10px center;
@@ -146,32 +160,34 @@
         }
 
         
-        /* --- 5. BUTTON KATEGORI (MODIFIKASI: Grid & Warna) --- */
+        /* --- 5. BUTTON KATEGORI (MODIFIKASI: Single Row Flex) --- */
         .category-buttons {
-            display: grid; 
-            grid-template-columns: repeat(2, 1fr); 
-            gap: 10px;
-            margin-bottom: 30px;
-            padding: 10px;
-            background-color: #e0f2f1; /* BG Ringan */
+            display: flex; /* 🔥 MENGGUNAKAN FLEX UNTUK 1 BARIS */
+            flex-wrap: wrap; /* Jika tidak muat, akan pindah baris */
+            gap: 8px; /* Jarak antar tombol diperkecil */
+            margin-bottom: 30px; /* 🔥 JARAK KE JENIS PRODUK DIPERLEBAR */
+            padding: 8px;
+            background-color: #e0f2f1; 
             border-radius: var(--border-radius-small);
             border: 1px solid #b2dfdb;
         }
         
         .category-btn {
-            padding: 12px 5px; 
-            background-color: #f5f5f5; /* Light grey default */
+            padding: 8px 10px; /* 🔥 UKURAN TOMBOL DIPERKECIL */
+            background-color: #f5f5f5; 
             color: var(--text-color);
             border-radius: 6px;
             font-weight: 600;
             border: 1px solid #cfd8dc; 
             cursor: pointer;
             transition: all 0.2s ease;
-            font-size: 0.85em; 
+            font-size: 0.8em; /* 🔥 UKURAN FONT DIPERKECIL */
             display: flex; 
             align-items: center;
             justify-content: center;
             white-space: nowrap; 
+            flex-grow: 1; /* Agar membagi ruang secara merata */
+            max-width: calc(50% - 4px); /* Maksimal 2 kolom jika di layar kecil */
         }
         .category-btn i {
             margin-right: 5px;
@@ -203,7 +219,7 @@
 
         .submit-btn {
             flex-grow: 1;
-            padding: 15px 10px;
+            padding: 12px 10px; /* Padding dikurangi */
             border: none;
             border-radius: 10px;
             font-weight: 700;
@@ -211,7 +227,7 @@
             color: white;
             transition: background-color 0.3s ease, transform 0.1s ease, box-shadow 0.3s ease;
             cursor: pointer;
-            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15); /* Bayangan lebih halus */
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15); 
             width: 100%; 
         }
 
@@ -238,7 +254,7 @@
         }
 
         /* ------------------------------------------- */
-        /* 🔥 7. LIVE SEARCH SUGGESTION (Peningkatan Estetika) */
+        /* LIVE SEARCH SUGGESTION */
         /* ------------------------------------------- */
         .autocomplete-container {
             position: relative;
@@ -257,7 +273,6 @@
             overflow-y: auto; 
             touch-action: pan-y;
             -webkit-overflow-scrolling: touch; 
-            
             border-radius: 0 0 var(--border-radius-small) var(--border-radius-small);
             background-color: white;
             box-shadow: var(--shadow-light);
@@ -266,10 +281,10 @@
         }
 
         .autocomplete-items div {
-            padding: 10px 15px;
+            padding: 8px 15px; /* Padding dikurangi agar lebih kompak */
             cursor: pointer;
             background-color: #fff; 
-            border-bottom: 1px solid #f0f0f0; /* Garis pemisah lebih halus */
+            border-bottom: 1px solid #f0f0f0; 
             font-size: 0.9em;
             transition: background-color 0.2s;
         }
@@ -281,17 +296,17 @@
 
         .autocomplete-items div:hover,
         .autocomplete-active { 
-            background-color: #e3f2fd !important; /* Biru muda saat aktif */
+            background-color: #e3f2fd !important; 
             color: var(--text-color);
         }
-        /* Hapus garis bawah item terakhir */
+        
         .autocomplete-items div:last-child {
             border-bottom: none;
         }
         
         /* ------------------------------------------- */
         
-        /* --- 8. MESSAGE DISPLAY (Disederhanakan) --- */
+        /* --- 8. MESSAGE DISPLAY --- */
         .message {
             text-align: center;
             margin-top: 25px;
@@ -325,15 +340,15 @@
         }
         
         /* ------------------------------------------- */
-        /* 🔥 9. FLOATING ACTION BUTTON (FAB) */
+        /* FLOATING ACTION BUTTON (FAB) */
         /* ------------------------------------------- */
         #fabToggle {
             position: fixed;
             bottom: 30px;
             right: 30px;
             width: auto;
-            min-width: 140px; /* Lebih menarik */
-            height: 55px; /* Lebih tebal */
+            min-width: 140px; 
+            height: 55px; 
             padding: 0 20px;
             border-radius: 28px;
             font-size: 1em; 
@@ -360,11 +375,11 @@
 
         /* Ganti warna FAB berdasarkan mode */
         body.mode-masuk #fabToggle {
-            background-color: var(--danger-color); /* Berubah ke Keluar */
+            background-color: var(--danger-color); 
         }
 
         body.mode-keluar #fabToggle {
-            background-color: var(--success-color); /* Berubah ke Masuk */
+            background-color: var(--success-color); 
         }
         
         /* --- 10. RESPONSIVE ADJUSTMENTS (@media) --- */
@@ -375,14 +390,18 @@
                 margin-top: 10px;
             }
             .category-buttons {
-                grid-template-columns: repeat(2, 1fr); /* Tetap 2 kolom */
+                /* Pada layar kecil, biarkan flex-wrap membagi rata menjadi 2 kolom */
+                justify-content: space-between;
             }
             .category-btn {
-                font-size: 0.8em; 
-                padding: 10px 5px;
+                flex-grow: 1;
+                flex-basis: calc(50% - 4px); /* Memastikan 2 kolom penuh pada layar kecil */
+                max-width: none;
+                font-size: 0.75em; 
+                padding: 8px 5px;
             }
             .submit-btn { 
-                padding: 12px 8px; 
+                padding: 10px 8px; 
                 font-size: 1em; 
             }
             #fabToggle { 
@@ -392,13 +411,19 @@
                 height: 48px; 
                 font-size: 0.9em;
             }
+            /* Kotak input pada layar kecil */
+            input[type="text"], input[type="number"], select {
+                height: 36px;
+                padding: 6px 15px 6px 40px; 
+            }
         }
     </style>
 </head>
 <body class="mode-masuk"> 
     <div class="container">
         <div class="app-title">
-            <i class="fas fa-warehouse"></i> Smart Swalayan Inventory
+            <img id="appLogo" src="https://i.ibb.co/6y4t6y0/smart-swalayan-logo.png" alt="Logo Swalayan">
+            <div class="mode-status" id="modeStatus">INVENTORY - MASUK</div>
         </div>
         
         <form id="inventoryForm">
@@ -501,6 +526,7 @@ const masukButton = document.getElementById('masukButton');
 const keluarButton = document.getElementById('keluarButton');
 const fabToggle = document.getElementById('fabToggle');
 const appBody = document.body;
+const modeStatusDiv = document.getElementById('modeStatus');
 
 let inventoryDataCache = {}; 
 let configDataCache = {}; 
@@ -777,6 +803,8 @@ function toggleMode() {
  * Fungsi untuk memperbarui tampilan berdasarkan mode
  */
 function updateUIMode(mode) {
+    modeStatusDiv.textContent = `INVENTORY - ${mode.toUpperCase()}`;
+    
     if (mode === 'Masuk') {
         appBody.classList.remove('mode-keluar');
         appBody.classList.add('mode-masuk');
@@ -792,9 +820,6 @@ function updateUIMode(mode) {
         fabToggle.innerHTML = '<i class="fas fa-exchange-alt"></i> Ganti ke MASUK';
         fabToggle.style.backgroundColor = 'var(--success-color)'; 
     }
-    
-    const appTitle = document.querySelector('.app-title');
-    appTitle.innerHTML = `<i class="fas fa-warehouse"></i> Smart Swalayan Inventory - ${mode.toUpperCase()}`;
 }
 
 
@@ -825,7 +850,6 @@ async function handleFormSubmit(e, action) {
     jenisProdukSelect.value = '';
     namaBarangInput.value = '';
     namaBarangInput.disabled = true;
-    // lokasiInput.value = ''; // Lokasi tidak di-reset agar bisa diisi lagi
 
     formatSimpanInput.value = '6';
     productNamesCache = [];
