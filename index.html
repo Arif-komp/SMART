@@ -72,7 +72,7 @@
         .input-group {
             margin-bottom: 20px;
             transition: all 0.3s ease-out;
-            overflow: visible; /* Penting untuk mencegah pemotongan dropdown */
+            overflow: visible;
             max-height: 100px; 
         }
         
@@ -136,10 +136,64 @@
             box-shadow: 0 4px 10px rgba(0, 121, 107, 0.3);
         }
         
-        /* --- 7. LIVE SEARCH SUGGESTION (PERBAIKAN KRUSIAL Z-INDEX) --- */
+        /* ------------------------------------------- */
+        /* 🔥 MODIFIKASI: 6. TOMBOL SUBMIT (Masuk/Keluar) */
+        /* ------------------------------------------- */
+        .submit-buttons {
+            display: flex;
+            gap: 15px;
+            margin-top: 30px;
+        }
+
+        .submit-btn {
+            flex-grow: 1;
+            padding: 15px 10px;
+            border: none;
+            border-radius: 10px;
+            font-weight: 700;
+            font-size: 1.1em;
+            color: white;
+            cursor: pointer;
+            /* Transisi untuk efek hover/active yang halus */
+            transition: background-color 0.3s ease, transform 0.1s ease, box-shadow 0.3s ease;
+            /* Tambahkan Bayangan Umum */
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2); 
+        }
+
+        #masukButton {
+            background-color: var(--success-color); /* Hijau */
+            /* Bayangan khusus Hijau */
+            box-shadow: 0 5px 15px rgba(76, 175, 80, 0.5);
+        }
+
+        #keluarButton {
+            background-color: var(--danger-color); /* Merah */
+            /* Bayangan khusus Merah */
+            box-shadow: 0 5px 15px rgba(244, 67, 54, 0.5);
+        }
+
+        /* Efek Hover */
+        #masukButton:hover {
+            background-color: #388e3c; /* Hijau Tua */
+            transform: translateY(-2px); /* Sedikit terangkat */
+        }
+
+        #keluarButton:hover {
+            background-color: #d32f2f; /* Merah Tua */
+            transform: translateY(-2px);
+        }
+
+        /* Efek Saat Diklik (Active) */
+        .submit-btn:active {
+            transform: translateY(0); /* Kembali ke posisi */
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3); /* Bayangan kecil */
+        }
+        /* --- END: 6. TOMBOL SUBMIT (Masuk/Keluar) --- */
+
+        /* --- 7. LIVE SEARCH SUGGESTION --- */
         .autocomplete-container {
             position: relative;
-            z-index: 1000; /* 🔥 Z-INDEX TINGGI */
+            z-index: 1000;
         }
 
         .autocomplete-items {
@@ -147,7 +201,7 @@
             border: 1px solid #d4d4d4;
             border-bottom: none;
             border-top: none;
-            z-index: 999; /* 🔥 JAMINAN DI ATAS ELEMEN LAIN */
+            z-index: 999;
             top: 100%;
             left: 0;
             right: 0;
@@ -167,7 +221,6 @@
             font-size: 0.9em;
         }
         
-        /* 🔥 CSS untuk Highlighting */
         .autocomplete-item-highlight {
             font-weight: 700; 
             color: var(--primary-color);
@@ -199,9 +252,22 @@
             opacity: 1;
         }
         
+        .message.error {
+            background-color: #fce4e4; 
+            color: #c62828;
+            border-color: #ef9a9a;
+        }
+
+        .message.loading {
+            background-color: #fffde7;
+            color: #fbc02d;
+            border-color: #fff9c4;
+        }
+        
         /* --- 10. RESPONSIVE ADJUSTMENTS (@media) --- */
         @media (max-width: 600px) {
             .container { max-width: 100%; }
+            .submit-btn { padding: 12px 8px; font-size: 1em; } /* Sedikit kecil di layar kecil */
         }
     </style>
 </head>
@@ -275,17 +341,15 @@
 <script>
 // =================================================================
 // Kode JS (FRONTEND)
+// Catatan: Semua kode JS dan fungsi pengiriman data TIDAK BERUBAH.
 // =================================================================
 
-// 🚨 PENTING: Ganti dengan URL Deployment Apps Script Anda yang sudah di-publish!
 const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbz-siwPKU2MeK3GkNrp7NXIrJjl4iQgQWaMPJIMc99Z7bTQwcv1z8bu4fdMMjwdfLLO0Q/exec'; 
 
-// Elemen DOM
 const categoryButtons = document.querySelectorAll('.category-btn');
 const jenisProdukSelect = document.getElementById('jenisProduk');
 const namaBarangInput = document.getElementById('namaBarang');
 const autocompleteList = document.getElementById('autocomplete-list'); 
-const form = document.getElementById('inventoryForm');
 const messageArea = document.getElementById('message'); 
 const kategoriInput = document.getElementById('kategori');
 const lokasiInputGroup = document.getElementById('lokasiInputGroup');
@@ -294,7 +358,6 @@ const formatSimpanInput = document.getElementById('formatSimpan');
 const textInputs = document.querySelectorAll('input[type="text"]');
 
 
-// Variabel Cache dan State
 let inventoryDataCache = {}; 
 let configDataCache = {};
 let currentCategory = '';
@@ -303,10 +366,6 @@ let productNamesCache = [];
 let currentFocus = -1; 
 
 
-// =================================================================
-// 1. FUNGSI UTAMA & INITIALIZATION
-// =================================================================
-
 document.addEventListener('DOMContentLoaded', () => {
     fetchInitialData();
     setupEventListeners();
@@ -314,9 +373,6 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('app-footer-copyright').textContent = `© ${new Date().getFullYear()} Smart Swalayan. All Rights Reserved.`;
 });
 
-// =================================================================
-// 2. JSONP HANDLER & FALLBACK DATA
-// =================================================================
 
 function handleSheetsData(result) {
     const scriptElement = document.getElementById('jsonp-script');
@@ -339,7 +395,6 @@ function handleSheetsData(result) {
 }
 
 function useFallbackData(reason) {
-     // Data ini digunakan jika koneksi ke Apps Script gagal
      const FALLBACK_DATA = {
          "BESI": {
              "BAJA RINGAN": ["BAJA RINGAN C75.75", "BAJA RINGAN R30.40", "BAJA RINGAN C75.60"],
@@ -393,10 +448,6 @@ function fetchInitialData() {
     document.head.appendChild(script);
 }
 
-// =================================================================
-// 3. FUNGSI KAPITALISASI & EVENT LISTENERS
-// =================================================================
-
 function setupUppercaseListeners() {
     textInputs.forEach(input => {
         input.addEventListener('input', function() {
@@ -406,7 +457,6 @@ function setupUppercaseListeners() {
 }
 
 function setupEventListeners() {
-    // A. KATEGORI SELECTION
     categoryButtons.forEach(button => {
         button.addEventListener('click', (e) => {
             const selectedCategory = e.currentTarget.getAttribute('data-category');
@@ -423,19 +473,17 @@ function setupEventListeners() {
         });
     });
 
-    // B. JENIS PRODUK SELECTION 
     jenisProdukSelect.addEventListener('change', (e) => {
         const selectedJenis = e.target.value;
         namaBarangInput.value = '';
         autocompleteList.innerHTML = '';
-        autocompleteList.style.display = 'none'; // JAMINAN HILANG
+        autocompleteList.style.display = 'none';
         lokasiInput.value = '';
         
         const config = configDataCache[selectedJenis] || { format: 5 }; 
         const format = config.format;
         formatSimpanInput.value = format; 
         
-        // Atur tampilan Lokasi
         if (format === 6) {
             lokasiInputGroup.classList.remove('hidden');
             lokasiInput.required = true;
@@ -444,7 +492,6 @@ function setupEventListeners() {
             lokasiInput.required = false;
         }
         
-        // Update Nama Barang Cache
         if (selectedJenis) {
             productNamesCache = currentCategoryData[selectedJenis] || []; 
             namaBarangInput.disabled = false; 
@@ -457,7 +504,6 @@ function setupEventListeners() {
         }
     });
 
-    // C. LIVE SEARCH (NAMA BARANG INPUT)
     namaBarangInput.addEventListener('input', () => {
         const input = namaBarangInput.value.trim().toUpperCase();
         autocompleteList.innerHTML = '';
@@ -476,7 +522,6 @@ function setupEventListeners() {
             const item = document.createElement('div');
             item.classList.add('autocomplete-item');
             
-            // Highlight logic
             const matchIndex = name.indexOf(input); 
             if (matchIndex >= 0) {
                 const before = name.substring(0, matchIndex);
@@ -494,18 +539,16 @@ function setupEventListeners() {
                 namaBarangInput.value = name;
                 autocompleteList.innerHTML = '';
                 autocompleteList.style.display = 'none';
-                namaBarangInput.focus(); // Kembali ke input setelah memilih
+                namaBarangInput.focus();
             });
             autocompleteList.appendChild(item);
         });
 
-        // TAMPILKAN HASIL JIKA ADA MATCHES
         if (matches.length > 0) {
              autocompleteList.style.display = 'block';
         }
     });
 
-    // C2. KEYBOARD NAVIGATION & ENTER
     namaBarangInput.addEventListener('keydown', function(e) {
         let x = document.getElementById('autocomplete-list');
         if (x) x = x.getElementsByTagName('div');
@@ -538,28 +581,21 @@ function setupEventListeners() {
         }
     }
 
-    // Tutup dropdown saat klik di luar
     document.addEventListener('click', (e) => {
         if (!e.target.matches('#namaBarang') && !e.target.closest('.autocomplete-container')) {
              autocompleteList.style.display = 'none';
         }
     });
 
-    // D. BUTTON SUBMISSION (doPost)
     document.getElementById('masukButton').addEventListener('click', (e) => handleFormSubmit(e, 'Masuk'));
     document.getElementById('keluarButton').addEventListener('click', (e) => handleFormSubmit(e, 'Keluar'));
 }
-
-// =================================================================
-// 4. FUNGSI PEMBANTU (SUBMIT & MESSAGE)
-// =================================================================
 
 function updateJenisProdukDropdown(data) {
     jenisProdukSelect.innerHTML = '<option value="">-- Pilih Jenis Produk --</option>';
     
     const jenisProdukList = Object.keys(data).sort(); 
     
-    // Reset state terkait
     lokasiInputGroup.classList.add('hidden');
     lokasiInput.required = false;
     namaBarangInput.disabled = true;
@@ -584,7 +620,6 @@ function updateJenisProdukDropdown(data) {
 async function handleFormSubmit(e, action) {
     e.preventDefault();
     
-    // Kumpulkan data (validasi diabaikan di sini, diasumsikan sudah dilakukan)
     const dataToSend = {
         kategori: kategoriInput.value.trim(),
         jenisProduk: jenisProdukSelect.value.trim(),
@@ -596,12 +631,10 @@ async function handleFormSubmit(e, action) {
         keluarOut: (action === 'Keluar' ? document.getElementById('jumlah').value.trim() : '')
     };
 
-    // PENTING: Lakukan validasi input di sini (seperti di kode sebelumnya)
     if (!dataToSend.kategori || !dataToSend.jenisProduk || !dataToSend.namaBarang || !dataToSend.checker || (dataToSend.formatSimpan === '6' && dataToSend.lokasi === '')) {
          return displayMessage('❌ Semua kolom wajib diisi.', 'error');
     }
     
-    // 🚨 RESET FORM (untuk UX yang lebih baik)
     document.getElementById('jumlah').value = '';
     jenisProdukSelect.value = '';
     namaBarangInput.value = '';
@@ -647,7 +680,6 @@ function displayMessage(message, type = 'info') {
         messageArea.className = `message ${type}`;
         messageArea.innerHTML = message;
         
-        // Terapkan class untuk styling yang sesuai
         if (type === 'success') messageArea.classList.add('success');
         if (type === 'error') messageArea.classList.add('error');
         if (type === 'loading') messageArea.classList.add('loading');
@@ -656,14 +688,12 @@ function displayMessage(message, type = 'info') {
             messageArea.classList.add('show');
         }, 10);
         
-        // Hilangkan pesan Error/Success setelah 5 detik
         if (type !== 'loading') {
             setTimeout(() => {
                 messageArea.classList.remove('show');
             }, 5000);
         }
     } else {
-        // Untuk pesan info/reset
         messageArea.innerHTML = message;
         messageArea.classList.add('show');
         setTimeout(() => {
