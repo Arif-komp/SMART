@@ -487,8 +487,12 @@
     // Kode JS (FRONTEND)
     // =================================================================
 
-    // 🔥 GANTI DENGAN URL APPS SCRIPT ANDA (URL yang sama untuk doGet dan doPost)
+    // 🔥 PENTING: GANTI SCRIPT_URL DENGAN URL DEPLOYMENT APPS SCRIPT ANDA
     const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyCbNGjMC2c0Cc6x9jP5vupUtK_4U4c_vNJkZ4ago5SzlHwoqLVn6Fs7YU7btZ60cnL/exec'; 
+
+    // 🔥 PENTING: ID Google Spreadsheet Anda untuk pengambilan data
+    // Pastikan Google Sheet ini di-PUBLISH KE WEB (File -> Share -> Publish to the web)
+    const SHEETS_ID = '1IEADNCoA30ggaO8l6pgXzJsjyjph0l2SU05U-jWxjvo'; 
 
     const categoryButtons = document.querySelectorAll('.category-btn');
     const jenisProdukSelect = document.getElementById('jenisProduk');
@@ -515,7 +519,8 @@
 
 
     document.addEventListener('DOMContentLoaded', () => {
-        fetchInitialData(); // 🔥 Menggunakan fungsi JSONP baru
+        // 🔥 MENGGANTI: Memuat data menggunakan Google Sheets Public API
+        fetchInitialDataFromSheet(); 
         setupEventListeners();
         setupUppercaseListeners();
         document.getElementById('app-footer-copyright').textContent = `© ${new Date().getFullYear()} Smart Swalayan. All Rights Reserved.`;
@@ -529,76 +534,85 @@
     });
 
 
-    /**
-     * 🔥 FUNGSI BARU: Mengambil data menggunakan JSONP (Wajib CORS-Friendly)
-     * Instan load dicapai dengan memuat data di awal dan menyimpannya di cache lokal.
-     * DITINGKATKAN: Tambahkan mekanisme timeout dan error handling yang lebih baik.
-     */
-    function fetchInitialData() {
-        displayMessage('⏳ Memuat semua data produk instan (CORS-Friendly)...', 'loading');
+    // =================================================================
+    // 🔥 FUNGSI BARU: Mengambil data menggunakan Google Sheets Public API
+    // =================================================================
+    async function fetchInitialDataFromSheet() {
+        displayMessage('⏳ Memuat semua data produk dari Google Sheet...', 'loading');
         
-        // Cek Placeholder (Dibiarkan untuk pengingat developer)
-        if (SCRIPT_URL.includes('https://script.google.com/macros/s/AKfycbyCbNGjMC2c0Cc6x9jP5vupUtK_4U4c_vNJkZ4ago5SzlHwoqLVn6Fs7YU7btZ60cnL/exec')) {
-            displayMessage('⚠️ SCRIPT_URL masih URL *placeholder*. Data mungkin tidak terambil.', 'error');
-        }
+        // URL untuk Google Sheets Public API (Pastikan Sheet sudah di-Publish)
+        const publicApiUrl = `https://docs.google.com/spreadsheets/d/${SHEETS_ID}/gviz/tq?tqx=out:json`;
 
-        // 1. Definisikan fungsi callback global (harus ada di window)
-        window.handleSheetsData = function(response) {
-            clearTimeout(loadTimeout); // Hapus timeout jika data diterima
+        try {
+            const response = await fetch(publicApiUrl);
+            const text = await response.text();
             
-            if (response.status === 'ok' && response.data) {
-                inventoryDataCache = response.data;
-                displayMessage('✅ Data produk dimuat instan (JSONP)!', 'success'); 
+            // Ekstrak JSONP wrapper "google.visualization.Query.setResponse("
+            const jsonText = text.substring(
+                text.indexOf('{'), 
+                text.lastIndexOf('}') + 1
+            );
+            
+            const responseData = JSON.parse(jsonText);
+
+            if (responseData.status === 'ok' && responseData.table) {
+                // Proses data menjadi struktur cache yang dibutuhkan {Kategori: {JenisProduk: [NamaBarang]}}
+                inventoryDataCache = processSheetsData(responseData.table);
+                displayMessage('✅ Data produk dimuat dari Google Sheet!', 'success'); 
             } else {
-                console.error('Data error:', response.error || 'Respon Apps Script tidak valid.');
-                useFallbackData(`❌ Gagal memproses data Apps Script: ${response.error || 'Respon tidak valid/kosong'}.`);
+                useFallbackData(`❌ Gagal membaca data Sheet: ${responseData.errors ? responseData.errors[0].message : 'Respon tidak valid'}.`);
             }
-            // Hapus script tag setelah selesai
-            const scriptElement = document.getElementById('jsonpScript');
-            if (scriptElement) document.head.removeChild(scriptElement);
-            delete window.handleSheetsData;
-        };
+        } catch (error) {
+            console.error('Fetch error:', error);
+            useFallbackData('❌ Gagal koneksi ke Google Sheet. Cek SHEETS_ID dan pastikan sudah di-PUBLISH KE WEB.');
+        }
+    }
 
-        // 2. Buat URL dengan parameter callback
-        const jsonpUrl = SCRIPT_URL + '?callback=handleSheetsData';
+    /**
+     * Memproses data mentah dari Google Visualization API menjadi format cache.
+     * Asumsi: Kolom A = Kategori, Kolom B = Jenis Produk, Kolom C = Nama Barang
+     */
+    function processSheetsData(table) {
+        const cache = {};
+        const rows = table.rows;
 
-        // 3. Buat script tag dan append ke head untuk memicu permintaan JSONP
-        const script = document.createElement('script');
-        script.src = jsonpUrl;
-        script.id = 'jsonpScript';
-        
-        // 👇 Penambahan Debugging Timeout:
-        let loadTimeout = setTimeout(() => {
-            const scriptElement = document.getElementById('jsonpScript');
-            if (scriptElement) document.head.removeChild(scriptElement);
-            delete window.handleSheetsData; // Hapus callback agar tidak dijalankan nanti
-            useFallbackData('⏳ Gagal: Permintaan memuat data melebihi batas waktu (Timeout 15 detik). Cek koneksi atau ukuran data Anda.');
-        }, 15000); // Batas waktu 15 detik
-        
-        script.onerror = function() {
-            clearTimeout(loadTimeout); // Hapus timeout jika terjadi error
-            useFallbackData('❌ Gagal memuat skrip data. Cek SCRIPT_URL dan koneksi.');
-        };
-        
-        document.head.appendChild(script);
+        // Kolom A = Kategori (Index 0), Kolom B = Jenis (Index 1), Kolom C = Nama (Index 2)
+        rows.forEach(row => {
+            const kategori = row.c[0] ? row.c[0].v.toUpperCase().trim() : '';
+            const jenisProduk = row.c[1] ? row.c[1].v.toUpperCase().trim() : '';
+            const namaBarang = row.c[2] ? row.c[2].v.toUpperCase().trim() : '';
+
+            if (kategori && jenisProduk && namaBarang) {
+                if (!cache[kategori]) {
+                    cache[kategori] = {};
+                }
+                if (!cache[kategori][jenisProduk]) {
+                    cache[kategori][jenisProduk] = [];
+                }
+                cache[kategori][jenisProduk].push(namaBarang);
+            }
+        });
+
+        // Hapus duplikat dalam daftar nama barang
+        for (const kategori in cache) {
+            for (const jenis in cache[kategori]) {
+                cache[kategori][jenis] = [...new Set(cache[kategori][jenis])];
+            }
+        }
+        return cache;
     }
 
 
     function useFallbackData(reason) {
+        // Data Fallback (hanya untuk demo/jika error)
         const FALLBACK_DATA = {
             "BESI": {
-                "BAJA RINGAN": ["BAJA RINGAN C75.75", "BAJA RINGAN R30.40"],
+                "PIPA KOTAK": ["PIPA KOTAK 15X15 (0.8) KUNING", "PIPA KOTAK 15X35 (0.8) KUNING 2,74", "PIPA KOTAK 15X35 (0.9) MERAH 3,20", "PIPA KOTAK 15X35 (1.2) BIRU", "PIPA KOTAK 20X40 (0.8) KUNING"],
                 "BESI BETON": ["BESI BETON 12MM POLOS", "BESI BETON 10MM POLOS"]
             },
             "KERAMIK": {
                 "LANTAI 40x40": ["KERAMIK 40x40 KASAR PUTIH", "KERAMIK 40x40 GLOSSY ABU"],
                 "DINDING": ["KERAMIK DINDING 25x40 GARIS"]
-            },
-            "LT 2": {
-                "PERALATAN": ["SEKRUP GYPSUM", "CAT TEMBOK 5KG", "KUAS ROLL"]
-            },
-            "GM": {
-                "PRODUK GM": ["PRODUK GENERAL MERCHANDISE A", "PRODUK GENERAL MERCHANDISE B"]
             }
         };
 
@@ -611,6 +625,30 @@
             input.addEventListener('input', function() {
                 this.value = this.value.toUpperCase(); 
             });
+        });
+    }
+
+    // =================================================================
+    // 🔥 FUNGSI BARU: PENCARIAN FLEKSIBEL (Tidak harus berurutan)
+    // =================================================================
+    /**
+     * Melakukan pencarian barang secara fleksibel (tidak harus berurutan).
+     * Contoh: "pip 8" akan mencocokkan "PIPA KOTAK 15X15 (0.8) KUNING"
+     * @param {string} name - Nama produk yang akan dicari (uppercase).
+     * @param {string} input - Input pencarian dari user (uppercase dan trim).
+     * @returns {boolean} True jika cocok.
+     */
+    function flexibleSearch(name, input) {
+        if (!input || input.length < 2) return false;
+
+        // Pecah input pencarian menjadi token/kata kunci individual, pisahkan berdasarkan spasi
+        const searchTokens = input.split(/\s+/).filter(token => token.length > 0);
+
+        if (searchTokens.length === 0) return false;
+
+        // Cek apakah SEMUA token ada di dalam nama barang (pencarian AND logic)
+        return searchTokens.every(token => {
+            return name.includes(token);
         });
     }
 
@@ -639,7 +677,7 @@
 
             formatSimpanInput.value = '6'; 
             lokasiInputGroup.classList.remove('hidden'); 
-            lokasiInput.required = true; // Wajib diisi sesuai logika Apps Script
+            lokasiInput.required = true; 
             
             if (selectedJenis) {
                 productNamesCache = currentCategoryData[selectedJenis] || []; 
@@ -659,30 +697,22 @@
             autocompleteList.style.display = 'none';
             currentFocus = -1; 
 
-            if (jenisProdukSelect.value === '' || input.length === 0) {
+            // Jika Jenis Produk belum dipilih atau input terlalu pendek untuk pencarian fleksibel, hentikan.
+            if (jenisProdukSelect.value === '' || input.length < 2) {
                 return;
             }
 
+            // 🔥 LOGIKA PENCARIAN FLEKSIBEL DITERAPKAN DI SINI
             const matches = productNamesCache.filter(name => 
-                name.includes(input)
+                flexibleSearch(name, input)
             ).slice(0, 10); 
 
             matches.forEach(name => {
                 const item = document.createElement('div');
                 item.classList.add('autocomplete-item');
                 
-                const matchIndex = name.indexOf(input); 
-                if (matchIndex >= 0) {
-                    const before = name.substring(0, matchIndex);
-                    const match = name.substring(matchIndex, matchIndex + input.length);
-                    const after = name.substring(matchIndex + input.length);
-                    
-                    item.innerHTML = before + 
-                                        `<span class="autocomplete-item-highlight">${match}</span>` + 
-                                        after;
-                } else {
-                    item.textContent = name;
-                }
+                // Menampilkan nama, tanpa fitur highlighting kompleks untuk pencarian fleksibel
+                item.textContent = name;
 
                 item.addEventListener('click', () => {
                     namaBarangInput.value = name;
@@ -697,7 +727,9 @@
                 autocompleteList.style.display = 'block';
             }
         });
-
+        // Sisa event listener (keydown, addActive, removeActive, document.click) tetap sama
+        
+        // ... (Kode untuk namaBarangInput.addEventListener('keydown', ...)) ...
         namaBarangInput.addEventListener('keydown', function(e) {
             let x = document.getElementById('autocomplete-list');
             if (x) x = x.getElementsByTagName('div');
@@ -845,8 +877,7 @@
                 method: 'POST',
                 headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
                 body: urlEncodedData,
-                // Mode 'no-cors' tidak disarankan karena akan mengabaikan response
-                // Biarkan browser dan Apps Script menangani CORS/Cross-Domain
+                // Pastikan deployment Apps Script Anda (doPost) diatur untuk "execute as: Me" dan "who has access: Anyone"
             });
 
             const result = await response.json();
