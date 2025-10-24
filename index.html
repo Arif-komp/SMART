@@ -490,7 +490,7 @@
     // 🔥 PENTING: GANTI SCRIPT_URL DENGAN URL DEPLOYMENT APPS SCRIPT ANDA
     const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyCbNGjMC2c0Cc6x9jP5vupUtK_4U4c_vNJkZ4ago5SzlHwoqLVn6Fs7YU7btZ60cnL/exec'; 
 
-    // 🔥 PENTING: ID Google Spreadsheet Anda untuk pengambilan data
+    // 🔥 ID Google Spreadsheet Anda untuk pengambilan data (Sudah diganti sesuai permintaan)
     // Pastikan Google Sheet ini di-PUBLISH KE WEB (File -> Share -> Publish to the web)
     const SHEETS_ID = '1IEADNCoA30ggaO8l6pgXzJsjyjph0l2SU05U-jWxjvo'; 
 
@@ -519,7 +519,7 @@
 
 
     document.addEventListener('DOMContentLoaded', () => {
-        // 🔥 MENGGANTI: Memuat data menggunakan Google Sheets Public API
+        // Menggunakan fungsi pengambilan data baru dari Google Sheets API
         fetchInitialDataFromSheet(); 
         setupEventListeners();
         setupUppercaseListeners();
@@ -535,7 +535,7 @@
 
 
     // =================================================================
-    // 🔥 FUNGSI BARU: Mengambil data menggunakan Google Sheets Public API
+    // 🔥 MODIFIKASI: Mengambil data menggunakan Google Sheets Public API
     // =================================================================
     async function fetchInitialDataFromSheet() {
         displayMessage('⏳ Memuat semua data produk dari Google Sheet...', 'loading');
@@ -545,6 +545,7 @@
 
         try {
             const response = await fetch(publicApiUrl);
+            // Handling respons sebagai teks untuk memproses JSONP wrapper
             const text = await response.text();
             
             // Ekstrak JSONP wrapper "google.visualization.Query.setResponse("
@@ -574,13 +575,15 @@
      */
     function processSheetsData(table) {
         const cache = {};
+        // table.rows adalah array yang berisi baris data
         const rows = table.rows;
 
         // Kolom A = Kategori (Index 0), Kolom B = Jenis (Index 1), Kolom C = Nama (Index 2)
         rows.forEach(row => {
-            const kategori = row.c[0] ? row.c[0].v.toUpperCase().trim() : '';
-            const jenisProduk = row.c[1] ? row.c[1].v.toUpperCase().trim() : '';
-            const namaBarang = row.c[2] ? row.c[2].v.toUpperCase().trim() : '';
+            // Pastikan kolom data ada dan memiliki nilai 'v'
+            const kategori = row.c[0] && row.c[0].v ? row.c[0].v.toUpperCase().trim() : '';
+            const jenisProduk = row.c[1] && row.c[1].v ? row.c[1].v.toUpperCase().trim() : '';
+            const namaBarang = row.c[2] && row.c[2].v ? row.c[2].v.toUpperCase().trim() : '';
 
             if (kategori && jenisProduk && namaBarang) {
                 if (!cache[kategori]) {
@@ -596,7 +599,7 @@
         // Hapus duplikat dalam daftar nama barang
         for (const kategori in cache) {
             for (const jenis in cache[kategori]) {
-                cache[kategori][jenis] = [...new Set(cache[kategori][jenis])];
+                cache[kategori][jenis] = [...new Set(cache[kategori][jenis])].sort(); // Diurutkan agar lebih rapi
             }
         }
         return cache;
@@ -629,7 +632,7 @@
     }
 
     // =================================================================
-    // 🔥 FUNGSI BARU: PENCARIAN FLEKSIBEL (Tidak harus berurutan)
+    // 🔥 MODIFIKASI: FUNGSI PENCARIAN FLEKSIBEL (Tidak harus berurutan)
     // =================================================================
     /**
      * Melakukan pencarian barang secara fleksibel (tidak harus berurutan).
@@ -639,7 +642,10 @@
      * @returns {boolean} True jika cocok.
      */
     function flexibleSearch(name, input) {
-        if (!input || input.length < 2) return false;
+        if (!input || input.length < 2) {
+             // Jika input hanya 1 karakter, gunakan pencarian standar (startsWith)
+             return name.startsWith(input); 
+        }
 
         // Pecah input pencarian menjadi token/kata kunci individual, pisahkan berdasarkan spasi
         const searchTokens = input.split(/\s+/).filter(token => token.length > 0);
@@ -697,12 +703,11 @@
             autocompleteList.style.display = 'none';
             currentFocus = -1; 
 
-            // Jika Jenis Produk belum dipilih atau input terlalu pendek untuk pencarian fleksibel, hentikan.
-            if (jenisProdukSelect.value === '' || input.length < 2) {
+            if (jenisProdukSelect.value === '' || input.length === 0) {
                 return;
             }
 
-            // 🔥 LOGIKA PENCARIAN FLEKSIBEL DITERAPKAN DI SINI
+            // 🔥 LOGIKA PENCARIAN FLEKSIBEL DIGUNAKAN
             const matches = productNamesCache.filter(name => 
                 flexibleSearch(name, input)
             ).slice(0, 10); 
@@ -711,7 +716,7 @@
                 const item = document.createElement('div');
                 item.classList.add('autocomplete-item');
                 
-                // Menampilkan nama, tanpa fitur highlighting kompleks untuk pencarian fleksibel
+                // Menampilkan nama
                 item.textContent = name;
 
                 item.addEventListener('click', () => {
@@ -727,9 +732,7 @@
                 autocompleteList.style.display = 'block';
             }
         });
-        // Sisa event listener (keydown, addActive, removeActive, document.click) tetap sama
-        
-        // ... (Kode untuk namaBarangInput.addEventListener('keydown', ...)) ...
+
         namaBarangInput.addEventListener('keydown', function(e) {
             let x = document.getElementById('autocomplete-list');
             if (x) x = x.getElementsByTagName('div');
@@ -877,7 +880,6 @@
                 method: 'POST',
                 headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
                 body: urlEncodedData,
-                // Pastikan deployment Apps Script Anda (doPost) diatur untuk "execute as: Me" dan "who has access: Anyone"
             });
 
             const result = await response.json();
